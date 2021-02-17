@@ -11,6 +11,7 @@
 <script lang="ts">
 import { Component, Vue } from 'vue-property-decorator';
 import Modal from '@/components/Modal.vue'; // @ is an alias to /src
+import { io } from "socket.io-client";
 
 @Component({
   components: {
@@ -20,6 +21,11 @@ import Modal from '@/components/Modal.vue'; // @ is an alias to /src
 export default class Home extends Vue {
   public modal = false;
 
+
+  public mounted() {
+    const socket = io("http://localhost:3000");
+
+  }
 }
 
 </script>
@@ -53,7 +59,6 @@ export default class Home extends Vue {
       opacity: 1;
       box-shadow: inset -4px -4px 8px rgba(255, 255, 255, 0.5),
         inset 8px 8px 16px rgba(0, 0, 0, 0.1);
-      color: #79e3b6;
     }
     &:focus {
       outline: none;

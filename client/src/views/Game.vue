@@ -1,45 +1,62 @@
 <template>
   <div class="home">
-    <!-- <img alt="Vue logo" src="../assets/logo.png"> -->
-    <!-- <HelloWorld msg="Welcome to Your Vue.js + TypeScript App"/> -->
+    <button class="button"><span>Cast your votes!</span></button>
 
-    <button v-if="!modal" class="button" @click="startGame()"><span>Start new game</span></button>
-    <Modal v-if="modal" title="What is your name?" @completed="enteredName"></Modal>
+    <div class="players" v-for="player in getPlayers()" :key="player.id">
+      <div class="player">
+        {{player.name}}
+      </div>
+    </div>
   </div>
 </template>
 
 <script lang="ts">
-import { Component, Vue } from 'vue-property-decorator';
-import Modal from '@/components/Modal.vue'; // @ is an alias to /src
-import { io } from "socket.io-client";
-import Vuex from 'vuex'
 import store from '@/store';
-import router from '@/router';
+import { Component, Vue } from 'vue-property-decorator';
 @Component({
   components: {
-    Modal
   },
 })
-export default class Home extends Vue {
-
+export default class Game extends Vue {
   public modal = false;
 
-  public startGame() {
-    this.modal = true;
-    const socket = io("http://localhost:3000");
-    store.commit('setSocket', socket);
+
+  public mounted() {
+    store.state.socket.on('update', (players) => {
+      store.state.players = players;
+    });  
   }
 
-  public enteredName(name: string) {
-    console.log('sending', name);
-    store.state.socket.emit('name', name);
-    router.push({ path: 'game/12dsd122f'});
+  public getPlayers() {
+    return store.state.players;
   }
+
 }
 
 </script>
 
 <style scoped lang="scss">
+
+
+  .players {
+    width: 400px;
+    height: 400px;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    .player {
+      width: 150px;
+      height: 150px;
+      border-radius: 50%;
+      background: #6df8b2; 
+      box-shadow: -6px -6px 10px rgba(255, 255, 255, 0.8), 6px 6px 10px rgba(0, 0, 0, 0.2); color: #6f6cde;
+      font-size:32px;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+    }
+  }
+  
   .home {
     display: flex;
     justify-content: center;

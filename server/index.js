@@ -15,6 +15,29 @@ http.listen(3000, () => {
   console.log('listening on *:3000');
 });
 
+
+let players = [];
+
 io.on('connection', (socket) => {
-    console.log('a user connected');
+    console.log('a user connected', socket.id);
+    players.push({id: socket.id, name: ''});
+
+    socket.on('name', (name) => {
+      let player = players.find(p => p.id == socket.id);
+      if (player) {
+        player.name = name;
+      }
+      updateClients();
+    })
+
+    socket.on('disconnect', () => {
+      players = players.filter(player => player.id !== socket.id);
+      updateClients();
+     });
 });
+
+function updateClients() {
+  io.sockets.emit('update', players);
+}
+
+

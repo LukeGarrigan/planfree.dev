@@ -3,7 +3,7 @@
     <div class="modal">
       <span>{{title}}</span>
 
-      <input id="selectNameInput" type="text" class="input"/>
+      <input id="selectNameInput" v-model="name" type="text" class="input" @keypress.enter="completed"/>
       
     </div>
   </div>
@@ -14,13 +14,16 @@ import { Component, Prop, Vue } from 'vue-property-decorator';
 @Component
 export default class Modal extends Vue {
   @Prop() private title!: string;
-
+  public name = '';
   public mounted() {
     const input = document.getElementById('selectNameInput');
     if (input) {
       input.focus();
     }
+  }
 
+  public completed() {
+    this.$emit('completed', this.name);
   }
 }
 </script>

@@ -1,6 +1,7 @@
 <template>
   <div class="home">
-    <button class="button"><span>Cast your votes!</span></button>
+    <button v-if="!modal" class="button"><span>Cast your votes!</span></button>
+    <Modal v-if="modal" title="What is your name?" @completed="enteredName"></Modal>
 
     <div class="players" v-for="player in getPlayers()" :key="player.id">
       <div class="player">
@@ -13,24 +14,47 @@
 <script lang="ts">
 import store from '@/store';
 import { Component, Vue } from 'vue-property-decorator';
+import Modal from '@/components/Modal.vue'; 
+import Player from '@/view-models/Player.ts'; 
+import { io } from "socket.io-client";
 @Component({
   components: {
+    Modal
   },
 })
 export default class Game extends Vue {
-  public modal = false;
-
+  public modal = true;
 
   public mounted() {
-    store.state.socket.on('update', (players) => {
+    if (this.joiningAGame()) {
+      
+      const socket = io("http://localhost:3000", {
+        query: {
+          "roomId":this.$route.params.id
+        }
+      });
+      store.commit('setSocket', socket);
+    }
+
+    store.state.socket.on('update', (players: Player[]) => {
       store.state.players = players;
-    });  
+    }); 
   }
 
   public getPlayers() {
     return store.state.players;
   }
 
+
+  public enteredName(name: string) {
+    store.state.socket.emit('name', name);
+    this.modal = false;
+  }
+
+  private joiningAGame() {
+    const currentState = store.state.socket; 
+    return currentState && Object.keys(currentState).length === 0 && currentState.constructor === Object
+  }
 }
 
 </script>

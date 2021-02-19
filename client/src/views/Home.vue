@@ -1,39 +1,28 @@
 <template>
   <div class="home">
-    <!-- <img alt="Vue logo" src="../assets/logo.png"> -->
-    <!-- <HelloWorld msg="Welcome to Your Vue.js + TypeScript App"/> -->
-
-    <button v-if="!modal" class="button" @click="startGame()"><span>Start new game</span></button>
-    <Modal v-if="modal" title="What is your name?" @completed="enteredName"></Modal>
+    <button class="button" @click="startGame()"><span>Start new game</span></button>
   </div>
 </template>
 
 <script lang="ts">
 import { Component, Vue } from 'vue-property-decorator';
-import Modal from '@/components/Modal.vue'; // @ is an alias to /src
+
 import { io } from "socket.io-client";
 import Vuex from 'vuex'
 import store from '@/store';
 import router from '@/router';
 @Component({
   components: {
-    Modal
   },
 })
 export default class Home extends Vue {
 
-  public modal = false;
-
   public startGame() {
-    this.modal = true;
     const socket = io("http://localhost:3000");
     store.commit('setSocket', socket);
-  }
-
-  public enteredName(name: string) {
-    console.log('sending', name);
-    store.state.socket.emit('name', name);
-    router.push({ path: 'game/12dsd122f'});
+    store.state.socket.on('room', (roomId: string) => {
+      router.push({ path: `game/${roomId}`});  
+    }); 
   }
 }
 

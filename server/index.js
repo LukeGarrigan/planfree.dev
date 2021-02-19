@@ -1,5 +1,6 @@
 const app = require('express')();
 const http = require('http').createServer(app);
+const short = require('short-uuid');
 const io = require("socket.io")(http, {
     cors: {
       origin: "http://localhost:8081",
@@ -20,24 +21,34 @@ let players = [];
 
 io.on('connection', (socket) => {
     console.log('a user connected', socket.id);
-    players.push({id: socket.id, name: ''});
 
+    let roomId = socket.handshake.query['roomId'];
+    if (!roomId) {
+      roomId = short.generate();
+      socket.emit('room', roomId); 
+    }
+    socket.join(roomId);
+
+    players.push({id: socket.id, name: '', roomId: roomId});
     socket.on('name', (name) => {
       let player = players.find(p => p.id == socket.id);
       if (player) {
         player.name = name;
       }
-      updateClients();
+      updateClientsInRoom(roomId);
     })
 
     socket.on('disconnect', () => {
       players = players.filter(player => player.id !== socket.id);
-      updateClients();
+      updateClientsInRoom(roomId);
      });
 });
 
-function updateClients() {
-  io.sockets.emit('update', players);
+function updateClientsInRoom(roomId) {
+  console.log('Updating clients in room', roomId)
+  const roomPlayers = players.filter(p => p.roomId == roomId);
+  console.log(roomPlayers);
+  io.to(roomId).emit('update', roomPlayers);
 }
 
 

@@ -1,12 +1,32 @@
 <template>
   <div class="home">
-    <button v-if="!modal" class="button"><span>Cast your votes!</span></button>
+    <button v-if="!modal && !playerHasVoted() && !showVotes" class="button"><span>Cast your votes</span></button>
+    <button v-if="!modal && playerHasVoted() && !showVotes" class="button" @click="showVotesClicked()"><span>Show votes!</span></button>
+    <button v-if="showVotes" class="button" @click="startNewGame()"><span>Start new game!</span></button>
     <Modal v-if="modal" title="What is your name?" @completed="enteredName"></Modal>
 
     <div class="players" v-for="player in getPlayers()" :key="player.id">
-      <div class="player">
-        {{player.name}}
+      <div class="player" :class="{'voted': player.vote != undefined && player.vote != null && !showVotes}">
+        <span v-if="showVotes">{{player.vote}}</span>
       </div>
+      <div class="name">
+        <span>{{player.name}}</span>
+      </div>
+    </div>
+
+    <div class="options" v-if="!modal">
+      <button class="fib-button" @click="performVote('0')"><span>0</span></button>
+      <button class="fib-button" @click="performVote('1')"><span>1</span></button>
+      <button class="fib-button" @click="performVote('2')"><span>2</span></button>
+      <button class="fib-button" @click="performVote('3')"><span>3</span></button>
+      <button class="fib-button" @click="performVote('5')"><span>5</span></button>
+      <button class="fib-button" @click="performVote('8')"><span>8</span></button>
+      <button class="fib-button" @click="performVote('13')"><span>13</span></button>
+      <button class="fib-button" @click="performVote('21')"><span>21</span></button>
+      <button class="fib-button" @click="performVote('34')"><span>34</span></button>
+      <button class="fib-button" @click="performVote('55')"><span>55</span></button>
+      <button class="fib-button" @click="performVote('89')"><span>89</span></button>
+      <button class="fib-button" @click="performVote('?')"><span>?</span></button>
     </div>
   </div>
 </template>
@@ -24,6 +44,7 @@ import { io } from "socket.io-client";
 })
 export default class Game extends Vue {
   public modal = true;
+  public showVotes = false;
 
   public mounted() {
     if (this.joiningAGame()) {
@@ -39,16 +60,43 @@ export default class Game extends Vue {
     store.state.socket.on('update', (players: Player[]) => {
       store.state.players = players;
     }); 
+
+    store.state.socket.on('show', () => {
+      this.showVotes = true;
+    })
+
+    store.state.socket.on('restart', () => {
+      this.showVotes = false;
+    })
+  }
+
+  public showVotesClicked() {
+    store.state.socket.emit('show');
   }
 
   public getPlayers() {
     return store.state.players;
   }
 
+  public performVote(vote: string) {
+    store.state.socket.emit('vote', vote);
+  }
+
+  public startNewGame() {
+    store.state.socket.emit('restart');
+  }
 
   public enteredName(name: string) {
     store.state.socket.emit('name', name);
     this.modal = false;
+  }
+
+  public playerHasVoted() {
+     const players = store.state.players;
+     if (players.filter(p => p.vote !== null && p.vote !== undefined).length > 0) {
+       return true;
+     }
+     return false;
   }
 
   private joiningAGame() {
@@ -63,21 +111,34 @@ export default class Game extends Vue {
 
 
   .players {
+    position: relative;
+    top: 5em;
     width: 400px;
     height: 400px;
     display: flex;
     justify-content: center;
     align-items: center;
+    flex-direction: column;
     .player {
-      width: 150px;
-      height: 150px;
-      border-radius: 50%;
-      background: #6df8b2; 
+      border-radius: 32px;
+      border: none;
+      cursor: pointer;
+      width: 80px;
+      height: 100px;
+      //background: #6df8b2; 
+      background: #f3f0f1;
       box-shadow: -6px -6px 10px rgba(255, 255, 255, 0.8), 6px 6px 10px rgba(0, 0, 0, 0.2); color: #6f6cde;
-      font-size:32px;
       display: flex;
       justify-content: center;
       align-items: center;
+    }
+    .name {
+      text-align: center;
+      font-size:32px;
+    }
+
+    .voted {
+      background: #6df8b2; 
     }
   }
   
@@ -119,6 +180,43 @@ export default class Game extends Vue {
     font-family: "Montserrat", sans-serif;
     font-size: 32px;
     font-weight: semibold;
+    color: #6f6cde;
   }
+
+
+  .options {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    position: absolute;
+    gap:30px;
+    width: 100%;
+    bottom: 10em;
+    .fib-button {
+      background: #f3f0f1;
+      border-radius: 32px;
+      text-align: center;
+      border: none;
+      cursor: pointer;
+      width: 80px;
+      transition: all 0.1s ease-in-out;
+      box-shadow: -6px -6px 10px rgba(255, 255, 255, 0.8), 6px 6px 10px rgba(0, 0, 0, 0.2); color: #6f6cde;
+      &:hover {
+        opacity: 0.3;
+        box-shadow: -6px -6px 10px rgba(255, 255, 255, 0.8),
+          6px 6px 10px rgba(0, 0, 0, 0.2);
+      }
+      &:active {
+        opacity: 1;
+        box-shadow: inset -4px -4px 8px rgba(255, 255, 255, 0.5),
+          inset 8px 8px 16px rgba(0, 0, 0, 0.1);
+      }
+      &:focus {
+        outline: none;
+      }
+    }
+
+  }
+  
 
 </style>

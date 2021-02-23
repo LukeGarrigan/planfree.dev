@@ -36,7 +36,24 @@ io.on('connection', (socket) => {
         player.name = name;
       }
       updateClientsInRoom(roomId);
-    })
+    });
+
+    socket.on('vote', (vote) => {
+      let player = players.find(p => p.id == socket.id);
+      if (player) {
+        player.vote = vote;
+      }
+      updateClientsInRoom(roomId);
+    });
+
+    socket.on('show', () => {
+      console.log('Showing votes');
+      io.to(roomId).emit('show');
+    });
+
+    socket.on('restart', () => {
+      restartGame(roomId);
+    });
 
     socket.on('disconnect', () => {
       players = players.filter(player => player.id !== socket.id);
@@ -45,9 +62,15 @@ io.on('connection', (socket) => {
 });
 
 function updateClientsInRoom(roomId) {
-  console.log('Updating clients in room', roomId)
   const roomPlayers = players.filter(p => p.roomId == roomId);
   console.log(roomPlayers);
+  io.to(roomId).emit('update', roomPlayers);
+}
+
+function restartGame(roomId) {
+  const roomPlayers = players.filter(p => p.roomId == roomId);
+  roomPlayers.forEach(p => p.vote = undefined);
+  io.to(roomId).emit('restart');
   io.to(roomId).emit('update', roomPlayers);
 }
 

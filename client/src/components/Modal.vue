@@ -37,6 +37,7 @@ export default class Modal extends Vue {
     //background: pink;
     display: flex;
     justify-content: center;
+    position: absolute;
   }
 
   .modal {

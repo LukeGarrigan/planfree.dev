@@ -1,6 +1,8 @@
 <template>
   <div class="home">
-    <button v-if="!modal && !playerHasVoted() && !showVotes" class="button"><span>Cast your votes</span></button>
+    <button v-if="!modal" class="button invite"><div>Invite players</div><div><svg xmlns="http://www.w3.org/2000/svg" height="24" viewBox="0 0 24 24" width="24"><path d="M0 0h24v24H0V0z" fill="none"/><path d="M16 1H4c-1.1 0-2 .9-2 2v14h2V3h12V1zm3 4H8c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h11c1.1 0 2-.9 2-2V7c0-1.1-.9-2-2-2zm0 16H8V7h11v14z"/></svg></div></button>
+
+    <button v-if="!modal && !playerHasVoted() && !showVotes" class="button no-hover" ><span>Cast your votes</span></button>
     <button v-if="!modal && playerHasVoted() && !showVotes" class="button" @click="showVotesClicked()"><span>Show votes!</span></button>
     <button v-if="showVotes" class="button" @click="startNewGame()"><span>Start new game!</span></button>
     <Modal v-if="modal" title="What is your name?" @completed="enteredName"></Modal>
@@ -175,6 +177,31 @@ export default class Game extends Vue {
       outline: none;
     }
   }
+
+  .invite {
+    display: flex;
+    flex-direction: row;
+    align-items: center;
+    justify-content: center;
+    gap: 10px;
+    right: 2%;
+    top: 2%;
+    width: 300px;
+    height: 70px;
+    text-align: center;
+    font-size: 25px;
+    svg {
+      position: relative;
+      left: 2px;
+      top: 3px;
+      fill: #6f6cde;
+    }
+  }
+
+  .no-hover {
+    pointer-events: none;
+  }
+
   span {
     line-height: 100px;
     font-family: "Montserrat", sans-serif;
@@ -182,7 +209,6 @@ export default class Game extends Vue {
     font-weight: semibold;
     color: #6f6cde;
   }
-
 
   .options {
     display: flex;

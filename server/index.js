@@ -47,7 +47,6 @@ io.on('connection', (socket) => {
     });
 
     socket.on('show', () => {
-      console.log('Showing votes');
       io.to(roomId).emit('show');
     });
 
@@ -63,13 +62,13 @@ io.on('connection', (socket) => {
 
 function updateClientsInRoom(roomId) {
   const roomPlayers = players.filter(p => p.roomId == roomId);
-  console.log(roomPlayers);
   io.to(roomId).emit('update', roomPlayers);
 }
 
 function restartGame(roomId) {
   const roomPlayers = players.filter(p => p.roomId == roomId);
   roomPlayers.forEach(p => p.vote = undefined);
+  console.log('Restarting', roomPlayers);
   io.to(roomId).emit('restart');
   io.to(roomId).emit('update', roomPlayers);
 }

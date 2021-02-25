@@ -53,7 +53,7 @@ export default class Game extends Vue {
   public mounted() {
     if (this.joiningAGame()) {
       
-      const socket = io("http://localhost:3000", {
+      const socket = io("https://z6vll.sse.codesandbox.io", {
         query: {
           "roomId":this.$route.params.id
         }

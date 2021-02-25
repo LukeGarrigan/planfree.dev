@@ -18,7 +18,8 @@ import router from '@/router';
 export default class Home extends Vue {
 
   public startGame() {
-    const socket = io("https://z6vll.sse.codesandbox.io");
+    // https://z6vll.sse.codesandbox.io
+    const socket = io("http://localhost:3000");
     store.commit('setSocket', socket);
     store.state.socket.on('room', (roomId: string) => {
       router.push({ path: `game/${roomId}`});  

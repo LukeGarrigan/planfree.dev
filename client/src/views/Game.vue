@@ -53,7 +53,8 @@ export default class Game extends Vue {
   public mounted() {
     if (this.joiningAGame()) {
       
-      const socket = io("https://z6vll.sse.codesandbox.io", {
+      // https://z6vll.sse.codesandbox.io
+      const socket = io("http://localhost:3000", {
         query: {
           "roomId":this.$route.params.id
         }
@@ -165,6 +166,7 @@ export default class Game extends Vue {
   }
   .button {
     position: absolute;
+    z-index:9999;
     top: 40%;
     width: 400px;
     height: 100px;

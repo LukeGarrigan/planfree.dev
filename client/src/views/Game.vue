@@ -137,10 +137,9 @@ export default class Game extends Vue {
     .player {
       border-radius: 32px;
       border: none;
-      cursor: pointer;
+      cursor: default;
       width: 80px;
       height: 100px;
-      //background: #6df8b2; 
       background: #f3f0f1;
       box-shadow: -6px -6px 10px rgba(255, 255, 255, 0.8), 6px 6px 10px rgba(0, 0, 0, 0.2); color: #6f6cde;
       display: flex;
@@ -225,6 +224,7 @@ export default class Game extends Vue {
     font-size: 32px;
     font-weight: semibold;
     color: #6f6cde;
+    user-select: none;
   }
 
   .options {

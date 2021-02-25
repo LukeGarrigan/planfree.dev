@@ -55,7 +55,7 @@ export default class Modal extends Vue {
 
     input {
       width: 80%;
-      height :40px;
+      height : 40px;
       border: none;
       outline: none;
       font-size: 26px;

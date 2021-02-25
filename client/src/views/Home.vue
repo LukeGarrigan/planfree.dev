@@ -38,10 +38,14 @@ export default class Home extends Vue {
     box-sizing: border-box;
   }
   .button {
+    display: flex;
+    align-items: center;
+    justify-content: center;
     position: absolute;
+    z-index:9999;
     top: 40%;
-    width: 400px;
-    height: 100px;
+    width: 320px;
+    height: 80px;
     background: #f3f0f1;
     border-radius: 32px;
     text-align: center;
@@ -66,7 +70,7 @@ export default class Home extends Vue {
   span {
     line-height: 100px;
     font-family: "Montserrat", sans-serif;
-    font-size: 32px;
+    font-size: 26px;
     font-weight: semibold;
   }
 

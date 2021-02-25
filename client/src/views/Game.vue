@@ -129,18 +129,18 @@ export default class Game extends Vue {
   .players {
     position: relative;
     top: 5em;
-    width: 400px;
-    height: 400px;
+    width: 320px;
+    height: 320px;
     display: flex;
     justify-content: center;
     align-items: center;
     flex-direction: column;
     .player {
-      border-radius: 32px;
+      border-radius: 26px;
       border: none;
       cursor: default;
-      width: 80px;
-      height: 100px;
+      width: 64px;
+      height: 80px;
       background: #f3f0f1;
       box-shadow: -6px -6px 10px rgba(255, 255, 255, 0.8), 6px 6px 10px rgba(0, 0, 0, 0.2); color: #6f6cde;
       display: flex;
@@ -149,7 +149,7 @@ export default class Game extends Vue {
     }
     .name {
       text-align: center;
-      font-size:32px;
+      font-size:26px;
     }
 
     .voted {
@@ -165,11 +165,14 @@ export default class Game extends Vue {
     box-sizing: border-box;
   }
   .button {
+    display: flex;
+    align-items: center;
+    justify-content: center;
     position: absolute;
     z-index:9999;
     top: 40%;
-    width: 400px;
-    height: 100px;
+    width: 320px;
+    height: 80px;
     background: #f3f0f1;
     border-radius: 32px;
     text-align: center;
@@ -223,7 +226,7 @@ export default class Game extends Vue {
   span {
     line-height: 100px;
     font-family: "Montserrat", sans-serif;
-    font-size: 32px;
+    font-size: 26px;
     font-weight: semibold;
     color: #6f6cde;
     user-select: none;
@@ -238,12 +241,16 @@ export default class Game extends Vue {
     width: 100%;
     bottom: 10em;
     .fib-button {
+      display: flex;
+      align-items: center;
+      justify-content: center;
       background: #f3f0f1;
-      border-radius: 32px;
+      border-radius: 26px;
       text-align: center;
       border: none;
       cursor: pointer;
-      width: 80px;
+      width: 64px;
+      height: 80px;
       transition: all 0.1s ease-in-out;
       box-shadow: -6px -6px 10px rgba(255, 255, 255, 0.8), 6px 6px 10px rgba(0, 0, 0, 0.2); color: #6f6cde;
       &:hover {

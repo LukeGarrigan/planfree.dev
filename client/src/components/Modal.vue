@@ -41,8 +41,8 @@ export default class Modal extends Vue {
   }
 
   .modal {
-    width: 500px;
-    height: 250px;
+    width: 400px;
+    height: 200px;
     top: 35%;
     position: absolute;
     border-radius: 32px;
@@ -55,12 +55,12 @@ export default class Modal extends Vue {
 
     input {
       width: 80%;
-      height :50px;
+      height :40px;
       border: none;
       outline: none;
-      font-size: 32px;
-      padding: 10px;
-      border-radius: 20px;
+      font-size: 26px;
+      padding: 8px;
+      border-radius: 16px;
       color: #6f6cde;
     }
   }
@@ -68,7 +68,7 @@ export default class Modal extends Vue {
   span {
     line-height: 100px;
     font-family: "Montserrat", sans-serif;
-    font-size: 32px;
+    font-size: 26px;
     font-weight: semibold;
   }
 

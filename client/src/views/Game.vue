@@ -5,7 +5,7 @@
 
     <button v-if="!modal && !playerHasVoted() && !showVotes" class="button no-hover" ><span>Cast your votes</span></button>
     <button v-if="!modal && playerHasVoted() && !showVotes" class="button" @click="showVotesClicked()"><span>Show votes!</span></button>
-    <button v-if="showVotes" class="button" @click="startNewGame()"><span>Start new game!</span></button>
+    <button v-if="showVotes" class="button start" @click="startNewGame()"><span>Start new game!</span></button>
     <Modal v-if="modal" title="What is your name?" @completed="enteredName"></Modal>
 
     <div class="players" v-for="player in getPlayers()" :key="player.id">
@@ -52,9 +52,7 @@ export default class Game extends Vue {
 
   public mounted() {
     if (this.joiningAGame()) {
-      
-      // https://z6vll.sse.codesandbox.io
-      const socket = io("http://localhost:3000", {
+      const socket = io(process.env.VUE_APP_SERVER, {
         query: {
           "roomId":this.$route.params.id
         }
@@ -170,7 +168,7 @@ export default class Game extends Vue {
     justify-content: center;
     position: absolute;
     z-index:9999;
-    top: 40%;
+    top: 45%;
     width: 320px;
     height: 80px;
     background: #f3f0f1;

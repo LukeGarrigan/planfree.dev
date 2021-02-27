@@ -66,7 +66,7 @@ export default class Modal extends Vue {
   }
 
   span {
-    line-height: 100px;
+    line-height: 80px;
     font-family: "Montserrat", sans-serif;
     font-size: 26px;
     font-weight: semibold;

@@ -1,9 +1,10 @@
 const app = require('express')();
 const http = require('http').createServer(app);
 const short = require('short-uuid');
+require('dotenv').config()
 const io = require("socket.io")(http, {
     cors: {
-      origin: "http://localhost:8081",
+      origin: process.env.ORIGIN || 'http://localhost:8081',
       methods: ["GET", "POST"]
     }
   });
@@ -12,6 +13,7 @@ app.get('/', (req, res) => {
   res.send('<h1>Hello world</h1>');
 });
 
+console.log(process.env.ORIGIN);
 http.listen(process.env.PORT || 3000, () => {
   console.log('listening on *:3000');
 });

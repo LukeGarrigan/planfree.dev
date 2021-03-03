@@ -9,6 +9,11 @@ const io = require("socket.io")(http, {
     }
   });
 
+// keeping the connection alive  
+setInterval(() => {
+  io.emit('ping');
+}, 8000)
+
 app.get('/', (req, res) => {
   res.send('<h1>Hello world</h1>');
 });
@@ -60,6 +65,13 @@ io.on('connection', (socket) => {
       players = players.filter(player => player.id !== socket.id);
       updateClientsInRoom(roomId);
      });
+
+
+     // keeping the connection alive
+     socket.on('pong', () => {
+       
+     })
+
 });
 
 function updateClientsInRoom(roomId) {
@@ -74,5 +86,6 @@ function restartGame(roomId) {
   io.to(roomId).emit('restart');
   io.to(roomId).emit('update', roomPlayers);
 }
+
 
 

@@ -71,6 +71,10 @@ export default class Game extends Vue {
     store.state.socket.on('restart', () => {
       this.showVotes = false;
     })
+
+    store.state.socket.on('ping', () => {
+      store.state.socket.emit('pong');
+    })
   }
 
   public showVotesClicked() {

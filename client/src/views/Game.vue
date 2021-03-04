@@ -236,12 +236,13 @@ export default class Game extends Vue {
 
   .options {
     display: flex;
-    align-items: center;
     justify-content: center;
     position: absolute;
+    flex-wrap: wrap;
+    height: 200px;
     gap:30px;
-    width: 100%;
-    bottom: 10em;
+    width: 90%;
+    bottom: 5%;
     .fib-button {
       display: flex;
       align-items: center;

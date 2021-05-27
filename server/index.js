@@ -69,7 +69,8 @@ io.on('connection', (socket) => {
 
      // keeping the connection alive
      socket.on('pong', () => {
-       
+      let player = players.find(p => p.id == socket.id);
+      console.log('pong', player.name, new Date());
      })
 
 });

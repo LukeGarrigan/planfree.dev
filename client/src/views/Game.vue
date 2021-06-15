@@ -38,7 +38,7 @@
 import store from '@/store';
 import { Component, Vue } from 'vue-property-decorator';
 import Modal from '@/components/Modal.vue'; 
-import Player from '@/view-models/Player.ts'; 
+import Player from '@/view-models/Player'; 
 import { io } from "socket.io-client";
 @Component({
   components: {

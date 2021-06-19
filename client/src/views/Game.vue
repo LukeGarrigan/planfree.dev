@@ -60,21 +60,12 @@ export default class Game extends Vue {
       store.commit('setSocket', socket);
     }
 
-    store.state.socket.on('update', (players: Player[]) => {
-      store.state.players = players;
-    }); 
+    const storedName = localStorage.getItem('name')
+    if (storedName) {
+      this.enteredName(storedName);
+    }
 
-    store.state.socket.on('show', () => {
-      this.showVotes = true;
-    })
-
-    store.state.socket.on('restart', () => {
-      this.showVotes = false;
-    })
-
-    store.state.socket.on('ping', () => {
-      store.state.socket.emit('pong');
-    })
+    this.setupSocketHandlers();
   }
 
   public showVotesClicked() {
@@ -95,6 +86,7 @@ export default class Game extends Vue {
 
   public enteredName(name: string) {
     store.state.socket.emit('name', name);
+    localStorage.setItem('name', name);
     this.modal = false;
   }
 
@@ -120,6 +112,24 @@ export default class Game extends Vue {
   private joiningAGame() {
     const currentState = store.state.socket; 
     return currentState && Object.keys(currentState).length === 0 && currentState.constructor === Object
+  }
+
+  private setupSocketHandlers() {
+    store.state.socket.on('update', (players: Player[]) => {
+      store.state.players = players;
+    }); 
+
+    store.state.socket.on('show', () => {
+      this.showVotes = true;
+    })
+
+    store.state.socket.on('restart', () => {
+      this.showVotes = false;
+    })
+
+    store.state.socket.on('ping', () => {
+      store.state.socket.emit('pong');
+    })
   }
 }
 

@@ -17,7 +17,7 @@
       </div>
     </div>
 
-    <div class="options" v-if="!modal">
+    <div class="options" v-if="!modal && !showVotes">
       <button class="fib-button" @click="performVote('0')"><span>0</span></button>
       <button class="fib-button" @click="performVote('1')"><span>1</span></button>
       <button class="fib-button" @click="performVote('2')"><span>2</span></button>
@@ -31,7 +31,18 @@
       <button class="fib-button" @click="performVote('89')"><span>89</span></button>
       <button class="fib-button" @click="performVote('?')"><span>?</span></button>
     </div>
+
+    <div class="results-container" v-if="showVotes">
+      <div class="results">
+        <div class="average"> Average: {{getAverage()}} </div>
+        <div class="popular"> Popular: {{getMode()}} </div>
+      </div>
+        
+    </div>
+
   </div>
+
+ 
 </template>
 
 <script lang="ts">
@@ -109,6 +120,56 @@ export default class Game extends Vue {
     setTimeout(() => this.showCopiedToClipboard = false, 3000);
   }
 
+  public getAverage() {
+    const players = store.state.players;
+    let count = 0;
+    let total = 0;
+    for (const player of players) {
+      if (player.vote) {
+        total += parseInt(player.vote);
+        count++;
+      } 
+    }
+
+    
+    return (total / count).toFixed(1).replace(/\.0+$/,'')
+  }
+
+  public getMode(): string {
+    const players = store.state.players;
+    const scores: Record<string, number> = {};
+    for (const player of players) {
+      if (player.vote) {
+        
+        if (scores[player.vote]) {
+          scores[player.vote] = scores[player.vote] + 1;
+        } else {
+          scores[player.vote] = 1;
+        }
+      } 
+    }
+
+    let mostSeen = 1;
+    let mostSeenCard = '';
+    for (const key in scores) {
+      const value = scores[key];
+      if (value > mostSeen) {
+        mostSeen = value;
+        mostSeenCard = key;
+      }
+    }
+    
+    if (mostSeen == 1) {
+      return 'NA';
+    } else {
+      return mostSeenCard;
+    }
+  }
+
+
+ 
+
+
   private joiningAGame() {
     const currentState = store.state.socket; 
     return currentState && Object.keys(currentState).length === 0 && currentState.constructor === Object
@@ -139,6 +200,7 @@ export default class Game extends Vue {
 
 
   .players {
+    user-select: none;
     position: relative;
     top: 5em;
     width: 320px;
@@ -208,6 +270,7 @@ export default class Game extends Vue {
   }
 
   .invite {
+    user-select: none;
     display: flex;
     flex-direction: row;
     align-items: center;
@@ -218,7 +281,7 @@ export default class Game extends Vue {
     width: 300px;
     height: 70px;
     text-align: center;
-    font-size: 25px;
+    font-size: 26px;
     svg {
       position: relative;
       left: 2px;
@@ -244,6 +307,43 @@ export default class Game extends Vue {
     user-select: none;
   }
 
+  .results-container {
+    display: flex;
+    justify-content: center;
+    position: absolute;
+    flex-wrap: wrap;
+    height: 200px;
+    gap:30px;
+    width: 90%;
+    bottom: 5%;
+    font-size: 20px;
+    color: #dbde6c;
+
+    .results {
+      display: flex;
+      flex-direction: column;
+      justify-content: center;
+      background:#6f6cde;
+      border-radius: 26px;
+      border: none;
+      width: 250px;
+      height: 100px;
+      transition: all 0.1s ease-in-out;
+      box-shadow: -6px -6px 10px rgba(255, 255, 255, 0.8), 6px 6px 10px rgba(0, 0, 0, 0.2); 
+      
+      user-select: none;
+      font-family: "Montserrat", sans-serif;
+      font-weight: semibold;
+      &:focus {
+        outline: none;
+      }
+
+      .average {
+        padding: 4px;
+      }
+    }
+  }
+
   .options {
     display: flex;
     justify-content: center;
@@ -253,6 +353,8 @@ export default class Game extends Vue {
     gap:30px;
     width: 90%;
     bottom: 5%;
+    user-select: none;
+
     .fib-button {
       display: flex;
       align-items: center;

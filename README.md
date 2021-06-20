@@ -15,3 +15,20 @@
 </p>
 
 ![https://i.imgur.com/id0miuo.png](https://i.imgur.com/id0miuo.png)
+
+## Run locally:
+
+Backend:
+```console
+cd serve/
+nodemon index.js
+``` 
+
+Frontend:
+```console
+cd client/
+npm run serve 
+```
+Navigate to http://localhost:8082/ 
+
+

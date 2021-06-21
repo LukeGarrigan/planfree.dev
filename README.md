@@ -20,13 +20,15 @@
 
 Backend:
 ```console
-cd serve/
-nodemon index.js
+cd server/
+npm install
+npm start
 ``` 
 
 Frontend:
 ```console
 cd client/
+npm install
 npm run serve 
 ```
 Navigate to http://localhost:8082/ 

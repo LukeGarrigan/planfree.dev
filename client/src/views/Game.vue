@@ -65,7 +65,7 @@ export default class Game extends Vue {
     if (this.joiningAGame()) {
       const socket = io(process.env.VUE_APP_SERVER, {
         query: {
-          "roomId":this.$route.params.id
+          "roomId": this.$route.params.id
         }
       });
       store.commit('setSocket', socket);

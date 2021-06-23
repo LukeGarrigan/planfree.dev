@@ -107,7 +107,6 @@
 import { Component, Vue } from "vue-property-decorator";
 
 import { io } from "socket.io-client";
-import Vuex from "vuex";
 import store from "@/store";
 import router from "@/router";
 @Component({

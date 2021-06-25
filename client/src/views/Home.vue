@@ -230,7 +230,7 @@ export default class Home extends Vue {
 }
 
 svg rect {
-  fill: #6f6cde;
+  fill: #54e8dd;
 }
 
 

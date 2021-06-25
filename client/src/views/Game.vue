@@ -227,7 +227,7 @@ export default class Game extends Vue {
     }
 
     .voted {
-      background: #6df8b2; 
+      background: #54e8dd; 
     }
   }
   
@@ -253,7 +253,7 @@ export default class Game extends Vue {
     border: none;
     cursor: pointer;
     transition: all 0.1s ease-in-out;
-    box-shadow: -6px -6px 10px rgba(255, 255, 255, 0.8), 6px 6px 10px rgba(0, 0, 0, 0.2); color: #6f6cde;
+    box-shadow: -6px -6px 10px rgba(255, 255, 255, 0.8), 6px 6px 10px rgba(0, 0, 0, 0.2); color: #161b1f;
     &:hover {
       opacity: 0.3;
       box-shadow: -6px -6px 10px rgba(255, 255, 255, 0.8),
@@ -286,12 +286,12 @@ export default class Game extends Vue {
       position: relative;
       left: 2px;
       top: 3px;
-      fill: #6f6cde;
+      fill: #161b1f;
     }
   }
 
   .copied {
-    background:#6df8b2;
+    background:#54e8dd;
   }
 
   .no-hover {
@@ -303,7 +303,7 @@ export default class Game extends Vue {
     font-family: "Montserrat", sans-serif;
     font-size: 26px;
     font-weight: semibold;
-    color: #6f6cde;
+    color: #161b1f;
     user-select: none;
   }
 
@@ -317,13 +317,13 @@ export default class Game extends Vue {
     width: 90%;
     bottom: 5%;
     font-size: 20px;
-    color: #dbde6c;
+    color: #54e8dd;
 
     .results {
       display: flex;
       flex-direction: column;
       justify-content: center;
-      background:#6f6cde;
+      background:#161b1f;
       border-radius: 26px;
       border: none;
       width: 250px;

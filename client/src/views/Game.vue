@@ -216,7 +216,7 @@ export default class Game extends Vue {
       width: 64px;
       height: 80px;
       background: #f3f0f1;
-      box-shadow: -6px -6px 10px rgba(255, 255, 255, 0.8), 6px 6px 10px rgba(0, 0, 0, 0.2); color: #6f6cde;
+      box-shadow: -6px -6px 10px rgba(255, 255, 255, 0.8), 6px 6px 10px rgba(0, 0, 0, 0.2); color: #161b1f;
       display: flex;
       justify-content: center;
       align-items: center;
@@ -367,7 +367,7 @@ export default class Game extends Vue {
       width: 64px;
       height: 80px;
       transition: all 0.1s ease-in-out;
-      box-shadow: -6px -6px 10px rgba(255, 255, 255, 0.8), 6px 6px 10px rgba(0, 0, 0, 0.2); color: #6f6cde;
+      box-shadow: -6px -6px 10px rgba(255, 255, 255, 0.8), 6px 6px 10px rgba(0, 0, 0, 0.2); color: #161b1f;
       &:hover {
         opacity: 0.3;
         box-shadow: -6px -6px 10px rgba(255, 255, 255, 0.8),

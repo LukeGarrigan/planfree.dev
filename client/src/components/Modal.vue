@@ -46,8 +46,8 @@ export default class Modal extends Vue {
     top: 35%;
     position: absolute;
     border-radius: 32px;
-    // background: white;
-    box-shadow: -6px -6px 10px rgba(255, 255, 255, 0.8), 6px 6px 10px rgba(0, 0, 0, 0.2); color: #6f6cde;
+    box-shadow: -6px -6px 10px rgba(255, 255, 255, 0.8), 6px 6px 10px rgba(0, 0, 0, 0.2); 
+    color: #161b1f;
     display: flex;
     align-items: center;
     justify-content: center;
@@ -61,7 +61,7 @@ export default class Modal extends Vue {
       font-size: 26px;
       padding: 8px;
       border-radius: 16px;
-      color: #6f6cde;
+      color: #161b1f;
     }
   }
 

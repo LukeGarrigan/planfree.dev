@@ -245,7 +245,7 @@ svg rect {
   }
 
   .free-poker-header {
-    width: 50%;
+    width: 90%;
     align-items: flex-end;
   }
 

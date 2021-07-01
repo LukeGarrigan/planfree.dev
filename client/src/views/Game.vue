@@ -18,7 +18,7 @@
       </div>
     </div>
 
-    <div class="options" v-if="!modal && !showVotes">
+    <div class="options" v-if="!modal && (!showVotes || showVotes && countdown != 0) ">
       <button class="fib-button" @click="performVote('0')"><span>0</span></button>
       <button class="fib-button" @click="performVote('1')"><span>1</span></button>
       <button class="fib-button" @click="performVote('2')"><span>2</span></button>
@@ -33,7 +33,7 @@
       <button class="fib-button" @click="performVote('?')"><span>?</span></button>
     </div>
 
-    <div class="results-container" v-if="showVotes">
+    <div class="results-container" v-if="showVotes && countdown == 0">
       <div class="results">
         <div class="average"> Average: {{getAverage()}} </div>
         <div class="popular"> Popular: {{getMode()}} </div>

@@ -5,12 +5,13 @@
 
     <button v-if="!modal && !playerHasVoted() && !showVotes" class="button no-hover" ><span>Cast your votes</span></button>
     <button v-if="!modal && playerHasVoted() && !showVotes" class="button" @click="showVotesClicked()"><span>Show votes!</span></button>
-    <button v-if="showVotes" class="button start" @click="startNewGame()"><span>Start new game!</span></button>
+    <button v-if="showVotes && countdown == 0" class="button start" @click="startNewGame()"><span>Start new game!</span></button>
+    <button v-if="showVotes && countdown > 0" class="button no-hover"><span>{{countdown}}</span></button>
     <Modal v-if="modal" title="What is your name?" @completed="enteredName"></Modal>
 
     <div class="players" v-for="player in getPlayers()" :key="player.id">
-      <div class="player" :class="{'voted': player.vote != undefined && player.vote != null && !showVotes}">
-        <span v-if="showVotes">{{player.vote}}</span>
+      <div class="player" :class="{'voted': player.vote}">
+        <span v-if="showVotes && countdown == 0">{{player.vote}}</span>
       </div>
       <div class="name">
         <span>{{player.name}}</span>
@@ -60,6 +61,7 @@ export default class Game extends Vue {
   public modal = true;
   public showVotes = false;
   public showCopiedToClipboard = false;
+  public countdown = 0;
 
   public mounted() {
     if (this.joiningAGame()) {
@@ -182,6 +184,14 @@ export default class Game extends Vue {
 
     store.state.socket.on('show', () => {
       this.showVotes = true;
+
+      this.countdown = 3;
+      const interval = setInterval(() => {
+        this.countdown -= 1;
+        if (this.countdown == 0) {
+          clearInterval(interval);
+        }
+      }, 1000)
     })
 
     store.state.socket.on('restart', () => {

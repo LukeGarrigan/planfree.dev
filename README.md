@@ -17,7 +17,7 @@
   </a>
 </p>
 
-![https://i.imgur.com/id0miuo.png](https://i.imgur.com/id0miuo.png)
+![image](https://user-images.githubusercontent.com/12545967/124085610-2351dc80-da48-11eb-960d-af548db474e9.png)
 
 ## Run locally:
 

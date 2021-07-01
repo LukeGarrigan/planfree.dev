@@ -50,6 +50,10 @@ io.on('connection', (socket) => {
       if (player) {
         player.vote = vote;
       }
+      
+      if (players.every(p => p.vote)) {
+        io.to(roomId).emit('show');  
+      }
       updateClientsInRoom(roomId);
     });
 

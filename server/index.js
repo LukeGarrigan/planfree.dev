@@ -12,6 +12,7 @@ const io = require("socket.io")(http, {
 // keeping the connection alive  
 setInterval(() => {
   io.emit('ping');
+  logRooms();
 }, 8000)
 
 app.get('/', (req, res) => {
@@ -74,7 +75,6 @@ io.on('connection', (socket) => {
      // keeping the connection alive
      socket.on('pong', () => {
       let player = players.find(p => p.id == socket.id);
-      console.log('pong', player.name, new Date());
      })
 
 });
@@ -90,6 +90,17 @@ function restartGame(roomId) {
   console.log('Restarting', roomPlayers);
   io.to(roomId).emit('restart');
   io.to(roomId).emit('update', roomPlayers);
+}
+
+function logRooms() {
+  const rooms = players.map(e => e.roomId);
+  if (rooms) {
+    for (const room of rooms.filter((val, i, arr) => arr.indexOf(val) == i)) {
+      const playersInRoom = players.filter(p => p.roomId == room).map(p => p.name);
+      console.log(`Room: ${room} - Players: ${playersInRoom.join(", ")}`);
+    }
+  }
+
 }
 
 

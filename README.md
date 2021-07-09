@@ -6,6 +6,9 @@
 <h4 align="center">A completely free implementation of planning poker</h4>
 
 <p align="center">
+  <a href="https://img.shields.io/github/license/lukegarrigan/p5js-chess">
+    <img src="https://img.shields.io/github/license/lukegarrigan/p5js-chess" />
+  </a>
   <a href="https://GitHub.com/LukeGarrigan/planfree.dev/issues/">
       <img src="https://img.shields.io/github/issues/LukeGarrigan/planfree.dev.svg">
   </a>
@@ -15,6 +18,8 @@
   <a href="https://www.travis-ci.com/LukeGarrigan/planfree.dev">
       <img src="https://www.travis-ci.com/LukeGarrigan/planfree.dev.svg?branch=main">
   </a>
+ 
+ 
 </p>
 
 ![image](https://user-images.githubusercontent.com/12545967/124085610-2351dc80-da48-11eb-960d-af548db474e9.png)

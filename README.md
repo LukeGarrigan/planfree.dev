@@ -9,17 +9,15 @@
   <a href="https://img.shields.io/github/license/lukegarrigan/p5js-chess">
     <img src="https://img.shields.io/github/license/lukegarrigan/p5js-chess" />
   </a>
-  <a href="https://GitHub.com/LukeGarrigan/planfree.dev/issues/">
-      <img src="https://img.shields.io/github/issues/LukeGarrigan/planfree.dev.svg">
-  </a>
-  <a href="https://app.netlify.com/sites/blissful-bardeen-521053/deploys">
+   <a href="https://app.netlify.com/sites/blissful-bardeen-521053/deploys">
       <img src="https://img.shields.io/netlify/03077de6-f8e4-49e6-a8fc-2e460f60d98b">
   </a>
   <a href="https://www.travis-ci.com/LukeGarrigan/planfree.dev">
       <img src="https://www.travis-ci.com/LukeGarrigan/planfree.dev.svg?branch=main">
   </a>
- 
- 
+  <a href="https://GitHub.com/LukeGarrigan/planfree.dev/issues/">
+      <img src="https://img.shields.io/github/issues/LukeGarrigan/planfree.dev.svg">
+  </a>
 </p>
 
 ![image](https://user-images.githubusercontent.com/12545967/124085610-2351dc80-da48-11eb-960d-af548db474e9.png)

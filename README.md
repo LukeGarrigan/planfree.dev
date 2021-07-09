@@ -13,7 +13,7 @@
       <img src="https://img.shields.io/github/issues/LukeGarrigan/planfree.dev.svg">
   </a>
   <a href="https://app.netlify.com/sites/blissful-bardeen-521053/deploys">
-      <img src="https://api.netlify.com/api/v1/badges/03077de6-f8e4-49e6-a8fc-2e460f60d98b/deploy-status">
+      <img src="https://img.shields.io/netlify/03077de6-f8e4-49e6-a8fc-2e460f60d98b">
   </a>
   <a href="https://www.travis-ci.com/LukeGarrigan/planfree.dev">
       <img src="https://www.travis-ci.com/LukeGarrigan/planfree.dev.svg?branch=main">

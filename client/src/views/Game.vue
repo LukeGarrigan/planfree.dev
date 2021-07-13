@@ -98,9 +98,15 @@ export default class Game extends Vue {
   }
 
   public enteredName(name: string) {
-    store.state.socket.emit('name', name);
+    this.emitName(name);
     localStorage.setItem('name', name);
     this.modal = false;
+  }
+
+  private emitName(name: string) {
+    store.state.socket.emit('name', name);
+    setInterval(() => store.state.socket.emit('name', name), 4000); // a temp fix for my free hosting -
+                                                                    // free hosting restarts frequently meaning we need some way to recover 
   }
 
   public playerHasVoted() {

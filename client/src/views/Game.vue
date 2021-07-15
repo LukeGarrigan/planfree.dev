@@ -62,7 +62,7 @@ export default class Game extends Vue {
   public showVotes = false;
   public showCopiedToClipboard = false;
   public countdown = 0;
-  public interval: any;
+  public interval: any = {};
 
   public mounted() {
     if (this.joiningAGame()) {
@@ -172,10 +172,6 @@ export default class Game extends Vue {
       return mostSeenCard;
     }
   }
-
-
- 
-
 
   private joiningAGame() {
     const currentState = store.state.socket; 

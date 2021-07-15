@@ -62,6 +62,7 @@ export default class Game extends Vue {
   public showVotes = false;
   public showCopiedToClipboard = false;
   public countdown = 0;
+  public interval: any;
 
   public mounted() {
     if (this.joiningAGame()) {
@@ -188,12 +189,12 @@ export default class Game extends Vue {
 
     store.state.socket.on('show', () => {
       this.showVotes = true;
-
+      clearInterval(this.interval);
       this.countdown = 3;
-      const interval = setInterval(() => {
+      this.interval = setInterval(() => {
         this.countdown -= 1;
         if (this.countdown == 0) {
-          clearInterval(interval);
+          clearInterval(this.interval);
         }
       }, 1000)
     })
@@ -211,8 +212,6 @@ export default class Game extends Vue {
 </script>
 
 <style scoped lang="scss">
-
-
   .players {
     user-select: none;
     position: relative;

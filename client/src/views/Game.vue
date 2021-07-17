@@ -10,7 +10,7 @@
     <button v-if="!modal && !playerHasVoted() && !showVotes" class="button no-hover" ><span>Cast your votes</span></button>
     <button v-if="!modal && playerHasVoted() && !showVotes" class="button" @click="showVotesClicked()"><span>Show votes!</span></button>
     <button v-if="!modal && showVotes && countdown == 0" class="button start" @click="startNewGame()"><span>Start new game!</span></button>
-    <button v-if="showVotes && countdown > 0" class="button no-hover"><span>{{countdown}}</span></button>
+    <button v-if="!modal && showVotes && countdown > 0" class="button no-hover"><span>{{countdown}}</span></button>
     <Modal v-if="modal" title="What is your name?" @completed="enteredName"></Modal>
 
     <div class="players" v-for="player in getPlayers()" :key="player.id">

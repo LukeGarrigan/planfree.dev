@@ -1,11 +1,15 @@
 <template>
   <div class="home">
-    <button v-if="!modal && !showCopiedToClipboard" class="button invite" @click="copyToClipboard()"><div>Invite players</div><div><svg xmlns="http://www.w3.org/2000/svg" height="24" viewBox="0 0 24 24" width="24"><path d="M0 0h24v24H0V0z" fill="none"/><path d="M16 1H4c-1.1 0-2 .9-2 2v14h2V3h12V1zm3 4H8c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h11c1.1 0 2-.9 2-2V7c0-1.1-.9-2-2-2zm0 16H8V7h11v14z"/></svg></div></button>
-    <button v-if="!modal && showCopiedToClipboard" class="button invite copied no-hover"><div>Copied to clipboard</div><div></div></button>
 
+    <div class="top-buttons">
+
+      <button v-if="!modal" class="edit-name-button" @click="modal = true"><div>{{name}}</div><div><svg xmlns="http://www.w3.org/2000/svg" height="24px" viewBox="0 0 24 24" width="24px" fill="#000000"><path d="M0 0h24v24H0V0z" fill="none"/><path d="M14.06 9.02l.92.92L5.92 19H5v-.92l9.06-9.06M17.66 3c-.25 0-.51.1-.7.29l-1.83 1.83 3.75 3.75 1.83-1.83c.39-.39.39-1.02 0-1.41l-2.34-2.34c-.2-.2-.45-.29-.71-.29zm-3.6 3.19L3 17.25V21h3.75L17.81 9.94l-3.75-3.75z"/></svg></div></button>
+      <button v-if="!modal && !showCopiedToClipboard" class="button invite" @click="copyToClipboard()"><div>Invite players</div><div><svg xmlns="http://www.w3.org/2000/svg" height="24" viewBox="0 0 24 24" width="24"><path d="M0 0h24v24H0V0z" fill="none"/><path d="M16 1H4c-1.1 0-2 .9-2 2v14h2V3h12V1zm3 4H8c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h11c1.1 0 2-.9 2-2V7c0-1.1-.9-2-2-2zm0 16H8V7h11v14z"/></svg></div></button>
+      <button v-if="!modal && showCopiedToClipboard" class="button invite copied no-hover"><div>Copied to clipboard</div><div></div></button>  
+    </div>
     <button v-if="!modal && !playerHasVoted() && !showVotes" class="button no-hover" ><span>Cast your votes</span></button>
     <button v-if="!modal && playerHasVoted() && !showVotes" class="button" @click="showVotesClicked()"><span>Show votes!</span></button>
-    <button v-if="showVotes && countdown == 0" class="button start" @click="startNewGame()"><span>Start new game!</span></button>
+    <button v-if="!modal && showVotes && countdown == 0" class="button start" @click="startNewGame()"><span>Start new game!</span></button>
     <button v-if="showVotes && countdown > 0" class="button no-hover"><span>{{countdown}}</span></button>
     <Modal v-if="modal" title="What is your name?" @completed="enteredName"></Modal>
 
@@ -58,11 +62,14 @@ import { io } from "socket.io-client";
   },
 })
 export default class Game extends Vue {
+  public isHovering = false;
   public modal = true;
   public showVotes = false;
   public showCopiedToClipboard = false;
   public countdown = 0;
   public interval: any = {};
+  public name = "";
+
 
   public mounted() {
     if (this.joiningAGame()) {
@@ -99,6 +106,7 @@ export default class Game extends Vue {
   }
 
   public enteredName(name: string) {
+    this.name = name;
     this.emitName(name);
     localStorage.setItem('name', name);
     this.modal = false;
@@ -278,26 +286,73 @@ export default class Game extends Vue {
     }
   }
 
-  .invite {
-    user-select: none;
+
+  .top-buttons {
     display: flex;
     flex-direction: row;
-    align-items: center;
-    justify-content: center;
-    gap: 10px;
-    right: 2%;
+    width: 100%;
+    position: absolute;
+    justify-content: flex-end;
     top: 2%;
-    width: 300px;
-    height: 70px;
-    text-align: center;
-    font-size: 26px;
-    svg {
+    right: 2%;
+    gap: 20px;
+    .invite {
       position: relative;
-      left: 2px;
-      top: 3px;
-      fill: #161b1f;
+      user-select: none;
+      gap: 10px;
+      width: 300px;
+      height: 70px;
+      font-size: 26px;
+      svg {
+        position: relative;
+        left: 2px;
+        top: 3px;
+        fill: #161b1f;
+      }
+    }
+
+    .edit-name-button {
+      position: relative;
+      user-select: none;
+      height: 70px;
+      font-size: 26px;
+      background: #f3f0f1;
+      border-radius: 32px;
+      border: none;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 10px;
+      opacity: 0.5;
+      cursor: pointer;
+      &:hover {
+        opacity: 1;
+      }
+      &:hover::before {
+         transform: scaleX(1);
+      }
+      
+      &:before {
+        content: "";
+        position: absolute;
+        display: block;
+        width: 100%;
+        height: 2px;
+        bottom: 10px;
+        right: 10px;
+        background-color: #000;
+        transform: scaleX(0);
+        transition: transform 0.3s ease;
+      }
+      svg {
+        position: relative;
+        left: 2px;
+        top: 3px;
+      }
     }
   }
+ 
+
 
   .copied {
     background:#54e8dd;

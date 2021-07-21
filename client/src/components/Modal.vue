@@ -2,9 +2,7 @@
   <div class="modal-container">
     <div class="modal">
       <span>{{title}}</span>
-
-      <input id="selectNameInput" v-model="name" type="text" class="input" @keypress.enter="completed"/>
-      
+      <input id="selectNameInput" v-model="name" type="text" class="input" maxlength="20" @keypress.enter="completed"/>
     </div>
   </div>
 </template>

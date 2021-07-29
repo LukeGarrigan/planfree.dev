@@ -1,50 +1,48 @@
 <template>
-  <div class="home">
-
-    <div class="top-buttons">
-
-      <button v-if="!modal" class="edit-name-button" @click="modal = true"><div>{{name}}</div><div><svg xmlns="http://www.w3.org/2000/svg" height="24px" viewBox="0 0 24 24" width="24px" fill="#000000"><path d="M0 0h24v24H0V0z" fill="none"/><path d="M14.06 9.02l.92.92L5.92 19H5v-.92l9.06-9.06M17.66 3c-.25 0-.51.1-.7.29l-1.83 1.83 3.75 3.75 1.83-1.83c.39-.39.39-1.02 0-1.41l-2.34-2.34c-.2-.2-.45-.29-.71-.29zm-3.6 3.19L3 17.25V21h3.75L17.81 9.94l-3.75-3.75z"/></svg></div></button>
-      <button v-if="!modal && !showCopiedToClipboard" class="button invite" @click="copyToClipboard()"><div>Invite players</div><div><svg xmlns="http://www.w3.org/2000/svg" height="24" viewBox="0 0 24 24" width="24"><path d="M0 0h24v24H0V0z" fill="none"/><path d="M16 1H4c-1.1 0-2 .9-2 2v14h2V3h12V1zm3 4H8c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h11c1.1 0 2-.9 2-2V7c0-1.1-.9-2-2-2zm0 16H8V7h11v14z"/></svg></div></button>
-      <button v-if="!modal && showCopiedToClipboard" class="button invite copied no-hover"><div>Copied to clipboard</div><div></div></button>  
-    </div>
-    <button v-if="!modal && !playerHasVoted() && !showVotes" class="button no-hover" ><span>Cast your votes</span></button>
-    <button v-if="!modal && playerHasVoted() && !showVotes" class="button" @click="showVotesClicked()"><span>Show votes!</span></button>
-    <button v-if="!modal && showVotes && countdown == 0" class="button start" @click="startNewGame()"><span>Start new game!</span></button>
-    <button v-if="!modal && showVotes && countdown > 0" class="button no-hover"><span>{{countdown}}</span></button>
+  <div>
     <Modal v-if="modal" title="Choose your display name" @completed="enteredName"></Modal>
-
-    <div class="players" v-for="player in getPlayers()" :key="player.id">
-      <div class="player" :class="{'voted': player.vote}">
-        <span v-if="showVotes && countdown == 0">{{player.vote}}</span>
+    <div v-if="!modal" class="home">
+      <div class="top-buttons">
+        <button class="edit-name-button" @click="modal = true"><div>{{name}}</div><div><svg xmlns="http://www.w3.org/2000/svg" height="24px" viewBox="0 0 24 24" width="24px" fill="#000000"><path d="M0 0h24v24H0V0z" fill="none"/><path d="M14.06 9.02l.92.92L5.92 19H5v-.92l9.06-9.06M17.66 3c-.25 0-.51.1-.7.29l-1.83 1.83 3.75 3.75 1.83-1.83c.39-.39.39-1.02 0-1.41l-2.34-2.34c-.2-.2-.45-.29-.71-.29zm-3.6 3.19L3 17.25V21h3.75L17.81 9.94l-3.75-3.75z"/></svg></div></button>
+        <button v-if="!showCopiedToClipboard" class="button invite" @click="copyToClipboard()"><div>Invite players</div><div><svg xmlns="http://www.w3.org/2000/svg" height="24" viewBox="0 0 24 24" width="24"><path d="M0 0h24v24H0V0z" fill="none"/><path d="M16 1H4c-1.1 0-2 .9-2 2v14h2V3h12V1zm3 4H8c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h11c1.1 0 2-.9 2-2V7c0-1.1-.9-2-2-2zm0 16H8V7h11v14z"/></svg></div></button>
+        <button v-if="!modal && showCopiedToClipboard" class="button invite copied no-hover"><div>Copied to clipboard</div><div></div></button>  
       </div>
-      <div class="name">
-        <span>{{player.name}}</span>
+      <button v-if="!playerHasVoted() && !showVotes" class="button no-hover" ><span>Cast your votes</span></button>
+      <button v-if="playerHasVoted() && !showVotes" class="button" @click="showVotesClicked()"><span>Show votes!</span></button>
+      <button v-if="showVotes && countdown == 0" class="button start" @click="startNewGame()"><span>Start new game!</span></button>
+      <button v-if="showVotes && countdown > 0" class="button no-hover"><span>{{countdown}}</span></button>
+
+      <div class="players" v-for="player in getPlayers()" :key="player.id">
+        <div class="player" :class="{'voted': player.vote}">
+          <span v-if="showVotes && countdown == 0">{{player.vote}}</span>
+        </div>
+        <div class="name">
+          <span>{{player.name}}</span>
+        </div>
+      </div>
+
+      <div class="options" v-if="!showVotes || showVotes && countdown != 0">
+        <button class="fib-button" @click="performVote('0')"><span>0</span></button>
+        <button class="fib-button" @click="performVote('1')"><span>1</span></button>
+        <button class="fib-button" @click="performVote('2')"><span>2</span></button>
+        <button class="fib-button" @click="performVote('3')"><span>3</span></button>
+        <button class="fib-button" @click="performVote('5')"><span>5</span></button>
+        <button class="fib-button" @click="performVote('8')"><span>8</span></button>
+        <button class="fib-button" @click="performVote('13')"><span>13</span></button>
+        <button class="fib-button" @click="performVote('21')"><span>21</span></button>
+        <button class="fib-button" @click="performVote('34')"><span>34</span></button>
+        <button class="fib-button" @click="performVote('55')"><span>55</span></button>
+        <button class="fib-button" @click="performVote('89')"><span>89</span></button>
+        <button class="fib-button" @click="performVote('?')"><span>?</span></button>
+      </div>
+
+      <div class="results-container" v-if="showVotes && countdown == 0">
+        <div class="results">
+          <div class="average"> Average: {{getAverage()}} </div>
+          <div class="popular"> Popular: {{getMode()}} </div>
+        </div>
       </div>
     </div>
-
-    <div class="options" v-if="!modal && (!showVotes || showVotes && countdown != 0) ">
-      <button class="fib-button" @click="performVote('0')"><span>0</span></button>
-      <button class="fib-button" @click="performVote('1')"><span>1</span></button>
-      <button class="fib-button" @click="performVote('2')"><span>2</span></button>
-      <button class="fib-button" @click="performVote('3')"><span>3</span></button>
-      <button class="fib-button" @click="performVote('5')"><span>5</span></button>
-      <button class="fib-button" @click="performVote('8')"><span>8</span></button>
-      <button class="fib-button" @click="performVote('13')"><span>13</span></button>
-      <button class="fib-button" @click="performVote('21')"><span>21</span></button>
-      <button class="fib-button" @click="performVote('34')"><span>34</span></button>
-      <button class="fib-button" @click="performVote('55')"><span>55</span></button>
-      <button class="fib-button" @click="performVote('89')"><span>89</span></button>
-      <button class="fib-button" @click="performVote('?')"><span>?</span></button>
-    </div>
-
-    <div class="results-container" v-if="showVotes && countdown == 0">
-      <div class="results">
-        <div class="average"> Average: {{getAverage()}} </div>
-        <div class="popular"> Popular: {{getMode()}} </div>
-      </div>
-        
-    </div>
-
   </div>
 
  

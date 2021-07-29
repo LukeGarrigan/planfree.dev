@@ -2,7 +2,12 @@
   <div class="modal-container">
     <div class="modal">
       <span>{{title}}</span>
-      <input id="selectNameInput" v-model="name" type="text" class="input" maxlength="20" @keypress.enter="completed"/>
+      <div class="input-container">
+        <input type="text" id="selectNameInput" v-model="name" class="input" maxlength="20" @keypress.enter="completed"/>
+        <button class="enter-button" type="submit" @click="completed">
+          <svg xmlns="http://www.w3.org/2000/svg" height="24px" viewBox="0 0 24 24" width="24px" fill="#000000"><path d="M0 0h24v24H0z" fill="none"/><path d="M10 6L8.59 7.41 13.17 12l-4.58 4.59L10 18l6-6z"/></svg>
+        </button>
+      </div>
     </div>
   </div>
 </template>
@@ -40,10 +45,10 @@ export default class Modal extends Vue {
 
   .modal {
     width: 400px;
-    height: 200px;
+    height: 220px;
     top: 35%;
     position: absolute;
-    border-radius: 32px;
+    border-radius: 15px;
     box-shadow: -6px -6px 10px rgba(255, 255, 255, 0.8), 6px 6px 10px rgba(0, 0, 0, 0.2); 
     color: #161b1f;
     display: flex;
@@ -51,16 +56,33 @@ export default class Modal extends Vue {
     justify-content: center;
     flex-direction: column;
 
+    .input-container {
+      display: flex;
+    }
+
+    .enter-button {
+      background: #54e8dd;
+      border:none;
+      cursor: pointer;    
+      border-top-right-radius: 10px;
+      border-bottom-right-radius:10px;
+      width: 50px;
+    }
+    
     input {
-      width: 80%;
-      height : 40px;
+      box-sizing: border-box;
+      padding: 8px;
+      width: 295px;
+      height: 55px;
       border: none;
       outline: none;
       font-size: 26px;
-      padding: 8px;
-      border-radius: 16px;
+      border-top-left-radius: 10px;
+      border-bottom-left-radius:10px;
       color: #161b1f;
+      padding-right: 50px;
     }
+
   }
 
   span {

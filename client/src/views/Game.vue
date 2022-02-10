@@ -1,11 +1,19 @@
 <template>
   <div>
     <Modal v-if="modal" title="Choose your display name" @completed="enteredName"></Modal>
+
     <div v-if="!modal" class="home">
       <div class="top-buttons">
+
         <button class="edit-name-button" @click="modal = true"><div>{{name}}</div><div><svg xmlns="http://www.w3.org/2000/svg" height="24px" viewBox="0 0 24 24" width="24px" fill="#000000"><path d="M0 0h24v24H0V0z" fill="none"/><path d="M14.06 9.02l.92.92L5.92 19H5v-.92l9.06-9.06M17.66 3c-.25 0-.51.1-.7.29l-1.83 1.83 3.75 3.75 1.83-1.83c.39-.39.39-1.02 0-1.41l-2.34-2.34c-.2-.2-.45-.29-.71-.29zm-3.6 3.19L3 17.25V21h3.75L17.81 9.94l-3.75-3.75z"/></svg></div></button>
         <button v-if="!showCopiedToClipboard" class="button invite" @click="copyToClipboard()"><div>Invite players</div><div><svg xmlns="http://www.w3.org/2000/svg" height="24" viewBox="0 0 24 24" width="24"><path d="M0 0h24v24H0V0z" fill="none"/><path d="M16 1H4c-1.1 0-2 .9-2 2v14h2V3h12V1zm3 4H8c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h11c1.1 0 2-.9 2-2V7c0-1.1-.9-2-2-2zm0 16H8V7h11v14z"/></svg></div></button>
-        <button v-if="!modal && showCopiedToClipboard" class="button invite copied no-hover"><div>Copied to clipboard</div><div></div></button>  
+        <button v-if="!modal && showCopiedToClipboard" class="button invite copied no-hover"><div>Copied to clipboard</div><div></div></button>
+      </div>
+
+      <div class="top-left-buttons">
+        <a class="github-button" href="https://github.com/LukeGarrigan/planfree.dev" data-icon="octicon-star" data-size="large" data-show-count="true" aria-label="Star LukeGarrigan/planfree.dev on GitHub">Star</a>
+        <a class="github-button" href="https://github.com/LukeGarrigan/planfree.dev/fork" data-icon="octicon-repo-forked" data-size="large" aria-label="Fork LukeGarrigan/planfree.dev on GitHub">Fork</a>
+        <a class="github-button" href="https://github.com/LukeGarrigan/planfree.dev/issues" data-icon="octicon-issue-opened" data-size="large" aria-label="Issue LukeGarrigan/planfree.dev on GitHub">Issue</a>
       </div>
       <button v-if="!playerHasVoted() && !showVotes" class="button no-hover" ><span>Cast your votes</span></button>
       <button v-if="playerHasVoted() && !showVotes" class="button" @click="showVotesClicked()"><span>Show votes!</span></button>
@@ -45,14 +53,14 @@
     </div>
   </div>
 
- 
+
 </template>
 
 <script lang="ts">
 import store from '@/store';
 import { Component, Vue } from 'vue-property-decorator';
-import Modal from '@/components/Modal.vue'; 
-import Player from '@/view-models/player'; 
+import Modal from '@/components/Modal.vue';
+import Player from '@/view-models/player';
 import { io } from "socket.io-client";
 @Component({
   components: {
@@ -141,10 +149,10 @@ export default class Game extends Vue {
       if (player.vote) {
         total += parseInt(player.vote);
         count++;
-      } 
+      }
     }
 
-    
+
     return (total / count).toFixed(1).replace(/\.0+$/,'')
   }
 
@@ -153,13 +161,13 @@ export default class Game extends Vue {
     const scores: Record<string, number> = {};
     for (const player of players) {
       if (player.vote) {
-        
+
         if (scores[player.vote]) {
           scores[player.vote] = scores[player.vote] + 1;
         } else {
           scores[player.vote] = 1;
         }
-      } 
+      }
     }
 
     let mostSeen = 1;
@@ -171,7 +179,7 @@ export default class Game extends Vue {
         mostSeenCard = key;
       }
     }
-    
+
     if (mostSeen == 1) {
       return 'NA';
     } else {
@@ -180,14 +188,14 @@ export default class Game extends Vue {
   }
 
   private joiningAGame() {
-    const currentState = store.state.socket; 
+    const currentState = store.state.socket;
     return currentState && Object.keys(currentState).length === 0 && currentState.constructor === Object
   }
 
   private setupSocketHandlers() {
     store.state.socket.on('update', (players: Player[]) => {
       store.state.players = players;
-    }); 
+    });
 
     store.state.socket.on('show', () => {
       this.showVotes = true;
@@ -242,10 +250,10 @@ export default class Game extends Vue {
     }
 
     .voted {
-      background: #54e8dd; 
+      background: #54e8dd;
     }
   }
-  
+
   .home {
     display: flex;
     justify-content: center;
@@ -281,6 +289,21 @@ export default class Game extends Vue {
     }
     &:focus {
       outline: none;
+    }
+  }
+
+  .top-left-buttons {
+    display: flex;
+    flex-direction: row;
+    left: 20px;
+    top: 20px;
+    position: absolute;
+    gap: 5px;
+  }
+
+  @media only screen and (max-width: 700px) {
+    .top-left-buttons {
+      visibility: hidden;
     }
   }
 
@@ -329,7 +352,7 @@ export default class Game extends Vue {
       &:hover::before {
          transform: scaleX(1);
       }
-      
+
       &:before {
         content: "";
         position: absolute;
@@ -349,7 +372,7 @@ export default class Game extends Vue {
       }
     }
   }
- 
+
 
 
   .copied {
@@ -391,8 +414,8 @@ export default class Game extends Vue {
       width: 250px;
       height: 100px;
       transition: all 0.1s ease-in-out;
-      box-shadow: -6px -6px 10px rgba(255, 255, 255, 0.8), 6px 6px 10px rgba(0, 0, 0, 0.2); 
-      
+      box-shadow: -6px -6px 10px rgba(255, 255, 255, 0.8), 6px 6px 10px rgba(0, 0, 0, 0.2);
+
       user-select: none;
       font-family: "Montserrat", sans-serif;
       font-weight: semibold;
@@ -446,6 +469,6 @@ export default class Game extends Vue {
     }
 
   }
-  
+
 
 </style>

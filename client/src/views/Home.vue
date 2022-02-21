@@ -132,10 +132,11 @@ export default class Home extends Vue {
       }
     }, 5000);
     const socket = io(process.env.VUE_APP_SERVER);
-    this.hasStarted = true;
     store.commit("setSocket", socket);
     store.state.socket.on("room", (roomId: string) => {
-    router.push({ path: `game/${roomId}` });
+      this.hasStarted = true;
+
+      router.push({ path: `game/${roomId}` });
    });
   }
 }

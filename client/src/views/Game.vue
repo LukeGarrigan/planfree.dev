@@ -8,13 +8,15 @@
         <button class="edit-name-button" @click="modal = true"><div>{{name}}</div><div><svg xmlns="http://www.w3.org/2000/svg" height="24px" viewBox="0 0 24 24" width="24px" fill="#000000"><path d="M0 0h24v24H0V0z" fill="none"/><path d="M14.06 9.02l.92.92L5.92 19H5v-.92l9.06-9.06M17.66 3c-.25 0-.51.1-.7.29l-1.83 1.83 3.75 3.75 1.83-1.83c.39-.39.39-1.02 0-1.41l-2.34-2.34c-.2-.2-.45-.29-.71-.29zm-3.6 3.19L3 17.25V21h3.75L17.81 9.94l-3.75-3.75z"/></svg></div></button>
         <button v-if="!showCopiedToClipboard" class="button invite" @click="copyToClipboard()"><div>Invite players</div><div><svg xmlns="http://www.w3.org/2000/svg" height="24" viewBox="0 0 24 24" width="24"><path d="M0 0h24v24H0V0z" fill="none"/><path d="M16 1H4c-1.1 0-2 .9-2 2v14h2V3h12V1zm3 4H8c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h11c1.1 0 2-.9 2-2V7c0-1.1-.9-2-2-2zm0 16H8V7h11v14z"/></svg></div></button>
         <button v-if="!modal && showCopiedToClipboard" class="button invite copied no-hover"><div>Copied to clipboard</div><div></div></button>
+
       </div>
 
       <div class="top-left-buttons">
-        <a class="github-button" href="https://github.com/LukeGarrigan/planfree.dev" data-icon="octicon-star" data-size="large" data-show-count="true" aria-label="Star LukeGarrigan/planfree.dev on GitHub">Star</a>
-        <a class="github-button" href="https://github.com/LukeGarrigan/planfree.dev/fork" data-icon="octicon-repo-forked" data-size="large" aria-label="Fork LukeGarrigan/planfree.dev on GitHub">Fork</a>
-        <a class="github-button" href="https://github.com/LukeGarrigan/planfree.dev/issues" data-icon="octicon-issue-opened" data-size="large" aria-label="Issue LukeGarrigan/planfree.dev on GitHub">Issue</a>
+        <button class="star-button" @click="goToGithub()">
+          <svg viewBox="0 0 16 16" width="16" height="16" class="octicon octicon-star" aria-hidden="true"><path fill-rule="evenodd" d="M8 .25a.75.75 0 01.673.418l1.882 3.815 4.21.612a.75.75 0 01.416 1.279l-3.046 2.97.719 4.192a.75.75 0 01-1.088.791L8 12.347l-3.766 1.98a.75.75 0 01-1.088-.79l.72-4.194L.818 6.374a.75.75 0 01.416-1.28l4.21-.611L7.327.668A.75.75 0 018 .25zm0 2.445L6.615 5.5a.75.75 0 01-.564.41l-3.097.45 2.24 2.184a.75.75 0 01.216.664l-.528 3.084 2.769-1.456a.75.75 0 01.698 0l2.77 1.456-.53-3.084a.75.75 0 01.216-.664l2.24-2.183-3.096-.45a.75.75 0 01-.564-.41L8 2.694v.001z"></path></svg>
+        </button>
       </div>
+
       <button v-if="!playerHasVoted() && !showVotes" class="button no-hover" ><span>Cast your votes</span></button>
       <button v-if="playerHasVoted() && !showVotes" class="button" @click="showVotesClicked()"><span>Show votes!</span></button>
       <button v-if="showVotes && countdown == 0" class="button start" @click="startNewGame()"><span>Start new game!</span></button>
@@ -187,6 +189,10 @@ export default class Game extends Vue {
     }
   }
 
+
+  public goToGithub() {
+    open('https://github.com/LukeGarrigan/planfree.dev');
+  }
   private joiningAGame() {
     const currentState = store.state.socket;
     return currentState && Object.keys(currentState).length === 0 && currentState.constructor === Object
@@ -299,6 +305,23 @@ export default class Game extends Vue {
     top: 20px;
     position: absolute;
     gap: 5px;
+
+    .star-button {
+      background: #f3f0f1;
+      border-radius: 32px;
+      text-align: center;
+      border: none;
+      cursor: pointer;
+      width: 30px;
+      height: 30px;
+      box-shadow: -6px -6px 10px rgba(255, 255, 255, 0.8), 6px 6px 10px rgba(0, 0, 0, 0.2); color: #161b1f;
+
+      &:hover {
+        opacity: 0.3;
+        box-shadow: -6px -6px 10px rgba(255, 255, 255, 0.8),
+        6px 6px 10px rgba(0, 0, 0, 0.2);
+      }
+    }
   }
 
   @media only screen and (max-width: 700px) {

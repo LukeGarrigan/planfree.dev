@@ -126,18 +126,18 @@ export default class Home extends Vue {
   public startGame() {
     this.clickedStart = true;
 
-    setTimeout(() => {
-      if (!this.hasStarted) {
-        alert("If it's taking more than 5 seconds, my credits have probably ran out 😱 apologies.");
-      }
-    }, 5000);
-    const socket = io(process.env.VUE_APP_SERVER);
-    store.commit("setSocket", socket);
-    store.state.socket.on("room", (roomId: string) => {
-      this.hasStarted = true;
+    try {
+      const socket = io(process.env.VUE_APP_SERVER);
+      store.commit("setSocket", socket);
+      store.state.socket.on("room", (roomId: string) => {
+        this.hasStarted = true;
+        router.push({ path: `game/${roomId}` });
+      });
+    } catch (err) {
+      this.clickedStart = false;
+      alert('Oops sorry, my Azure credits have ran out 😱 ')
+    }
 
-      router.push({ path: `game/${roomId}` });
-   });
   }
 }
 </script>

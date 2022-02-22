@@ -172,7 +172,10 @@ export default class Home extends Vue {
     font-size: 3.2em;
     span {
       color: #54e8dd;
-      text-decoration: underline;
+      background: black;
+      border-radius: 10px;
+      width: 7rem;
+      display: inline-block;
     }
   }
 }

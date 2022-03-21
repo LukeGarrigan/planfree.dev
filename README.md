@@ -5,6 +5,7 @@
 
 <h4 align="center">A completely free implementation of planning poker</h4>
 
+Try it out with your team, it's currently live at [planfree.dev](https://www.planfree.dev/#/). If you find any issues, or wish to contribute, take a look at the [issues list](https://github.com/LukeGarrigan/planfree.dev/issues).
 <p align="center">
   <a href="https://img.shields.io/github/license/lukegarrigan/p5js-chess">
     <img src="https://img.shields.io/github/license/lukegarrigan/p5js-chess" />

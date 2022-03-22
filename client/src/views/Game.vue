@@ -148,7 +148,7 @@ export default class Game extends Vue {
     let count = 0;
     let total = 0;
     for (const player of players) {
-      if (player.vote) {
+      if (player.vote && player.vote !== '?') {
         total += parseInt(player.vote);
         count++;
       }

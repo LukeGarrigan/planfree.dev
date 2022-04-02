@@ -32,18 +32,16 @@
       </div>
 
       <div class="options" v-if="!showVotes || showVotes && countdown != 0">
-        <button class="fib-button" @click="performVote('0')"><span>0</span></button>
-        <button class="fib-button" @click="performVote('1')"><span>1</span></button>
-        <button class="fib-button" @click="performVote('2')"><span>2</span></button>
-        <button class="fib-button" @click="performVote('3')"><span>3</span></button>
-        <button class="fib-button" @click="performVote('5')"><span>5</span></button>
-        <button class="fib-button" @click="performVote('8')"><span>8</span></button>
-        <button class="fib-button" @click="performVote('13')"><span>13</span></button>
-        <button class="fib-button" @click="performVote('21')"><span>21</span></button>
-        <button class="fib-button" @click="performVote('34')"><span>34</span></button>
-        <button class="fib-button" @click="performVote('55')"><span>55</span></button>
-        <button class="fib-button" @click="performVote('89')"><span>89</span></button>
-        <button class="fib-button" @click="performVote('?')"><span>?</span></button>
+        <button
+          v-for="vote in [0, 1, 2, 3, 5, 8, 13, 21, 34, 55, 89, '?']"
+          :key="`vote-${vote}`"
+          class="fib-button"
+          :class="{current: currentVote === vote}"
+          @click="performVote(vote)"
+          :disabled="currentVote === vote"
+        >
+          <span>{{ vote }}</span>
+        </button>
       </div>
 
       <div class="results-container" v-if="showVotes && countdown == 0">
@@ -77,7 +75,7 @@ export default class Game extends Vue {
   public countdown = 0;
   public interval: any = {};
   public name = "";
-
+  public currentVote = null;
 
   public mounted() {
     if (this.joiningAGame()) {
@@ -107,6 +105,7 @@ export default class Game extends Vue {
 
   public performVote(vote: string) {
     store.state.socket.emit('vote', vote);
+    this.currentVote = vote;
   }
 
   public startNewGame() {
@@ -217,6 +216,7 @@ export default class Game extends Vue {
 
     store.state.socket.on('restart', () => {
       this.showVotes = false;
+      this.currentVote = null;
     })
 
     store.state.socket.on('ping', () => {
@@ -476,18 +476,23 @@ export default class Game extends Vue {
       height: 80px;
       transition: all 0.1s ease-in-out;
       box-shadow: -6px -6px 10px rgba(255, 255, 255, 0.8), 6px 6px 10px rgba(0, 0, 0, 0.2); color: #161b1f;
-      &:hover {
-        opacity: 0.3;
-        box-shadow: -6px -6px 10px rgba(255, 255, 255, 0.8),
-          6px 6px 10px rgba(0, 0, 0, 0.2);
+      &:not(.current) {
+        &:hover {
+          opacity: 0.3;
+          box-shadow: -6px -6px 10px rgba(255, 255, 255, 0.8),
+            6px 6px 10px rgba(0, 0, 0, 0.2);
+        }
+        &:active {
+          opacity: 1;
+          box-shadow: inset -4px -4px 8px rgba(255, 255, 255, 0.5),
+            inset 8px 8px 16px rgba(0, 0, 0, 0.1);
+        }
+        &:focus {
+          outline: none;
+        }
       }
-      &:active {
-        opacity: 1;
-        box-shadow: inset -4px -4px 8px rgba(255, 255, 255, 0.5),
-          inset 8px 8px 16px rgba(0, 0, 0, 0.1);
-      }
-      &:focus {
-        outline: none;
+      &.current {
+        background: #54e8dd;
       }
     }
 

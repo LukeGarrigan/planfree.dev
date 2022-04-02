@@ -75,7 +75,7 @@ export default class Game extends Vue {
   public countdown = 0;
   public interval: any = {};
   public name = "";
-  public currentVote = null;
+  public currentVote: any = null;
 
   public mounted() {
     if (this.joiningAGame()) {

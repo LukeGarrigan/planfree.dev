@@ -19,4 +19,4 @@ WORKDIR /usr/src/app
 RUN npm install
 
 # Command for container to execute
-ENTRYPOINT [ "npm", "start ]
+ENTRYPOINT [ "node", "index.js ]

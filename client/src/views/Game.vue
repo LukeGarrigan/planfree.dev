@@ -19,19 +19,19 @@
 
       <button v-if="!playerHasVoted() && !showVotes" class="button no-hover" ><span>Cast your votes</span></button>
       <button v-if="playerHasVoted() && !showVotes" class="button" @click="showVotesClicked()"><span>Show votes!</span></button>
-      <button v-if="showVotes && countdown == 0" class="button start" @click="startNewGame()"><span>Start new game!</span></button>
+      <button v-if="showVotes && countdown === 0" class="button start" @click="startNewGame()"><span>Start new game!</span></button>
       <button v-if="showVotes && countdown > 0" class="button no-hover"><span>{{countdown}}</span></button>
 
       <div class="players" v-for="player in getPlayers()" :key="player.id">
         <div class="player" :class="{'voted': player.vote}">
-          <span v-if="showVotes && countdown == 0">{{player.vote}}</span>
+          <span v-if="showVotes && countdown === 0">{{player.vote}}</span>
         </div>
         <div class="name">
           <span>{{player.name}}</span>
         </div>
       </div>
 
-      <div class="options" v-if="!showVotes || showVotes && countdown != 0">
+      <div class="options" v-if="!showVotes || showVotes && countdown !== 0">
         <button
           v-for="vote in ['0', '1', '2', '3', '5', '8', '13', '21', '34', '55', '89', '?']"
           :key="`vote-${vote}`"
@@ -44,7 +44,7 @@
         </button>
       </div>
 
-      <div class="results-container" v-if="showVotes && countdown == 0">
+      <div class="results-container" v-if="showVotes && countdown === 0">
         <div class="results">
           <div class="average"> Average: {{getAverage()}} </div>
           <div class="popular"> Popular: {{getMode()}} </div>
@@ -68,7 +68,6 @@ import { io } from "socket.io-client";
   },
 })
 export default class Game extends Vue {
-  public isHovering = false;
   public modal = true;
   public showVotes = false;
   public showCopiedToClipboard = false;
@@ -87,7 +86,7 @@ export default class Game extends Vue {
       store.commit('setSocket', socket);
     }
 
-    const storedName = localStorage.getItem('name')
+    const storedName = localStorage.getItem('name');
     if (storedName) {
       this.enteredName(storedName);
     }
@@ -125,10 +124,7 @@ export default class Game extends Vue {
 
   public playerHasVoted() {
      const players = store.state.players;
-     if (players.filter(p => p.vote !== null && p.vote !== undefined).length > 0) {
-       return true;
-     }
-     return false;
+     return players.filter(p => p.vote !== null && p.vote !== undefined).length > 0;
   }
 
   public copyToClipboard() {
@@ -152,8 +148,6 @@ export default class Game extends Vue {
         count++;
       }
     }
-
-
     return (total / count).toFixed(1).replace(/\.0+$/,'')
   }
 
@@ -162,7 +156,6 @@ export default class Game extends Vue {
     const scores: Record<string, number> = {};
     for (const player of players) {
       if (player.vote) {
-
         if (scores[player.vote]) {
           scores[player.vote] = scores[player.vote] + 1;
         } else {
@@ -188,10 +181,11 @@ export default class Game extends Vue {
     }
   }
 
-
   public goToGithub() {
     open('https://github.com/LukeGarrigan/planfree.dev');
   }
+
+
   private joiningAGame() {
     const currentState = store.state.socket;
     return currentState && Object.keys(currentState).length === 0 && currentState.constructor === Object
@@ -212,12 +206,12 @@ export default class Game extends Vue {
           clearInterval(this.interval);
         }
       }, 1000)
-    })
+    });
 
     store.state.socket.on('restart', () => {
       this.showVotes = false;
       this.currentVote = null;
-    })
+    });
 
     store.state.socket.on('ping', () => {
       store.state.socket.emit('pong');

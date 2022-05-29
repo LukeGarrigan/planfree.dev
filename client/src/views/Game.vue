@@ -139,7 +139,6 @@
 
 <script setup lang="ts">
 import store from "@/store";
-import { Component, Vue } from "vue-property-decorator";
 import Modal from "@/components/Modal.vue";
 import Player from "@/view-models/player";
 import { io } from "socket.io-client";
@@ -190,15 +189,15 @@ function startNewGame() {
   store.state.socket.emit("restart");
 }
 
+function emitName(name: string) {
+  store.state.socket.emit("name", name);
+}
+
 function enteredName(updatedName: string) {
   name.value = updatedName;
   emitName(updatedName);
   localStorage.setItem("name", updatedName);
   modal.value = false;
-}
-
-function emitName(name: string) {
-  store.state.socket.emit("name", name);
 }
 
 function playerHasVoted() {

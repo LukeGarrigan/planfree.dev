@@ -13,8 +13,6 @@
     "socket.io-client": "^3.1.1",
     "vue": "^3.2.36",
     "@vue/compat": "^3.2.36",
-    "vue-class-component": "^7.2.3",
-    "vue-property-decorator": "^9.1.2",
     "vue-router": "^4.0.14",
     "vuex": "4.0.2"
   },

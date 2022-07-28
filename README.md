@@ -1,5 +1,5 @@
 <h1 align="center">
- <a href="https://www.planfree.dev">planfree.dev</a>
+ <a href="https://planfree.dev">planfree.dev</a>
   <br>
 </h1>
 

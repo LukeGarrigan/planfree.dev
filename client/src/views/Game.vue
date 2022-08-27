@@ -375,9 +375,7 @@ function setupSocketHandlers() {
     box-shadow: inset -4px -4px 8px rgba(255, 255, 255, 0.5),
       inset 8px 8px 16px rgba(0, 0, 0, 0.1);
   }
-  &:focus {
-    outline: none;
-  }
+
 }
 
 .top-left-buttons {
@@ -575,9 +573,6 @@ span {
         opacity: 1;
         box-shadow: inset -4px -4px 8px rgba(255, 255, 255, 0.5),
           inset 8px 8px 16px rgba(0, 0, 0, 0.1);
-      }
-      &:focus {
-        outline: none;
       }
     }
     &.current {

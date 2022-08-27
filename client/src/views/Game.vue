@@ -55,7 +55,7 @@
       </div>
 
       <div class="top-left-buttons">
-        <button class="star-button" @click="goToGithub()">
+        <button class="star-button" @click="goToGithub()" aria-label="Go to the GitHub repository">
           <svg
             viewBox="0 0 16 16"
             width="16"

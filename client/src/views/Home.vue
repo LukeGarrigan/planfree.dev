@@ -5,11 +5,7 @@
         <h1>Scrum poker made simple and <span>free</span>.</h1>
       </div>
       <div class="start-game">
-        <button
-            class="button"
-            :class="{ disabled: clickedStart }"
-            @click="startGame()"
-        >
+        <button class="button" :class="{ disabled: clickedStart }" @click="startGame()">
           <span v-if="!clickedStart">Start new game</span>
 
           <svg
@@ -214,10 +210,6 @@ function startGame() {
     opacity: 1;
     box-shadow: inset -4px -4px 8px rgba(255, 255, 255, 0.5),
     inset 8px 8px 16px rgba(0, 0, 0, 0.1);
-  }
-
-  &:focus {
-    outline: none;
   }
 
   span {

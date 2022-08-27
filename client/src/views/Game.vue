@@ -1,5 +1,7 @@
 <template>
   <div>
+    <h1 class="screen-reader-only">Planfree.dev game lobby</h1>
+
     <Modal
       v-if="modal"
       title="Choose your display name"
@@ -328,6 +330,7 @@ function setupSocketHandlers() {
     align-items: center;
   }
   .name {
+    margin-top: 1em;
     text-align: center;
     font-size: 26px;
   }
@@ -476,6 +479,12 @@ function setupSocketHandlers() {
   }
 }
 
+.screen-reader-only {
+  position: absolute;
+  width: 0px;
+  overflow:hidden;
+}
+
 .copied {
   background: #54e8dd;
 }
@@ -485,7 +494,6 @@ function setupSocketHandlers() {
 }
 
 span {
-  line-height: 100px;
   font-family: "Montserrat", sans-serif;
   font-size: 26px;
   font-weight: semibold;

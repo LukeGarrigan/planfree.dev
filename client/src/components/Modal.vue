@@ -1,8 +1,9 @@
 <template>
   <div class="modal-container">
     <div class="modal">
-      <span>{{ title }}</span>
+      <span><label for="selectNameInput">{{ title }}</label></span>
       <div class="input-container">
+        
         <input
           type="text"
           id="selectNameInput"
@@ -11,7 +12,7 @@
           maxlength="20"
           @keypress.enter="completed"
         />
-        <button class="enter-button" type="submit" @click="completed">
+        <button class="enter-button" type="submit" @click="completed" aria-label="Use name">
           <svg
             xmlns="http://www.w3.org/2000/svg"
             height="24px"

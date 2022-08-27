@@ -213,7 +213,6 @@ function startGame() {
   }
 
   span {
-    line-height: 100px;
     font-family: "Montserrat", sans-serif;
     font-size: 26px;
     font-weight: semibold;

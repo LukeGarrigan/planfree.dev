@@ -407,7 +407,7 @@ function setupSocketHandlers() {
 }
 
 @media only screen and (max-width: 700px) {
-  .top-left-buttons {
+  .edit-name-button {
     visibility: hidden;
   }
 }

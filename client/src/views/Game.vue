@@ -10,6 +10,8 @@
 
     <div v-if="!modal" class="home">
       <div class="top-buttons">
+      
+
         <button class="edit-name-button" @click="modal = true">
           <div>{{ name }}</div>
           <div>
@@ -58,18 +60,11 @@
 
       <div class="top-left-buttons">
         <button class="star-button" @click="goToGithub()" aria-label="Go to the GitHub repository">
-          <svg
-            viewBox="0 0 16 16"
-            width="16"
-            height="16"
-            class="octicon octicon-star"
-            aria-hidden="true"
-          >
-            <path
-              fill-rule="evenodd"
-              d="M8 .25a.75.75 0 01.673.418l1.882 3.815 4.21.612a.75.75 0 01.416 1.279l-3.046 2.97.719 4.192a.75.75 0 01-1.088.791L8 12.347l-3.766 1.98a.75.75 0 01-1.088-.79l.72-4.194L.818 6.374a.75.75 0 01.416-1.28l4.21-.611L7.327.668A.75.75 0 018 .25zm0 2.445L6.615 5.5a.75.75 0 01-.564.41l-3.097.45 2.24 2.184a.75.75 0 01.216.664l-.528 3.084 2.769-1.456a.75.75 0 01.698 0l2.77 1.456-.53-3.084a.75.75 0 01.216-.664l2.24-2.183-3.096-.45a.75.75 0 01-.564-.41L8 2.694v.001z"
-            ></path>
-          </svg>
+          <svg xmlns="http://www.w3.org/2000/svg" height="20" width="20"><path d="M7.333 14.896 10 13.312l2.688 1.584-.709-3 2.313-1.979-3.063-.271L10 6.792 8.771 9.646l-3.063.271 2.334 1.979ZM5.062 18l1.313-5.542L2 8.729l5.75-.5L10 3l2.25 5.25 5.75.479-4.375 3.729L14.938 18 10 15.062ZM10 11.062Z"/></svg>
+        </button>
+
+        <button v-if="showInstallPwa" class="star-button" @click="installPWA()" aria-label="Add to homescreen">
+          <svg xmlns="http://www.w3.org/2000/svg" height="20" width="20"><path d="M7 17v-2H3.5q-.625 0-1.062-.438Q2 14.125 2 13.5v-9q0-.625.438-1.062Q2.875 3 3.5 3H11v1.5H3.5v9h13V11H18v2.5q0 .625-.438 1.062Q17.125 15 16.5 15H13v2Zm7.479-6L11 7.521l1.062-1.063 1.688 1.688V3h1.5v5.104l1.688-1.687L18 7.479Z"/></svg>
         </button>
       </div>
 
@@ -147,6 +142,7 @@ import { io } from "socket.io-client";
 import { onMounted, ref } from "vue";
 import { useRoute } from "vue-router";
 
+let showInstallPwa = ref(false);
 const modal = ref(true);
 const showVotes = ref(false);
 const showCopiedToClipboard = ref(false);
@@ -154,6 +150,19 @@ const countdown = ref(0);
 const interval: any = ref(null);
 const name = ref("");
 const currentVote: any = ref(null);
+
+
+let deferredPrompt: any;
+window.addEventListener('beforeinstallprompt', (e) => {
+  e.preventDefault();
+  deferredPrompt = e;
+  showInstallPwa.value = true;
+});
+
+function installPWA() {
+  deferredPrompt.prompt();
+}
+
 
 onMounted(() => {
   if (joiningAGame()) {

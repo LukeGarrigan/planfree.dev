@@ -13,11 +13,11 @@ Try it out with your team, it's currently live at [planfree.dev](https://www.pla
    <a href="https://app.netlify.com/sites/blissful-bardeen-521053/deploys">
       <img src="https://img.shields.io/netlify/03077de6-f8e4-49e6-a8fc-2e460f60d98b">
   </a>
-  <a href="https://www.travis-ci.com/LukeGarrigan/planfree.dev">
-      <img src="https://www.travis-ci.com/LukeGarrigan/planfree.dev.svg?branch=main">
-  </a>
   <a href="https://GitHub.com/LukeGarrigan/planfree.dev/issues/">
       <img src="https://img.shields.io/github/issues/LukeGarrigan/planfree.dev.svg">
+  </a>
+  <a href="https://dl.circleci.com/status-badge/redirect/gh/LukeGarrigan/planfree.dev/tree/main">
+      <img src="https://dl.circleci.com/status-badge/img/gh/LukeGarrigan/planfree.dev/tree/main.svg?style=svg">
   </a>
 </p>
 

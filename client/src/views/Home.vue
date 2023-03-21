@@ -6,7 +6,7 @@
       </div>
       <div class="start-game">
         <button class="button" :class="{ disabled: clickedStart }" @click="startGame()">
-          <span v-if="!clickedStart">Start new game</span>
+          <span v-if="!clickedStart">Create room</span>
 
           <svg
               v-if="clickedStart"

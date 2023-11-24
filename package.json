@@ -1,0 +1,20 @@
+{
+  "name": "planfree.dev",
+  "version": "1.0.0",
+  "description": "For deployment to heroku",
+  "main": "index.js",
+  "scripts": {
+    "start": "node server/index.js",
+    "postinstall": "npm install --prefix server/"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/LukeGarrigan/planfree.dev.git"
+  },
+  "author": "",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/LukeGarrigan/planfree.dev/issues"
+  },
+  "homepage": "https://github.com/LukeGarrigan/planfree.dev#readme"
+}

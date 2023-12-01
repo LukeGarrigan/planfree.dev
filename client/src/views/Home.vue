@@ -120,7 +120,7 @@ function startGame() {
   clickedStart.value = true;
   setTimeout(() => {
     if (!hasStarted.value) {
-      alert("If it's taking more than 5 seconds, my credits have probably ran out 😱 apologies.");
+      alert("Looks like there's a problem connecting you to the server 😕");
     }
   }, 5000);
   const socket = io(process.env.VUE_APP_SERVER);

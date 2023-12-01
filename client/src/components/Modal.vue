@@ -3,13 +3,14 @@
     <div class="modal">
       <span><label for="selectNameInput">{{ title }}</label></span>
       <div class="input-container">
-        
+
         <input
           type="text"
           id="selectNameInput"
           v-model="name"
           class="input"
           maxlength="20"
+          minlength="1"
           @keypress.enter="completed"
         />
         <button class="enter-button" type="submit" @click="completed" aria-label="Use name">
@@ -36,7 +37,7 @@
   }>()
 
   const emit = defineEmits(['completed'])
-  
+
   const name = ref('');
    onMounted(() => {
     const input = document.getElementById('selectNameInput');
@@ -46,7 +47,9 @@
   })
 
   function completed() {
-    emit('completed', name.value);
+    if (name.value && name.value.trim()) {
+      emit('completed', name.value);
+    }
   }
 
 </script>

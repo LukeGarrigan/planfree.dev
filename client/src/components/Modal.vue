@@ -3,14 +3,14 @@
     <div class="modal">
       <span><label for="selectNameInput">{{ title }}</label></span>
       <div class="input-container">
-        <PFInput v-model="name" @completed="completed"></PFInput>
+        <PFInput v-model="name" @completed="completed" :max-length="25"></PFInput>
       </div>
     </div>
   </div>
 </template>
 
 <script setup lang="ts">
-  import {ref, onMounted} from 'vue';
+  import {onMounted, ref} from 'vue';
   import PFInput from "@/components/PFInput.vue";
   const props = defineProps<{
     title: string

@@ -125,12 +125,14 @@
           <span>{{ vote }}</span>
         </button>
       </div>
-
       <div class="results-container" v-if="showVotes && countdown === 0">
         <div class="results">
           <div class="average">Average: {{ getAverage() }}</div>
           <div class="popular">Popular: {{ getMode() }}</div>
         </div>
+      </div>
+      <div class="tickets">
+        <Tickets></Tickets>
       </div>
     </div>
   </div>
@@ -143,6 +145,7 @@ import Player from "@/view-models/player";
 import { io } from "socket.io-client";
 import { onMounted, ref } from "vue";
 import { useRoute } from "vue-router";
+import Tickets from "@/components/Tickets.vue";
 
 let showInstallPwa = ref(false);
 const modal = ref(true);

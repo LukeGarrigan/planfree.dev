@@ -5,8 +5,9 @@
       v-model="model"
       @input="updateValue"
       class="input"
-      maxlength="20"
+      :maxlength="maxlength"
       minlength="1"
+      :placeholder="placeholder"
       @keypress.enter="completed"
   />
 
@@ -26,14 +27,24 @@
 
 <script setup lang="ts">
 
+import {computed} from "vue";
+
 const props = defineProps({
   modelValue: {
     type: String,
     default: ''
+  },
+  placeholder: {
+    type: String,
+    default: ''
+  },
+  maxLength: {
+    type: Number,
+    default: 100
   }
 })
 
-const model = props.modelValue;
+const model = computed(() => props.modelValue);
 const emit = defineEmits(['update:modelValue', 'completed']);
 
 const updateValue = (event: any) => {
@@ -45,29 +56,6 @@ const completed = () => emit('completed');
 
 <!-- Add "scoped" attribute to limit CSS to this component only -->
 <style scoped lang="scss">
-.modal-container {
-  width: 100%;
-  height: 100%;
-  //background: pink;
-  display: flex;
-  justify-content: center;
-  position: absolute;
-}
-
-.modal {
-  width: 400px;
-  height: 220px;
-  top: 35%;
-  position: absolute;
-  border-radius: 15px;
-  box-shadow: -6px -6px 10px rgba(255, 255, 255, 0.8),
-  6px 6px 10px rgba(0, 0, 0, 0.2);
-  color: #161b1f;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  flex-direction: column;
-
   .input-container {
     display: flex;
   }
@@ -79,6 +67,7 @@ const completed = () => emit('completed');
     border-top-right-radius: 10px;
     border-bottom-right-radius: 10px;
     width: 50px;
+    height: 55px;
   }
 
   input {
@@ -94,8 +83,11 @@ const completed = () => emit('completed');
     color: #161b1f;
     padding-right: 50px;
   }
-}
-
+  input::placeholder {
+    color: #a0a0a0; /* Lighter/dimmer color for the placeholder */
+    font-size: 20px; /* Smaller font size for the placeholder */
+    padding-left: 10px;
+  }
 span {
   line-height: 80px;
   font-family: "Montserrat", sans-serif;

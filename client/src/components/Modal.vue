@@ -27,7 +27,6 @@
   })
 
   function completed() {
-     console.log('Hit the completed', name.value);
     if (name.value && name.value.trim()) {
       emit('completed', name.value);
     }

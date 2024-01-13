@@ -9,10 +9,11 @@
   },
   "dependencies": {
     "@types/socket.io": "^3.0.2",
+    "@vue/compat": "^3.2.36",
     "core-js": "^3.25.0",
     "socket.io-client": "^4.5.1",
+    "uuid": "^9.0.1",
     "vue": "^3.2.36",
-    "@vue/compat": "^3.2.36",
     "vue-router": "^4.0.14",
     "vuex": "4.0.2"
   },

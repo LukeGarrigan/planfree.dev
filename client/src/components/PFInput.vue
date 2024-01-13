@@ -5,7 +5,7 @@
       v-model="model"
       @input="updateValue"
       class="input"
-      :maxlength="maxlength"
+      :maxlength="props.maxLength"
       minlength="1"
       :placeholder="placeholder"
       @keypress.enter="completed"
@@ -27,7 +27,7 @@
 
 <script setup lang="ts">
 
-import {computed} from "vue";
+import {computed, watch} from "vue";
 
 const props = defineProps({
   modelValue: {
@@ -44,7 +44,10 @@ const props = defineProps({
   }
 })
 
-const model = computed(() => props.modelValue);
+let model = props.modelValue;
+watch(props.modelValue, () => {
+  model = props.modelValue;
+});
 const emit = defineEmits(['update:modelValue', 'completed']);
 
 const updateValue = (event: any) => {

@@ -3,20 +3,22 @@
 
     <PFInput v-model="ticketName" @completed="addedTicket" placeholder="Add issue title"></PFInput>
     <div class="tickets-container">
-      <div v-for="ticket in tickets">
-        <div class="ticket" @click="voteOn(ticket.id)">
-          <h4 :class="{ voting : votingOnId === ticket.id }">{{ ticket.name }} <span v-if="ticket.score">{{ ticket.score }}</span></h4>
-          <button class="star-button" aria-label="delete ticket" @click="voteOn(ticket.id)">
-            <svg xmlns="http://www.w3.org/2000/svg" height="20" viewBox="0 -960 960 960" width="20"><path d="m438-426 198-198-57-57-141 141-56-56-57 57 113 113Zm42 240q122-112 181-203.5T720-552q0-109-69.5-178.5T480-800q-101 0-170.5 69.5T240-552q0 71 59 162.5T480-186Zm0 106Q319-217 239.5-334.5T160-552q0-150 96.5-239T480-880q127 0 223.5 89T800-552q0 100-79.5 217.5T480-80Zm0-480Z"/></svg>
-          </button>
-          <button class="star-button" aria-label="delete ticket" @click="deleteTicket(ticket.id)">
-            <svg xmlns="http://www.w3.org/2000/svg" height="20" viewBox="0 -960 960 960" width="20">
-              <path
-                  d="M280-120q-33 0-56.5-23.5T200-200v-520h-40v-80h200v-40h240v40h200v80h-40v520q0 33-23.5 56.5T680-120H280Zm400-600H280v520h400v-520ZM360-280h80v-360h-80v360Zm160 0h80v-360h-80v360ZM280-720v520-520Z"/>
-            </svg>
-          </button>
-        </div>
-      </div>
+      <ul>
+        <li v-for="ticket in tickets">
+          <div class="ticket" @click="voteOn(ticket.id)">
+            <h4 :class="{ voting : votingOnId === ticket.id }">{{ ticket.name }} <span v-if="ticket.score">{{ ticket.score }}</span></h4>
+            <button class="star-button" aria-label="delete ticket" @click="voteOn(ticket.id)">
+              <svg xmlns="http://www.w3.org/2000/svg" height="20" viewBox="0 -960 960 960" width="20"><path d="m438-426 198-198-57-57-141 141-56-56-57 57 113 113Zm42 240q122-112 181-203.5T720-552q0-109-69.5-178.5T480-800q-101 0-170.5 69.5T240-552q0 71 59 162.5T480-186Zm0 106Q319-217 239.5-334.5T160-552q0-150 96.5-239T480-880q127 0 223.5 89T800-552q0 100-79.5 217.5T480-80Zm0-480Z"/></svg>
+            </button>
+            <button class="star-button" aria-label="delete ticket" @click="deleteTicket(ticket.id)">
+              <svg xmlns="http://www.w3.org/2000/svg" height="20" viewBox="0 -960 960 960" width="20">
+                <path
+                    d="M280-120q-33 0-56.5-23.5T200-200v-520h-40v-80h200v-40h240v40h200v80h-40v520q0 33-23.5 56.5T680-120H280Zm400-600H280v520h400v-520ZM360-280h80v-360h-80v360Zm160 0h80v-360h-80v360ZM280-720v520-520Z"/>
+              </svg>
+            </button>
+          </div>
+        </li>
+      </ul>
     </div>
   </div>
 </template>
@@ -83,9 +85,8 @@ function voteOn(ticketId: string) {
   align-items: center;
   word-wrap: break-word;
   overflow-wrap: break-word;
-
   gap: 10px;
-
+  font-family: "Montserrat", sans-serif;
   &:hover {
     .star-button {
       visibility: visible;

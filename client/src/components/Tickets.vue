@@ -3,10 +3,10 @@
     <PFInput v-model="ticketName" @completed="addedTicket" placeholder="Issue title"></PFInput>
     <div v-for="(ticket, id) in tickets">
       <div class="ticket" @click="voteOn(ticket)">
-        <h4>{{ ticket.id === votingOnId ? 'Voting' : 'Issue'}}: {{ ticket.name }} <span>{{ ticket.score }}</span></h4>
         <button class="star-button" aria-label="delete ticket" @click="deleteTicket(ticket.id)">
           <svg xmlns="http://www.w3.org/2000/svg" height="20" viewBox="0 -960 960 960" width="20"><path d="M280-120q-33 0-56.5-23.5T200-200v-520h-40v-80h200v-40h240v40h200v80h-40v520q0 33-23.5 56.5T680-120H280Zm400-600H280v520h400v-520ZM360-280h80v-360h-80v360Zm160 0h80v-360h-80v360ZM280-720v520-520Z"/></svg>
         </button>
+        <h4>{{ ticket.id === votingOnId ? 'Voting' : 'Issue'}}: {{ ticket.name }} <span v-if="ticket.score">{{ ticket.score }}</span></h4>
       </div>
     </div>
   </div>
@@ -32,7 +32,6 @@ const addedTicket = () => {
   const newTicket = {
     name: ticketName.value,
     voted: false,
-    score: 5,
     id: uuidv4()
   } as Ticket;
   tickets.value = [newTicket, ...tickets.value]
@@ -63,7 +62,7 @@ function voteOn(ticket: Ticket) {
   top: 50%;
   transform: translateY(-50%);
   height: 50%;
-  width: 350px; // Corrected width with unit
+  width: 360px;
   text-align: left;
   overflow: auto;
   word-wrap: break-word;
@@ -81,7 +80,6 @@ function voteOn(ticket: Ticket) {
   gap: 10px;
 
   &:hover {
-    background: pink;
     .star-button {
       visibility: visible;
     }

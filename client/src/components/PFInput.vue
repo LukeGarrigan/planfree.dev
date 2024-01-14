@@ -1,28 +1,31 @@
 <template>
-  <input
-      type="text"
-      id="selectNameInput"
-      v-model="model"
-      @input="updateValue"
-      class="input"
-      :maxlength="props.maxLength"
-      minlength="1"
-      :placeholder="placeholder"
-      @keypress.enter="completed"
-  />
 
-  <button class="enter-button" type="submit" aria-label="Use name" @click="completed">
-    <svg
-        xmlns="http://www.w3.org/2000/svg"
-        height="24px"
-        viewBox="0 0 24 24"
-        width="24px"
-        fill="#000000"
-    >
-      <path d="M0 0h24v24H0z" fill="none"/>
-      <path d="M10 6L8.59 7.41 13.17 12l-4.58 4.59L10 18l6-6z"/>
-    </svg>
-  </button>
+  <div class="input-container">
+    <input
+        type="text"
+        id="selectNameInput"
+        v-model="model"
+        @input="updateValue"
+        class="input"
+        :maxlength="props.maxLength"
+        minlength="1"
+        :placeholder="placeholder"
+        @keypress.enter="completed"
+    />
+
+    <button class="enter-button" type="submit" aria-label="Use name" @click="completed">
+      <svg
+          xmlns="http://www.w3.org/2000/svg"
+          height="24px"
+          viewBox="0 0 24 24"
+          width="24px"
+          fill="#000000"
+      >
+        <path d="M0 0h24v24H0z" fill="none"/>
+        <path d="M10 6L8.59 7.41 13.17 12l-4.58 4.59L10 18l6-6z"/>
+      </svg>
+    </button>
+  </div>
 </template>
 
 <script setup lang="ts">

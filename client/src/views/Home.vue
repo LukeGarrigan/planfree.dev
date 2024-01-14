@@ -7,7 +7,6 @@
       <div class="start-game">
         <button class="button" :class="{ disabled: clickedStart }" @click="startGame()">
           <span v-if="!clickedStart">Create room</span>
-
           <svg
               v-if="clickedStart"
               version="1.1"

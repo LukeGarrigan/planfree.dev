@@ -56,6 +56,9 @@
           <div>Copied to clipboard</div>
           <div></div>
         </button>
+        <button class="fib-button" @click="toggleTickets">
+          <svg xmlns="http://www.w3.org/2000/svg" height="24" viewBox="0 -960 960 960" width="24"><path d="M200-120q-33 0-56.5-23.5T120-200v-560q0-33 23.5-56.5T200-840h440l200 200v440q0 33-23.5 56.5T760-120H200Zm0-80h560v-400H600v-160H200v560Zm80-80h400v-80H280v80Zm0-320h200v-80H280v80Zm0 160h400v-80H280v80Zm-80-320v160-160 560-560Z"/></svg>
+        </button>
       </div>
 
       <div class="top-left-buttons">
@@ -131,7 +134,7 @@
           <div class="popular">Popular: {{ getMode() }}</div>
         </div>
       </div>
-      <div class="tickets">
+      <div class="tickets" v-show="showTickets">
         <Tickets></Tickets>
       </div>
     </div>
@@ -155,6 +158,7 @@ const countdown = ref(0);
 const interval: any = ref(null);
 const name = ref("");
 const currentVote: any = ref(null);
+const showTickets = ref(false);
 
 
 let deferredPrompt: any;
@@ -316,6 +320,8 @@ function setupSocketHandlers() {
     store.state.socket.emit("pong");
   });
 }
+
+const toggleTickets = () => showTickets.value = !showTickets.value;
 </script>
 
 <style scoped lang="scss">
@@ -562,36 +568,38 @@ span {
   bottom: 5%;
   user-select: none;
 
-  .fib-button {
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    background: #f3f0f1;
-    border-radius: 26px;
-    text-align: center;
-    border: none;
-    cursor: pointer;
-    width: 64px;
-    height: 80px;
-    transition: all 0.1s ease-in-out;
-    box-shadow: -6px -6px 10px rgba(255, 255, 255, 0.8),
+
+}
+
+.fib-button {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: #f3f0f1;
+  border-radius: 26px;
+  text-align: center;
+  border: none;
+  cursor: pointer;
+  width: 64px;
+  height: 70px;
+  transition: all 0.1s ease-in-out;
+  box-shadow: -6px -6px 10px rgba(255, 255, 255, 0.8),
+  6px 6px 10px rgba(0, 0, 0, 0.2);
+  color: #161b1f;
+  &:not(.current) {
+    &:hover {
+      opacity: 0.3;
+      box-shadow: -6px -6px 10px rgba(255, 255, 255, 0.8),
       6px 6px 10px rgba(0, 0, 0, 0.2);
-    color: #161b1f;
-    &:not(.current) {
-      &:hover {
-        opacity: 0.3;
-        box-shadow: -6px -6px 10px rgba(255, 255, 255, 0.8),
-          6px 6px 10px rgba(0, 0, 0, 0.2);
-      }
-      &:active {
-        opacity: 1;
-        box-shadow: inset -4px -4px 8px rgba(255, 255, 255, 0.5),
-          inset 8px 8px 16px rgba(0, 0, 0, 0.1);
-      }
     }
-    &.current {
-      background: #54e8dd;
+    &:active {
+      opacity: 1;
+      box-shadow: inset -4px -4px 8px rgba(255, 255, 255, 0.5),
+      inset 8px 8px 16px rgba(0, 0, 0, 0.1);
     }
+  }
+  &.current {
+    background: #54e8dd;
   }
 }
 </style>

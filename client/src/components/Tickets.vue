@@ -26,32 +26,24 @@
 import PFInput from "@/components/PFInput.vue";
 import {computed, ref, watch} from "vue";
 import {v4 as uuidv4} from 'uuid';
+import {useTickets} from "@/composables/useTickets";
 
-interface Ticket {
-  id: string;
-  name: string,
-  score: number,
-  voted: boolean
-}
+const { tickets, votingOnId } = useTickets();
 
-let tickets = ref<Ticket[]>([]);
 let ticketName = ref('');
-let votingOnId = ref('');
 
 const addedTicket = () => {
   tickets.value.push({
     name: ticketName.value,
     voted: false,
     id: uuidv4()
-  } as Ticket);
-
+  });
   ticketName.value = '';
 }
 
 watch(tickets.value, () => {
   if (!votingOnId.value) {
     votingOnId.value = tickets.value.find(t => !t.voted)?.id;
-    console.log('votingOnId ', votingOnId.value)
   }
 })
 

@@ -1,12 +1,21 @@
 <template>
-  <div class="tickets-container">
-    <PFInput v-model="ticketName" @completed="addedTicket" placeholder="Issue title"></PFInput>
-    <div v-for="(ticket, id) in tickets">
-      <div class="ticket" @click="voteOn(ticket)">
-        <button class="star-button" aria-label="delete ticket" @click="deleteTicket(ticket.id)">
-          <svg xmlns="http://www.w3.org/2000/svg" height="20" viewBox="0 -960 960 960" width="20"><path d="M280-120q-33 0-56.5-23.5T200-200v-520h-40v-80h200v-40h240v40h200v80h-40v520q0 33-23.5 56.5T680-120H280Zm400-600H280v520h400v-520ZM360-280h80v-360h-80v360Zm160 0h80v-360h-80v360ZM280-720v520-520Z"/></svg>
-        </button>
-        <h4>{{ ticket.id === votingOnId ? 'Voting' : 'Issue'}}: {{ ticket.name }} <span v-if="ticket.score">{{ ticket.score }}</span></h4>
+  <div class="tickets-wrapper">
+
+    <PFInput v-model="ticketName" @completed="addedTicket" placeholder="Add issue title"></PFInput>
+    <div class="tickets-container">
+      <div v-for="ticket in tickets">
+        <div class="ticket" @click="voteOn(ticket.id)">
+          <h4 :class="{ voting : votingOnId === ticket.id }">{{ ticket.name }} <span v-if="ticket.score">{{ ticket.score }}</span></h4>
+          <button class="star-button" aria-label="delete ticket" @click="voteOn(ticket.id)">
+            <svg xmlns="http://www.w3.org/2000/svg" height="20" viewBox="0 -960 960 960" width="20"><path d="m438-426 198-198-57-57-141 141-56-56-57 57 113 113Zm42 240q122-112 181-203.5T720-552q0-109-69.5-178.5T480-800q-101 0-170.5 69.5T240-552q0 71 59 162.5T480-186Zm0 106Q319-217 239.5-334.5T160-552q0-150 96.5-239T480-880q127 0 223.5 89T800-552q0 100-79.5 217.5T480-80Zm0-480Z"/></svg>
+          </button>
+          <button class="star-button" aria-label="delete ticket" @click="deleteTicket(ticket.id)">
+            <svg xmlns="http://www.w3.org/2000/svg" height="20" viewBox="0 -960 960 960" width="20">
+              <path
+                  d="M280-120q-33 0-56.5-23.5T200-200v-520h-40v-80h200v-40h240v40h200v80h-40v520q0 33-23.5 56.5T680-120H280Zm400-600H280v520h400v-520ZM360-280h80v-360h-80v360Zm160 0h80v-360h-80v360ZM280-720v520-520Z"/>
+            </svg>
+          </button>
+        </div>
       </div>
     </div>
   </div>
@@ -15,7 +24,7 @@
 <script setup lang="ts">
 
 import PFInput from "@/components/PFInput.vue";
-import {computed, ref} from "vue";
+import {computed, ref, watch} from "vue";
 import {v4 as uuidv4} from 'uuid';
 
 interface Ticket {
@@ -25,38 +34,38 @@ interface Ticket {
   voted: boolean
 }
 
-let tickets: Ticket[] = ref([]);
+let tickets = ref<Ticket[]>([]);
 let ticketName = ref('');
+let votingOnId = ref('');
 
 const addedTicket = () => {
-  const newTicket = {
+  tickets.value.push({
     name: ticketName.value,
     voted: false,
     id: uuidv4()
-  } as Ticket;
-  tickets.value = [newTicket, ...tickets.value]
+  } as Ticket);
+
   ticketName.value = '';
 }
 
-  const votingOnId = computed(() => {
-    return tickets.value.find(t => !t.voted)?.id ?? '';
-  })
+watch(tickets.value, () => {
+  if (!votingOnId.value) {
+    votingOnId.value = tickets.value.find(t => !t.voted)?.id;
+    console.log('votingOnId ', votingOnId.value)
+  }
+})
 
-function deleteTicket(id: string ) {
+function deleteTicket(id: string) {
   tickets.value = tickets.value.filter(t => t.id !== id);
 }
 
-function voteOn(ticket: Ticket) {
-  const index = tickets.value.indexOf(ticket);
-  tickets.value.splice(index, 1);
-  tickets.value = [ticket, ...tickets.value];
+function voteOn(ticketId: string) {
+  votingOnId.value = ticketId;
 }
 </script>
 
-<!-- Add "scoped" attribute to limit CSS to this component only -->
 <style scoped lang="scss">
-
-.tickets-container {
+.tickets-wrapper {
   position: fixed;
   right: 20px;
   top: 50%;
@@ -64,19 +73,25 @@ function voteOn(ticket: Ticket) {
   height: 50%;
   width: 360px;
   text-align: left;
-  overflow: auto;
   word-wrap: break-word;
   overflow-wrap: break-word;
+}
+
+.tickets-container {
+  display: flex;
+  flex-direction: column;
+  overflow: auto;
+  height: 70%;
 }
 
 .ticket {
   cursor: pointer;
   display: flex;
   text-align: left;
-  justify-content: center;
   align-items: center;
   word-wrap: break-word;
   overflow-wrap: break-word;
+
   gap: 10px;
 
   &:hover {
@@ -84,7 +99,17 @@ function voteOn(ticket: Ticket) {
       visibility: visible;
     }
   }
+
+  .voting {
+    text-decoration: underline;
+    text-decoration-color: #54e8dd;
+    text-decoration-thickness: 2px;
+  }
 }
+
+
+
+
 
 span {
   background: black;

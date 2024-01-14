@@ -30,7 +30,7 @@
 
 <script setup lang="ts">
 
-import {computed, watch} from "vue";
+import {computed, ref, watch} from "vue";
 
 const props = defineProps({
   modelValue: {
@@ -47,9 +47,10 @@ const props = defineProps({
   }
 })
 
-let model = props.modelValue;
+let model = ref(props.modelValue);
 watch(props.modelValue, () => {
-  model = props.modelValue;
+  console.log('prop cahnged', props.modelValue);
+  model.value = props.modelValue;
 });
 const emit = defineEmits(['update:modelValue', 'completed']);
 
@@ -57,47 +58,47 @@ const updateValue = (event: any) => {
   emit('update:modelValue', event.target.value);
 };
 
-const completed = () => emit('completed');
+const completed = () => {
+  if (model.value.length > 0) {
+    emit('completed');
+  }
+  model.value = '';
+}
 </script>
 
 <!-- Add "scoped" attribute to limit CSS to this component only -->
 <style scoped lang="scss">
-  .input-container {
-    display: flex;
-  }
+.input-container {
+  display: flex;
+}
 
-  .enter-button {
-    background: #54e8dd;
-    border: none;
-    cursor: pointer;
-    border-top-right-radius: 10px;
-    border-bottom-right-radius: 10px;
-    width: 50px;
-    height: 55px;
-  }
+.enter-button {
+  //background: #54e8dd;
+  background: white;
+  border: none;
+  cursor: pointer;
+  border-top-right-radius: 10px;
+  border-bottom-right-radius: 10px;
+  width: 50px;
+  height: 45px;
+}
 
-  input {
-    box-sizing: border-box;
-    padding: 8px;
-    width: 295px;
-    height: 55px;
-    border: none;
-    outline: none;
-    font-size: 26px;
-    border-top-left-radius: 10px;
-    border-bottom-left-radius: 10px;
-    color: #161b1f;
-    padding-right: 50px;
-  }
-  input::placeholder {
-    color: #a0a0a0; /* Lighter/dimmer color for the placeholder */
-    font-size: 20px; /* Smaller font size for the placeholder */
-    padding-left: 10px;
-  }
-span {
-  line-height: 80px;
-  font-family: "Montserrat", sans-serif;
-  font-size: 26px;
-  font-weight: semibold;
+input {
+  box-sizing: border-box;
+  width: 295px;
+  height: 45px;
+  border: none;
+  outline: none;
+  font-size: 20px;
+  border-top-left-radius: 10px;
+  border-bottom-left-radius: 10px;
+  color: #161b1f;
+  padding: 8px 50px 8px 8px;
+}
+
+input::placeholder {
+  color: #a0a0a0; /* Lighter/dimmer color for the placeholder */
+  font-size: 20px; /* Smaller font size for the placeholder */
+  padding-left: 10px;
 }
 </style>

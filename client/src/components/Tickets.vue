@@ -30,7 +30,7 @@ import {computed, ref, watch} from "vue";
 import {v4 as uuidv4} from 'uuid';
 import {useTickets} from "@/composables/useTickets";
 
-const { tickets, votingOnId } = useTickets();
+const { tickets, votingOnId, ticketUpdated } = useTickets();
 
 let ticketName = ref('');
 
@@ -41,6 +41,7 @@ const addedTicket = () => {
     id: uuidv4()
   });
   ticketName.value = '';
+  ticketUpdated();
 }
 
 watch(tickets.value, () => {
@@ -51,6 +52,7 @@ watch(tickets.value, () => {
 
 function deleteTicket(id: string) {
   tickets.value = tickets.value.filter(t => t.id !== id);
+  ticketUpdated();
 }
 
 function voteOn(ticketId: string) {

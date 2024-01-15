@@ -108,10 +108,10 @@
 
 <script setup lang="ts">
 import router from "@/router";
-import store from "@/store";
 import {io} from "socket.io-client";
 import {ref} from 'vue';
-
+import {useGameEngine} from "@/composables/useGameEngine";
+const { socket, setSocket  } = useGameEngine();
 const clickedStart = ref(false);
 const hasStarted = ref(false);
 
@@ -122,9 +122,9 @@ function startGame() {
       alert("Looks like there's a problem connecting you to the server 😕");
     }
   }, 5000);
-  const socket = io(process.env.VUE_APP_SERVER);
-  store.commit("setSocket", socket);
-  store.state.socket.on("room", (roomId: string) => {
+  const newSocket = io(process.env.VUE_APP_SERVER);
+  setSocket(newSocket);
+  socket.value.on("room", (roomId: string) => {
     hasStarted.value = true;
     router.push({ path: `/game/${roomId}` });
   });

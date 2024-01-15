@@ -97,7 +97,7 @@
         <span>{{ countdown }}</span>
       </button>
 
-      <div class="players" v-for="player in getPlayers()" :key="player.id">
+      <div class="players" v-for="player in players" :key="player.id">
         <div class="player" :class="{ voted: player.vote }">
           <span v-if="showVotes && countdown === 0">{{ player.vote }}</span>
         </div>
@@ -145,7 +145,6 @@
 </template>
 
 <script setup lang="ts">
-import store from "@/store";
 import Modal from "@/components/Modal.vue";
 import Player from "@/view-models/player";
 import { io } from "socket.io-client";
@@ -153,17 +152,15 @@ import { onMounted, ref } from "vue";
 import { useRoute } from "vue-router";
 import Tickets from "@/components/Tickets.vue";
 import {useTickets} from "@/composables/useTickets";
+import {useGameEngine} from "@/composables/useGameEngine";
 
 let showInstallPwa = ref(false);
 const modal = ref(true);
-const showVotes = ref(false);
 const showCopiedToClipboard = ref(false);
-const countdown = ref(0);
-const interval: any = ref(null);
 const name = ref("");
-const currentVote: any = ref(null);
 const showTickets = ref(false);
 const { votingOnName } = useTickets();
+const { socket, setSocket, players, showVotes, countdown, currentVote} = useGameEngine();
 
 let deferredPrompt: any;
 window.addEventListener('beforeinstallprompt', (e) => {
@@ -176,45 +173,38 @@ function installPWA() {
   deferredPrompt.prompt();
 }
 
-
 onMounted(() => {
   if (joiningAGame()) {
     const route = useRoute();
-    const socket = io(process.env.VUE_APP_SERVER, {
+    const newSocket = io(process.env.VUE_APP_SERVER, {
       query: {
         roomId: route.params.id,
       },
     });
-    store.commit("setSocket", socket);
+    setSocket(newSocket);
   }
 
   const storedName = localStorage.getItem("name");
   if (storedName) {
     enteredName(storedName);
   }
-
-  setupSocketHandlers();
 });
 
 function showVotesClicked() {
-  store.state.socket.emit("show");
-}
-
-function getPlayers() {
-  return store.state.players;
+  socket.value.emit("show");
 }
 
 function performVote(vote: string) {
-  store.state.socket.emit("vote", vote);
+  socket.value.emit("vote", vote);
   currentVote.value = vote;
 }
 
 function startNewGame() {
-  store.state.socket.emit("restart");
+  socket.value.emit("restart");
 }
 
 function emitName(name: string) {
-  store.state.socket.emit("name", name);
+  socket.value.emit("name", name);
 }
 
 function enteredName(updatedName: string) {
@@ -225,9 +215,8 @@ function enteredName(updatedName: string) {
 }
 
 function playerHasVoted() {
-  const players = store.state.players;
   return (
-    players.filter((p) => p.vote !== null && p.vote !== undefined).length > 0
+    players.value.filter((p: Player) => p.vote !== null && p.vote !== undefined).length > 0
   );
 }
 
@@ -243,10 +232,9 @@ function copyToClipboard() {
 }
 
 function getAverage() {
-  const players = store.state.players;
   let count = 0;
   let total = 0;
-  for (const player of players) {
+  for (const player of players.value) {
     if (player.vote && player.vote !== "?") {
       total += parseInt(player.vote);
       count++;
@@ -256,9 +244,8 @@ function getAverage() {
 }
 
 function getMode(): string {
-  const players = store.state.players;
   const scores: Record<string, number> = {};
-  for (const player of players) {
+  for (const player of players.value) {
     if (player.vote) {
       if (scores[player.vote]) {
         scores[player.vote] = scores[player.vote] + 1;
@@ -290,7 +277,7 @@ function goToGithub() {
 }
 
 function joiningAGame() {
-  const currentState = store.state.socket;
+  const currentState = socket.value;
   return (
     currentState &&
     Object.keys(currentState).length === 0 &&
@@ -298,32 +285,7 @@ function joiningAGame() {
   );
 }
 
-function setupSocketHandlers() {
-  store.state.socket.on("update", (players: Player[]) => {
-    store.state.players = players;
-  });
 
-  store.state.socket.on("show", () => {
-    showVotes.value = true;
-    clearInterval(interval.value);
-    countdown.value = 3;
-    interval.value = setInterval(() => {
-      countdown.value -= 1;
-      if (countdown.value == 0) {
-        clearInterval(interval.value);
-      }
-    }, 1000);
-  });
-
-  store.state.socket.on("restart", () => {
-    showVotes.value = false;
-    currentVote.value = null;
-  });
-
-  store.state.socket.on("ping", () => {
-    store.state.socket.emit("pong");
-  });
-}
 
 const toggleTickets = () => showTickets.value = !showTickets.value;
 </script>

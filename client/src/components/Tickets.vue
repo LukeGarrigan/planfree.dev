@@ -5,9 +5,9 @@
     <div class="tickets-container">
       <ul>
         <li v-for="ticket in tickets">
-          <div class="ticket" @click="voteOn(ticket.id)">
-            <h4 :class="{ voting : votingOnId === ticket.id }">{{ ticket.name }} <span v-if="ticket.score">{{ ticket.score }}</span></h4>
-            <button class="star-button" aria-label="delete ticket" @click="voteOn(ticket.id)">
+          <div class="ticket" @click="voteOn(ticket)">
+            <h4 :class="{ voting : ticket.votingOn }">{{ ticket.name }} <span v-if="ticket.score">{{ ticket.score }}</span></h4>
+            <button class="star-button" aria-label="delete ticket" @click="voteOn(ticket)">
               <svg xmlns="http://www.w3.org/2000/svg" height="20" viewBox="0 -960 960 960" width="20"><path d="m438-426 198-198-57-57-141 141-56-56-57 57 113 113Zm42 240q122-112 181-203.5T720-552q0-109-69.5-178.5T480-800q-101 0-170.5 69.5T240-552q0 71 59 162.5T480-186Zm0 106Q319-217 239.5-334.5T160-552q0-150 96.5-239T480-880q127 0 223.5 89T800-552q0 100-79.5 217.5T480-80Zm0-480Z"/></svg>
             </button>
             <button class="star-button" aria-label="delete ticket" @click="deleteTicket(ticket.id)">
@@ -29,6 +29,7 @@ import PFInput from "@/components/PFInput.vue";
 import {computed, ref, watch} from "vue";
 import {v4 as uuidv4} from 'uuid';
 import {useTickets} from "@/composables/useTickets";
+import Ticket from "@/view-models/tickets";
 
 const { tickets, votingOnId, ticketUpdated } = useTickets();
 
@@ -44,19 +45,18 @@ const addedTicket = () => {
   ticketUpdated();
 }
 
-watch(tickets.value, () => {
-  if (!votingOnId.value) {
-    votingOnId.value = tickets.value.find(t => !t.voted)?.id;
-  }
-})
-
 function deleteTicket(id: string) {
   tickets.value = tickets.value.filter(t => t.id !== id);
   ticketUpdated();
 }
 
-function voteOn(ticketId: string) {
-  votingOnId.value = ticketId;
+function voteOn(ticket: Ticket) {
+  for (const value of tickets.value) {
+    value.votingOn = false;
+  }
+
+  ticket.votingOn = true;
+  ticketUpdated();
 }
 </script>
 

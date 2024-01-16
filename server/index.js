@@ -28,6 +28,7 @@ http.listen(process.env.PORT || 3000, () => {
 let players = [];
 let tickets = [];
 
+
 io.on('connection', (socket) => {
     console.log('A user connected', socket.id);
     let roomId = socket.handshake.query['roomId'];
@@ -57,13 +58,13 @@ io.on('connection', (socket) => {
 
         const playersInRoom = players.filter(p => p.roomId == roomId);
         if (playersInRoom.every(p => p.vote)) {
-            io.to(roomId).emit('show');
+            showVotes(roomId);
         }
         updateClientsInRoom(roomId);
     });
 
     socket.on('show', () => {
-        io.to(roomId).emit('show');
+        showVotes(roomId);
     });
 
     socket.on('restart', () => {
@@ -76,6 +77,11 @@ io.on('connection', (socket) => {
         for (const ticket of updatedTickets) {
             ticket.roomId = roomId;
         }
+
+        if (updatedTickets.length === 1) {
+            updatedTickets[0].votingOn = true;
+        }
+
         tickets.push(...updatedTickets)
         updateClientsInRoom(roomId);
     });
@@ -98,7 +104,6 @@ io.on('connection', (socket) => {
 function updateClientsInRoom(roomId) {
     const roomPlayers = players.filter(p => p.roomId == roomId);
     const roomTickets = tickets.filter(p => p.roomId == roomId);
-    console.log(roomTickets[0])
     io.to(roomId).emit('update', {
         players: roomPlayers,
         tickets: roomTickets
@@ -127,5 +132,40 @@ function logRooms() {
     }
 }
 
+function showVotes(roomId) {
+    const roomTickets = tickets.filter(p => p.roomId == roomId);
 
+    if (roomTickets) {
+        const average = getAverage(roomId);
+        const fib = [0, 1, 2, 3, 5, 8, 13, 21, 34, 55, 89]
+        let closest = 0;
+        let smallestDiff = Number.MAX_VALUE;
+        for (const number of fib) {
+            const difference = Math.abs(number - average);
+            if (difference < smallestDiff) {
+                smallestDiff = difference;
+                closest = number;
+            }
+        }
 
+        const ticket = roomTickets.find(f => f.votingOn);
+        if (ticket) {
+            ticket.score = closest;
+        }
+    }
+
+    io.to(roomId).emit('show');
+}
+
+function getAverage(roomId) {
+    const roomPlayers = players.filter(p => p.roomId == roomId);
+    let count = 0;
+    let total = 0;
+    for (const player of players) {
+        if (player.vote && player.vote !== "?") {
+            total += parseInt(player.vote);
+            count++;
+        }
+    }
+    return total / count;
+}

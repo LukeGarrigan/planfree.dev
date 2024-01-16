@@ -114,6 +114,15 @@ function restartGame(roomId) {
     const roomPlayers = players.filter(p => p.roomId == roomId);
     const roomTickets = tickets.filter(p => p.roomId == roomId);
     roomPlayers.forEach(p => p.vote = undefined);
+
+    const ticketVotingOn = roomTickets.find(f => f.votingOn);
+    if (!(ticketVotingOn && !ticketVotingOn.score)) { // they haven't chosen a new ticket in wrapup
+        roomTickets.forEach(p => p.votingOn = false);
+        const ticketToVoteOn = roomTickets.find(t => !t.score);
+        if (ticketToVoteOn) {
+            ticketToVoteOn.votingOn = true;
+        }
+    }
     console.log(`Restarted game with Players: ${roomPlayers.map(p => p.name).join(", ")}`);
     io.to(roomId).emit('restart');
     io.to(roomId).emit('update', {

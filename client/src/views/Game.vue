@@ -98,7 +98,7 @@
           class="button start"
           @click="startNewGame()"
       >
-        <span>Start new game!</span>
+        <span>{{ startGameMessage }}</span>
       </button>
       <button v-if="showVotes && countdown > 0" class="button no-hover">
         <span>{{ countdown }}</span>
@@ -166,7 +166,7 @@ const modal = ref(true);
 const showCopiedToClipboard = ref(false);
 const name = ref("");
 const showTickets = ref(false);
-const {votingOnName} = useTickets();
+const {votingOnName, tickets} = useTickets();
 const {socket, setSocket, players, showVotes, countdown, currentVote} = useGameEngine();
 
 let deferredPrompt: any;
@@ -197,6 +197,13 @@ onMounted(() => {
   }
 });
 
+const startGameMessage = computed(() => {
+  if (!tickets.value || tickets.value.every(t => t.score)) {
+    return 'Start new game!'
+  } else {
+    return 'Vote next issue!'
+  }
+});
 function showVotesClicked() {
   socket.value.emit("show");
 }

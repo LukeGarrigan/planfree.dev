@@ -133,7 +133,7 @@
             class="fib-button"
             :class="{ current: currentVote === vote }"
             @click="performVote(vote)"
-            :disabled="currentVote === vote"
+            :disabled="currentVote === vote || countdown > 0"
         >
           <span>{{ vote }}</span>
         </button>

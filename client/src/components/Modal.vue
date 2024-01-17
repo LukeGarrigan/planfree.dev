@@ -3,35 +3,15 @@
     <div class="modal">
       <span><label for="selectNameInput">{{ title }}</label></span>
       <div class="input-container">
-
-        <input
-          type="text"
-          id="selectNameInput"
-          v-model="name"
-          class="input"
-          maxlength="20"
-          minlength="1"
-          @keypress.enter="completed"
-        />
-        <button class="enter-button" type="submit" @click="completed" aria-label="Use name">
-          <svg
-            xmlns="http://www.w3.org/2000/svg"
-            height="24px"
-            viewBox="0 0 24 24"
-            width="24px"
-            fill="#000000"
-          >
-            <path d="M0 0h24v24H0z" fill="none" />
-            <path d="M10 6L8.59 7.41 13.17 12l-4.58 4.59L10 18l6-6z" />
-          </svg>
-        </button>
+        <PFInput v-model="name" @completed="completed" :max-length="25"></PFInput>
       </div>
     </div>
   </div>
 </template>
 
 <script setup lang="ts">
-  import {ref, onMounted} from 'vue';
+  import {onMounted, ref} from 'vue';
+  import PFInput from "@/components/PFInput.vue";
   const props = defineProps<{
     title: string
   }>()
@@ -81,29 +61,6 @@
 
   .input-container {
     display: flex;
-  }
-
-  .enter-button {
-    background: #54e8dd;
-    border: none;
-    cursor: pointer;
-    border-top-right-radius: 10px;
-    border-bottom-right-radius: 10px;
-    width: 50px;
-  }
-
-  input {
-    box-sizing: border-box;
-    padding: 8px;
-    width: 295px;
-    height: 55px;
-    border: none;
-    outline: none;
-    font-size: 26px;
-    border-top-left-radius: 10px;
-    border-bottom-left-radius: 10px;
-    color: #161b1f;
-    padding-right: 50px;
   }
 }
 

@@ -72,12 +72,10 @@ io.on('connection', (socket) => {
     });
 
     socket.on('ticket', (updatedTickets) => {
-        let roomId = socket.handshake.query['roomId'];
         tickets = tickets.filter(ticket => ticket.roomId !== roomId);
         for (const ticket of updatedTickets) {
             ticket.roomId = roomId;
         }
-
         if (updatedTickets.length === 1) {
             updatedTickets[0].votingOn = true;
         }

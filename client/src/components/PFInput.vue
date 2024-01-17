@@ -48,10 +48,7 @@ const props = defineProps({
 })
 
 let model = ref(props.modelValue);
-watch(props.modelValue, () => {
-  console.log('prop cahnged', props.modelValue);
-  model.value = props.modelValue;
-});
+
 const emit = defineEmits(['update:modelValue', 'completed']);
 
 const updateValue = (event: any) => {

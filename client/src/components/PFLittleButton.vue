@@ -73,12 +73,12 @@ const clicked = () => {
 
 .popover {
   position: absolute;
-  bottom: 110%;
+  bottom: 120%;
   left: 50%;
   transform: translateX(-50%);
   visibility: hidden;
   opacity: 0;
-  width: 50px;
+  width: 100px;
   transition: opacity 0.2s, visibility 0.2s;
 }
 

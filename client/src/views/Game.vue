@@ -366,7 +366,7 @@ const toggleTickets = () => showTickets.value = !showTickets.value;
   display: flex;
   flex-direction: row;
   left: 20px;
-  top: 50px;
+  top: 35px;
   position: absolute;
   gap: 5px;
 

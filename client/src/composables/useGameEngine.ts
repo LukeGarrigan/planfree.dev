@@ -1,8 +1,9 @@
-import { ref } from "vue";
+import {ref} from "vue";
 import Player from "@/view-models/player";
 import Game from "@/view-models/game";
 import Ticket from "@/view-models/tickets";
 import GameFormat from "@/view-models/gameFormat";
+
 const players = ref<Player[]>([]);
 const socket = ref({} as any);
 const showVotes = ref(false);
@@ -13,11 +14,13 @@ const gameFormat = ref<GameFormat>();
 const closestValue: any = ref(null);
 const averageValue: any = ref(null);
 const tickets = ref<Ticket[]>([]);
+
 export function useGameEngine() {
     function setSocket(newSocket: any) {
         socket.value = newSocket;
         setupSocketHandlers();
     }
+
     function setupSocketHandlers() {
         socket.value.on("update", (game: Game) => {
             players.value = game.players;
@@ -30,12 +33,12 @@ export function useGameEngine() {
             localStorage.setItem("gameTypes", JSON.stringify(gameTypes));
         });
 
-        socket.value.on("show", (results:any) => {
+        socket.value.on("show", (results: any) => {
             closestValue.value = results.closest;
             averageValue.value = results.average;
             showVotes.value = true;
             clearInterval(interval.value);
-            countdown.value = 3; 
+            countdown.value = 3;
             interval.value = setInterval(() => {
                 countdown.value -= 1;
                 if (countdown.value == 0) {
@@ -54,5 +57,17 @@ export function useGameEngine() {
         });
     }
 
-    return { socket, players, setSocket, showVotes, countdown, currentVote, interval, tickets, gameFormat, closestValue, averageValue };
+    return {
+        socket,
+        players,
+        setSocket,
+        showVotes,
+        countdown,
+        currentVote,
+        interval,
+        tickets,
+        gameFormat,
+        closestValue,
+        averageValue
+    };
 }

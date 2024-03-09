@@ -5,8 +5,9 @@
       <ul>
         <li v-for="ticket in tickets">
           <div class="ticket" @click="voteOn(ticket)">
-            <h4 :class="{ voting: ticket.votingOn }">{{ ticket.name }} <span v-if="ticket.score">{{ ticket.score
-                }}</span></h4>
+            <h4 :class="{ voting: ticket.votingOn }">{{ ticket.name }} <span v-if="ticket.score">{{
+                ticket.score
+              }}</span></h4>
             <PFLittleButton class="delete-button" type="delete" @clicked="deleteTicket(ticket.id)"></PFLittleButton>
           </div>
         </li>
@@ -18,13 +19,13 @@
 <script setup lang="ts">
 
 import PFInput from "@/components/PFInput.vue";
-import { ref } from "vue";
-import { v4 as uuidv4 } from 'uuid';
-import { useTickets } from "@/composables/useTickets";
+import {ref} from "vue";
+import {v4 as uuidv4} from 'uuid';
+import {useTickets} from "@/composables/useTickets";
 import Ticket from "@/view-models/tickets";
 import PFLittleButton from "@/components/PFLittleButton.vue";
 
-const { tickets, votingOnId, ticketUpdated } = useTickets();
+const {tickets, votingOnId, ticketUpdated} = useTickets();
 
 let ticketName = ref('');
 
@@ -33,7 +34,7 @@ const addedTicket = () => {
     name: ticketName.value,
     voted: false,
     id: uuidv4(),
-    average: '0', 
+    average: '0',
     closest: '0',
     score: '0',
     votingOn: false
@@ -66,8 +67,8 @@ function voteOn(ticket: Ticket) {
   height: 50%;
   width: 360px;
   text-align: left;
-  word-wrap: break-word;
   overflow-wrap: break-word;
+  word-wrap: break-word;
 }
 
 .tickets-container {

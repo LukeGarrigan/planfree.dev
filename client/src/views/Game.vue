@@ -59,7 +59,7 @@
       </div>
 
       <div class="top-left">
-        <PFLittleButton type="github" popover-text="View repo" @clicked="goToGithub()"></PFLittleButton>
+        <PFLittleButton type="github" popover-text="Open repo" @clicked="goToGithub()"></PFLittleButton>
         <PFLittleButton type="pwa" popover-text="Install as app" @clicked="installPWA()"></PFLittleButton>
         <PFLittleButton type="settings" popover-text="Settings" @clicked="()=>{settings = true;}"></PFLittleButton>
         <div class="voting-on" v-if="votingOnName">

@@ -1,0 +1,20 @@
+{
+    "translation": {
+        "average_text": "Durchschnitt:",
+        "closest_text": "Nächster:",
+        "issue_title": "Problem-Titel",
+        "vote_next_issue": "Stimme für das nächste Problem ab!",
+        "start_new_game": "Neues Spiel starten!",
+        "cast_votes": "Gib deine Stimmen ab",
+        "voting_on": "Abstimmung über:",
+        "install_as_app": "Als App installieren",
+        "view_repo": "Repository anzeigen",
+        "copy_to_clip": "In die Zwischenablage kopiert",
+        "invite_players": "Spieler einladen",
+        "display_name_title": "Wähle deinen Anzeigenamen",
+        "lobby_header":"Planfree.dev Spielelobby",
+        "creat_room": "Raum erstellen",
+        "scrum_made_easy": "Scrum-Poker einfach und",
+        "free": "kostenlos"
+    }
+}

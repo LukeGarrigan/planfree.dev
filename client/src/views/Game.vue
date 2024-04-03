@@ -1,10 +1,10 @@
 <template>
   <div>
-    <h1 class="screen-reader-only">Planfree.dev game lobby</h1>
+    <h1 class="screen-reader-only">{{ $t('lobby_header') }}</h1>
 
     <Modal
         v-if="modal"
-        title="Choose your display name"
+        title=  'display_name_title'
         @completed="enteredName"
     ></Modal>
 
@@ -34,7 +34,7 @@
             class="button invite"
             @click="copyToClipboard()"
         >
-          <div>Invite players</div>
+          <div>{{ $t('invite_players') }}</div>
           <div>
             <svg
                 xmlns="http://www.w3.org/2000/svg"
@@ -53,7 +53,7 @@
             v-if="!modal && showCopiedToClipboard"
             class="button invite copied no-hover"
         >
-          <div>Copied to clipboard</div>
+          <div>{{$t("copy_to_clip")}}</div>
           <div></div>
         </button>
         <button class="fib-button" @click="toggleTickets">
@@ -65,16 +65,16 @@
       </div>
 
       <div class="top-left">
-        <PFLittleButton type="github" popover-text="View repo" @clicked="goToGithub()"></PFLittleButton>
-        <PFLittleButton type="pwa" popover-text="Install as app" @clicked="installPWA()"></PFLittleButton>
+        <PFLittleButton type="github" popover-text="view_repo" @clicked="goToGithub()"></PFLittleButton>
+        <PFLittleButton type="pwa" popover-text="install_as_app" @clicked="installPWA()"></PFLittleButton>
 
         <div class="voting-on" v-if="votingOnName">
-          <p class="voting-on-label">Voting on: <b>{{ votingOnName }}</b></p>
+          <p class="voting-on-label">{{$t("voting_on")}} <b>{{ votingOnName }}</b></p>
         </div>
       </div>
 
       <button v-if="!playerHasVoted() && !showVotes" class="button no-hover">
-        <span>Cast your votes</span>
+        <span>{{$t("cast_votes")}}</span>
       </button>
       <button
           v-if="playerHasVoted() && !showVotes"
@@ -88,7 +88,7 @@
           class="button start"
           @click="startNewGame()"
       >
-        <span>{{ startGameMessage }}</span>
+        <span>{{ $t(startGameMessage) }}</span>
       </button>
       <button v-if="showVotes && countdown > 0" class="button no-hover">
         <span>{{ countdown }}</span>
@@ -130,8 +130,8 @@
       </div>
       <div class="results-container" v-if="showVotes && countdown === 0">
         <div class="results">
-          <div class="average">Average: {{ getAverage() }}</div>
-          <div class="popular">Closest: {{ getClosest() }}</div>
+          <div class="average">{{$t("average_text")}} {{ getAverage() }}</div>
+          <div class="popular">{{$t("closest_text")}} {{ getClosest() }}</div>
         </div>
       </div>
       <div class="tickets" v-show="showTickets">
@@ -190,9 +190,9 @@ onMounted(() => {
 
 const startGameMessage = computed(() => {
   if (!tickets.value || tickets.value.every(t => t.score)) {
-    return 'Start new game!'
+    return 'start_new_game';
   } else {
-    return 'Vote next issue!'
+    return 'vote_next_issue';
   }
 });
 function showVotesClicked() {

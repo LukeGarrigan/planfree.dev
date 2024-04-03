@@ -1,0 +1,20 @@
+{
+    "translation": {
+        "average_text": "Average:",
+        "closest_text": "Closest:",
+        "issue_title": "Issue title",
+        "vote_next_issue": "Vote on the next issue!",
+        "start_new_game": "Start new game!",
+        "cast_votes": "Cast your votes",
+        "voting_on": "Voting on:",
+        "install_as_app": "Install as app",
+        "view_repo": "View repo",
+        "copy_to_clip": "Copied to clipboard",
+        "invite_players": "Invite players",
+        "display_name_title": "Choose your display name",
+        "lobby_header":"Planfree.dev game lobby",
+        "creat_room": "Create Room",
+        "scrum_made_easy": "Scrum poker made simple and",
+        "free": "free"
+    }
+}

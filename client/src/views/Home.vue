@@ -2,11 +2,11 @@
   <div class="home">
     <div class="container">
       <div class="free-poker-header">
-        <h1>Scrum poker made simple and <span>free</span>.</h1>
+        <h1>{{ $t('scrum_made_easy') }} <span>{{ $t('free') }}</span>.</h1>
       </div>
       <div class="start-game">
         <button class="button" :class="{ disabled: clickedStart }" @click="startGame()">
-          <span v-if="!clickedStart">Create room</span>
+          <span v-if="!clickedStart">{{ $t('create_room') }}</span>
           <svg
               v-if="clickedStart"
               version="1.1"

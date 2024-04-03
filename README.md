@@ -1,43 +1,21 @@
-<h1 align="center">
- <a href="https://planfree.dev">planfree.dev</a>
-  <br>
-</h1>
+# [planfree.dev](https://planfree.dev)
 
-<h4 align="center">A completely free implementation of planning poker</h4>
+#### A completely free implementation of planning poker
 
-Try it out with your team, it's currently live at [planfree.dev](https://www.planfree.dev/#/). If you find any issues, or wish to contribute, take a look at the [issues list](https://github.com/LukeGarrigan/planfree.dev/issues). If you have any ideas don't hesitate to create a new issue!
-<p align="center">
-  <a href="https://img.shields.io/github/license/lukegarrigan/p5js-chess">
-    <img src="https://img.shields.io/github/license/lukegarrigan/p5js-chess" />
-  </a>
-   <a href="https://app.netlify.com/sites/blissful-bardeen-521053/deploys">
-      <img src="https://img.shields.io/netlify/03077de6-f8e4-49e6-a8fc-2e460f60d98b">
-  </a>
-  <a href="https://GitHub.com/LukeGarrigan/planfree.dev/issues/">
-      <img src="https://img.shields.io/github/issues/LukeGarrigan/planfree.dev.svg">
-  </a>
-  <a href="https://dl.circleci.com/status-badge/redirect/gh/LukeGarrigan/planfree.dev/tree/main">
-      <img src="https://dl.circleci.com/status-badge/img/gh/LukeGarrigan/planfree.dev/tree/main.svg?style=svg">
-  </a>
-</p>
+Try it out with your team, it's currently live at [planfree.dev](https://www.planfree.dev/#/). 
+
+If you find any issues, or wish to contribute, take a look at the [issues list](https://github.com/LukeGarrigan/planfree.dev/issues). If you have any ideas don't hesitate to create a new issue!
+
+[![License](https://img.shields.io/github/license/lukegarrigan/p5js-chess)](https://github.com/LukeGarrigan/planfree.dev/blob/main/LICENSE)
+[![Netlify Status](https://img.shields.io/netlify/03077de6-f8e4-49e6-a8fc-2e460f60d98b)](https://app.netlify.com/sites/blissful-bardeen-521053/deploys)
+[![GitHub Issues](https://img.shields.io/github/issues/LukeGarrigan/planfree.dev.svg)](https://GitHub.com/LukeGarrigan/planfree.dev/issues/)
+[![CircleCI Status](https://dl.circleci.com/status-badge/img/gh/LukeGarrigan/planfree.dev/tree/main.svg?style=svg)](https://dl.circleci.com/status-badge/redirect/gh/LukeGarrigan/planfree.dev/tree/main)
 
 ![image](https://user-images.githubusercontent.com/12545967/124085610-2351dc80-da48-11eb-960d-af548db474e9.png)
 
-## Run locally:
+## Setup of Server
+This repository consist of two projects and each project has its own ReadMe to explain how it is being setup. 
 
-Backend:
-```console
-cd server/
-npm install
-npm start
-``` 
+[Server](./server/ReadMe.md)
 
-Frontend:
-```console
-cd client/
-npm install
-npm run serve 
-```
-Navigate to http://localhost:8082/ 
-
-
+[Client](./client/ReadMe.md)

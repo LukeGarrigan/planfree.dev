@@ -3,7 +3,7 @@ import Player from "@/view-models/player";
 import Game from "@/view-models/game";
 import Ticket from "@/view-models/tickets";
 const players = ref<Player[]>([]);
-const socket = ref({});
+const socket = ref({} as any);
 const showVotes = ref(false);
 const countdown = ref(0);
 const interval: any = ref(null);

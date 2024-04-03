@@ -1,6 +1,8 @@
-# planning-poker
+# Planning Poker (Client)
 
 ## Project setup
+
+### Install dependencies
 ```
 npm install
 ```
@@ -19,6 +21,10 @@ npm run build
 ```
 npm run lint
 ```
+
+# Additional steps
+- Copy the .env file from the [example folder](./example/) into the root of the client folder
+- update the variables with the relevant values
 
 ### Customize configuration
 See [Configuration Reference](https://cli.vuejs.org/config/).

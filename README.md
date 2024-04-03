@@ -4,6 +4,8 @@
 
 Try it out with your team, it's currently live at [planfree.dev](https://www.planfree.dev/#/). 
 
+[planfree.dev](https://www.planfree.dev/#/) is now also available in german based on your browser loacale. 
+
 If you find any issues, or wish to contribute, take a look at the [issues list](https://github.com/LukeGarrigan/planfree.dev/issues). If you have any ideas don't hesitate to create a new issue!
 
 [![License](https://img.shields.io/github/license/lukegarrigan/p5js-chess)](https://github.com/LukeGarrigan/planfree.dev/blob/main/LICENSE)

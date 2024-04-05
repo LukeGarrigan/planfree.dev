@@ -2,7 +2,7 @@
 
 ## Project setup
 
-### INstall dependencies
+### Install dependencies
 ```
 npm install
 ```
@@ -11,12 +11,6 @@ npm install
 ```
 npm start
 ```
-
-### Compiles and minifies for production
-```
-npm run build
-```
-
 # Additional steps
 - Copy the .env file from the [example folder](./example/) into the root of the server folder
 - update the variables with the relevant values

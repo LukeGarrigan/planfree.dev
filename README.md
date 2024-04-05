@@ -23,21 +23,7 @@ Try it out with your team, it's currently live at [planfree.dev](https://www.pla
 
 ![image](https://user-images.githubusercontent.com/12545967/124085610-2351dc80-da48-11eb-960d-af548db474e9.png)
 
-## Run locally:
+## Setup Local Dev  
 
-Backend:
-```console
-cd server/
-npm install
-npm start
-``` 
-
-Frontend:
-```console
-cd client/
-npm install
-npm run serve 
-```
-Navigate to http://localhost:8082/ 
-
-
+- [Server](./server/README)
+- [Client](./client/ReadMe.md)

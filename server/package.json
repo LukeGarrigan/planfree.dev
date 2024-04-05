@@ -4,16 +4,15 @@
   "description": "",
   "main": "index.js",
   "scripts": {
-    "start": "nodemon index.js",
-    "test": "echo \"Error: no test specified\" && exit 1"
+    "start": "nodemon index.js"
   },
   "author": "",
   "license": "ISC",
   "dependencies": {
-    "dotenv": "^16.0.2",
-    "express": "^4.18.1",
-    "nodemon": "^2.0.7",
-    "short-uuid": "^4.2.0",
-    "socket.io": "^4.5.1"
+    "dotenv": "^16.4.5",
+    "express": "^4.19.2",
+    "nodemon": "^3.1.0",
+    "short-uuid": "^4.2.2",
+    "socket.io": "^4.7.5"
   }
 }

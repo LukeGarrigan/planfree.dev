@@ -1,4 +1,4 @@
-# Planning Poker (Client)
+# Planning Poker (Server)
 
 ## Project setup
 
@@ -9,14 +9,8 @@ npm install
 
 ### Compiles and hot-reloads for development
 ```
-npm run serve
+npm start
 ```
-
-### Lints and fixes files
-```
-npm run lint
-```
-
 # Additional steps
-- Copy the .env file from the [example folder](./example/) into the root of the client folder
+- Copy the .env file from the [example folder](./example/) into the root of the server folder
 - update the variables with the relevant values

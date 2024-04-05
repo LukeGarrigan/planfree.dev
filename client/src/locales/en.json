@@ -15,6 +15,7 @@
         "lobby_header":"Planfree.dev game lobby",
         "create_room": "Create Room",
         "scrum_made_easy": "Scrum poker made simple and",
-        "free": "free"
+        "free": "free",
+        "connection_issue": "Looks like there's a problem connecting you to the server 😕"
     }
 }

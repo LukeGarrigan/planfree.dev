@@ -2,7 +2,7 @@
     "translation": {
         "average_text": "Durchschnitt:",
         "closest_text": "Nächster:",
-        "issue_title": "Problem-Titel",
+        "issue_title": "Problem titel",
         "vote_next_issue": "Stimme für das nächste Problem ab!",
         "start_new_game": "Neues Spiel starten!",
         "cast_votes": "Gib deine Stimmen ab",
@@ -15,6 +15,7 @@
         "lobby_header":"Planfree.dev Spielelobby",
         "create_room": "Raum erstellen",
         "scrum_made_easy": "Scrum-Poker einfach und",
-        "free": "kostenlos"
+        "free": "kostenlos",
+        "connection_issue": "Es sieht so aus, als gäbe es ein Problem bei der Verbindung zum Server 😕"
     }
 }

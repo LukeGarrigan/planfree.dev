@@ -111,15 +111,17 @@ import router from "@/router";
 import {io} from "socket.io-client";
 import {ref} from 'vue';
 import {useGameEngine} from "@/composables/useGameEngine";
+import { useTranslation } from "i18next-vue";
 const { socket, setSocket  } = useGameEngine();
 const clickedStart = ref(false);
 const hasStarted = ref(false);
+const { t } = useTranslation();
 
 function startGame() {
   clickedStart.value = true;
   setTimeout(() => {
     if (!hasStarted.value) {
-      alert("Looks like there's a problem connecting you to the server 😕");
+      alert(t("connection_issue"));
     }
   }, 5000);
   const newSocket = io(process.env.VUE_APP_SERVER);
@@ -131,7 +133,7 @@ function startGame() {
 }
 </script>
 
-<style scoped lang="scss">
+<style scoped lang="scss"> 
 .home {
   display: flex;
   justify-content: center;
@@ -165,7 +167,7 @@ function startGame() {
       color: #54e8dd;
       background: black;
       border-radius: 10px;
-      width: 7rem;
+      padding: 0 0.5rem;
       display: inline-block;
     }
   }

@@ -16,6 +16,8 @@
         "create_room": "Raum erstellen",
         "scrum_made_easy": "Scrum-Poker einfach und",
         "free": "kostenlos",
-        "connection_issue": "Es sieht so aus, als gäbe es ein Problem bei der Verbindung zum Server 😕"
+        "connection_issue": "Es sieht so aus, als gäbe es ein Problem bei der Verbindung zum Server 😕", 
+        "settings": "Einstellungen",
+        "units": "Einheiten"
     }
 }

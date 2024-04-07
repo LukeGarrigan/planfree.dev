@@ -5,7 +5,8 @@
                 <div class="settings-heading">{{ $t(title) }}</div>
                 <div class="settings-subheading">{{ $t(subTitle) }}</div>
                 <div class="settings-content">
-                    <button class="button" @click="() => share(`QR`)">
+
+                    <button v-if="!value" class="button" @click="() => share(`QR`)">
                         <svg xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" width="48px"
                             height="48px" viewBox="0 0 48 48" version="1.1">
                             <path style=" stroke:none;fill-rule:nonzero;fill:rgb(0%,0%,0%);fill-opacity:1;"
@@ -48,31 +49,43 @@
                         <span>QR Code</span>
                     </button>
 
-                    <button class="button" @click="() => share(`WhatsApp`)">
-                        <svg xmlns="http://www.w3.org/2000/svg" width="48px" height="48px" viewBox="0 0 48 48">
-                            <path style=" stroke:none;fill-rule:nonzero;fill:rgb(0%,0%,0%);fill-opacity:1;"
-                                d="M 13.90625 10.34375 C 13.835938 10.34375 13.765625 10.351562 13.695312 10.367188 C 13.625 10.382812 13.558594 10.40625 13.496094 10.4375 C 13.433594 10.464844 13.332031 10.542969 13.332031 10.542969 C 13.3125 10.554688 13.296875 10.570312 13.28125 10.582031 C 13.28125 10.582031 8.894531 14.640625 9.824219 19.597656 C 10.089844 21.019531 11.03125 22.5625 12.335938 24.234375 C 13.640625 25.910156 15.328125 27.6875 17.164062 29.382812 C 20.832031 32.773438 25.011719 35.828125 27.988281 36.964844 C 30.789062 38.039062 33.472656 36.765625 35.34375 35.34375 C 37.214844 33.921875 38.425781 32.261719 38.425781 32.261719 C 38.453125 32.230469 38.472656 32.191406 38.492188 32.15625 C 38.628906 31.890625 38.601562 31.683594 38.574219 31.542969 C 38.550781 31.402344 38.511719 31.300781 38.464844 31.199219 C 38.378906 31 38.265625 30.816406 38.128906 30.609375 C 37.851562 30.203125 37.472656 29.730469 37.03125 29.246094 C 36.152344 28.273438 35.09375 27.257812 34.078125 26.734375 C 33.664062 26.519531 33.242188 26.675781 33.019531 26.808594 C 32.796875 26.945312 32.640625 27.097656 32.476562 27.269531 C 32.148438 27.617188 31.820312 28.050781 31.464844 28.5 C 30.757812 29.402344 29.929688 30.171875 29.632812 30.277344 C 29.683594 30.257812 29.09375 30.386719 28.632812 30.222656 C 28.171875 30.054688 27.777344 29.804688 27.101562 29.398438 C 25.753906 28.589844 24.125 27.371094 22.59375 26.039062 C 21.0625 24.707031 19.625 23.25 18.644531 21.980469 C 18.152344 21.34375 17.777344 20.757812 17.558594 20.28125 C 17.34375 19.808594 17.320312 19.472656 17.34375 19.371094 C 17.667969 17.988281 18.269531 17.441406 18.800781 16.894531 C 19.066406 16.621094 19.398438 16.34375 19.507812 15.785156 C 19.621094 15.222656 19.324219 14.675781 18.917969 14.246094 C 16.9375 12.160156 15.785156 11.214844 15.039062 10.753906 C 14.664062 10.523438 14.390625 10.40625 14.113281 10.359375 C 14.042969 10.351562 13.976562 10.34375 13.90625 10.34375 Z M 13.90625 10.34375 " />
-                            <path style=" stroke:none;fill-rule:nonzero;fill:rgb(0%,0%,0%);fill-opacity:1;"
-                                d="M 24.523438 0.00390625 L 22.808594 0.00390625 L 22.894531 0.0898438 C 10.714844 0.929688 1.054688 11.085938 1.054688 23.476562 C 1.058594 27.226562 1.972656 30.910156 3.691406 34.234375 L 0.00390625 47.996094 L 13.765625 44.308594 C 17.089844 46.027344 20.773438 46.945312 24.523438 46.945312 C 37.464844 46.945312 47.996094 36.417969 47.996094 23.476562 C 47.996094 10.535156 37.464844 0.00390625 24.523438 0.00390625 Z M 24.523438 3.710938 L 24.550781 3.710938 C 35.480469 3.722656 44.292969 12.542969 44.292969 23.476562 C 44.292969 34.417969 35.464844 43.246094 24.527344 43.246094 C 22.945312 43.242188 20.449219 42.609375 18.410156 41.960938 C 16.371094 41.3125 14.765625 40.667969 14.765625 40.667969 L 14.765625 40.664062 L 14.332031 40.492188 L 5.214844 42.785156 L 7.503906 33.695312 L 7.339844 33.246094 L 7.335938 33.234375 C 7.335938 33.234375 6.6875 31.628906 6.039062 29.589844 C 5.390625 27.550781 4.757812 25.054688 4.757812 23.476562 C 4.757812 12.535156 13.585938 3.707031 24.523438 3.707031 Z M 24.523438 3.710938 " />
+                    <button v-if="!value" class="button" @click="() => share(`Share`)">
+                        <svg width="48px" height="48px" viewBox="0 0 24 24" fill="none"
+                            xmlns="http://www.w3.org/2000/svg">
+                            <path
+                                d="M9 12C9 13.3807 7.88071 14.5 6.5 14.5C5.11929 14.5 4 13.3807 4 12C4 10.6193 5.11929 9.5 6.5 9.5C7.88071 9.5 9 10.6193 9 12Z"
+                                stroke="#1C274C" stroke-width="1.5" />
+                            <path d="M14 6.5L9 10" stroke="#1C274C" stroke-width="1.5" stroke-linecap="round" />
+                            <path d="M14 17.5L9 14" stroke="#1C274C" stroke-width="1.5" stroke-linecap="round" />
+                            <path
+                                d="M19 18.5C19 19.8807 17.8807 21 16.5 21C15.1193 21 14 19.8807 14 18.5C14 17.1193 15.1193 16 16.5 16C17.8807 16 19 17.1193 19 18.5Z"
+                                stroke="#1C274C" stroke-width="1.5" />
+                            <path
+                                d="M19 5.5C19 6.88071 17.8807 8 16.5 8C15.1193 8 14 6.88071 14 5.5C14 4.11929 15.1193 3 16.5 3C17.8807 3 19 4.11929 19 5.5Z"
+                                stroke="#1C274C" stroke-width="1.5" />
                         </svg>
 
-                        <span>Whatsapp</span>
+                        <span>Share</span>
                     </button>
-                    <button class="button" @click="() => share(`Email`)">
-                        <svg xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" width="48px"
-                            height="48px" viewBox="0 0 48 48" version="1.1">
-                            <path style=" stroke:none;fill-rule:evenodd;fill:rgb(0%,0%,0%);fill-opacity:1;"
-                                d="M 0 42.355469 L 48 42.355469 L 48 5.648438 L 0 5.648438 Z M 2.824219 9.417969 L 2.824219 8.472656 L 45.175781 8.472656 L 45.175781 9.417969 L 24 27.78125 Z M 45.175781 13.15625 L 45.175781 36.917969 L 36.398438 25.945312 L 34.191406 27.707031 L 43.648438 39.53125 L 4.351562 39.53125 L 13.808594 27.707031 L 11.601562 25.945312 L 2.824219 36.917969 L 2.824219 13.15625 L 24 31.519531 Z M 45.175781 13.15625 " />
-                        </svg>
-                        <span>Email</span>
-                    </button>
-                    <button class="button" @click="() => share(`Copy`)">
+                    <button v-if="!value" class="button" @click="() => share(`Copy`)">
                         <svg xmlns="http://www.w3.org/2000/svg" height="48" viewBox="0 0 24 24" width="48">
                             <path d="M0 0h24v24H0V0z" fill="none" />
                             <path
                                 d="M16 1H4c-1.1 0-2 .9-2 2v14h2V3h12V1zm3 4H8c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h11c1.1 0 2-.9 2-2V7c0-1.1-.9-2-2-2zm0 16H8V7h11v14z" />
                         </svg>
                         <span>Copy</span>
+                    </button>
+                    <div v-if="value">
+                        <qrcode-vue :value="value" :level="level" :render-as="renderAs" />
+                    </div>
+                    <button class="button" @click="() => share(`close`)">
+                        <svg xmlns="http://www.w3.org/2000/svg" width="48" height="48" viewBox="0 0 24 24"
+                            fill="none">
+                            <path
+                                d="M20.7457 3.32851C20.3552 2.93798 19.722 2.93798 19.3315 3.32851L12.0371 10.6229L4.74275 3.32851C4.35223 2.93798 3.71906 2.93798 3.32854 3.32851C2.93801 3.71903 2.93801 4.3522 3.32854 4.74272L10.6229 12.0371L3.32856 19.3314C2.93803 19.722 2.93803 20.3551 3.32856 20.7457C3.71908 21.1362 4.35225 21.1362 4.74277 20.7457L12.0371 13.4513L19.3315 20.7457C19.722 21.1362 20.3552 21.1362 20.7457 20.7457C21.1362 20.3551 21.1362 19.722 20.7457 19.3315L13.4513 12.0371L20.7457 4.74272C21.1362 4.3522 21.1362 3.71903 20.7457 3.32851Z"
+                                fill="#0F0F0F" />
+                        </svg>
+                        <span>Close</span>
                     </button>
                 </div>
             </div>
@@ -81,15 +94,45 @@
 </template>
 
 <script setup lang="ts">
-import { defineEmits } from 'vue';
-const props = defineProps<{
-    title: string,
-    subTitle: string
-}>()
+import { ref, defineProps, defineEmits } from 'vue';
+import QrcodeVue, { Level, RenderAs } from 'qrcode.vue';
+
+const value = ref('')
+const level = ref<Level>("H")
+const renderAs = ref<RenderAs>('svg')
+
+const props = defineProps({
+    title: {
+        type: String,
+        default: ''
+    },
+    subTitle: {
+        type: String,
+        default: ''
+    }
+});
 
 const emit = defineEmits(['share'])
 
-function share(type: string) {
+async function share(type: string) {
+    if (type === 'Copy') {
+        navigator.clipboard.writeText(window.location.href)
+    }
+    else if (type === 'QR') {
+        value.value = window.location.href
+        return;
+    }
+    else if (type !== 'close') {
+        try {
+            await navigator.share({
+                text: "Check out this URL!",
+                url: window.location.href,
+            });
+            console.log("The URL was successfully shared");
+        } catch (err) {
+            console.error(`The URL could not be shared: ${err}`);
+        }
+    }
     emit('share', type)
 }
 </script>
@@ -133,7 +176,7 @@ function share(type: string) {
         display: flex;
         justify-content: center;
         flex-wrap: wrap;
-        flex-direction: row;
+        flex-direction: column;
         gap: 1em;
     }
 
@@ -149,7 +192,7 @@ function share(type: string) {
         user-select: none;
         display: flex;
         align-items: center;
-        // justify-content: start;
+        padding-left: 20px;
         width: 320px;
         height: 80px;
         background: #f3f0f1;
@@ -173,7 +216,11 @@ function share(type: string) {
             box-shadow: inset -4px -4px 8px rgba(255, 255, 255, 0.5),
                 inset 8px 8px 16px rgba(0, 0, 0, 0.1);
         }
-        padding-left: 20px;
+
+        svg{
+            width: 24px;
+            height: 24px;
+        }
         span {
             padding-left: 20px;
             font-family: "Montserrat", sans-serif;

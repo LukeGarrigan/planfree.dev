@@ -141,8 +141,7 @@ window.addEventListener('beforeinstallprompt', (e) => {
   showInstallPwa.value = true;
 });
 
-function shareGame(shareType:string) {
-  alert("Shareing game with " + shareType);
+async function shareGame(shareType:string) {
   showShareModal.value = false;
 }
 

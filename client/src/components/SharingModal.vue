@@ -115,7 +115,7 @@ function close() {
 
 async function copyLink() {
     value.value = undefined;
-    navigator.clipboard.writeText(window.location.href);
+    await navigator.clipboard.writeText(window.location.href);
     close();
 }
 
@@ -126,7 +126,7 @@ async function share() {
             url: window.location.href,
         });
     } catch (err) {
-        console.error(`The URL could not be shared: ${err}`);
+        console.error(`There was an issue sharing: ${err}`);
     }
     close();
 }

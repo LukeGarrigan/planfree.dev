@@ -237,36 +237,6 @@ function copyToClipboard() {
   setTimeout(() => (showCopiedToClipboard.value = false), 3000);
 }
 
-// const average = computed(() => {
-//   let count = 0;
-//   let total = 0;
-//   for (const player of players.value) {
-//     if (player.vote && player.vote !== "?") {
-//       total += parseInt(player.vote);
-//       count++;
-//     }
-//   }
-//   return total / count;
-// })
-
-// function getAverage() {
-//   return (average.value).toFixed(1).replace(/\.0+$/, "");
-// }
-
-// function getClosest() {
-//   const fib = [0, 1, 2, 3, 5, 8, 13, 21, 34, 55, 89]
-//   let closest = 0;
-//   let smallestDiff = Number.MAX_VALUE;
-//   for (const number of fib) {
-//     const difference = Math.abs(number - average.value);
-//     if (difference < smallestDiff) {
-//       smallestDiff = difference;
-//       closest = number;
-//     }
-//   }
-//   return closest;
-// }
-
 function goToGithub() {
   open("https://github.com/LukeGarrigan/planfree.dev");
 }

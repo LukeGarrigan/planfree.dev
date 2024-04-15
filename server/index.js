@@ -167,15 +167,14 @@ function showVotes(roomId) {
             // get the index of the item in the fib array
             const number = fib.indexOf(item);
             const difference = Math.abs(number - average);
-            if (difference < smallestDiff) {
+            if (difference <= smallestDiff) {
                 smallestDiff = difference;
                 closest = number;
             }
         }
-
         const ticket = roomTickets.find(f => f.votingOn);
         if (ticket) {
-            ticket.score = closest;
+            ticket.score =  gameType.find(p => p.roomId == roomId).gameType.values[closest];
         }
     }
 

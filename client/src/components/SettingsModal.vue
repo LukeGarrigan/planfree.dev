@@ -2,8 +2,8 @@
     <div class="modal-container">
         <div class="modal">
             <div class="settings-container">
-                <div class="settings-heading">{{$t('settings')}}</div>
-                <div class="settings-subheading">{{$t('units')}}</div>
+                <div class="settings-heading">{{'Settings'}}</div>
+                <div class="settings-subheading">{{'Units'}}</div>
                 <div class="settings-content">
                     <button v-for="vote in gameFormats" :key="`vote-${vote}`" class="button"
                         @click="() => saveSettings(vote)">
@@ -16,11 +16,12 @@
 </template>
 
 <script setup lang="ts">
+import GameFormat from '@/view-models/gameFormat';
 import { defineEmits } from 'vue';
 let gameFormats = JSON.parse(localStorage.getItem('gameTypes'));
 
 const emit = defineEmits(['saveSettings'])
-function saveSettings(vote) {
+function saveSettings(vote: GameFormat) {
     emit('saveSettings', vote);
 }
 </script>

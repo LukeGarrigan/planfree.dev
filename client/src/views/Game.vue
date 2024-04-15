@@ -7,7 +7,7 @@
         @completed="enteredName"
     ></Modal>
     <Sharing v-if="showShareModal" title='share_modal_title' subTitle='share_modal_subtitle' @share="shareGame"></Sharing>
-    <div v-if="!modal && !settings && !showShareModal"   class="home">
+    <div v-if="!modal && !showShareModal" class="home">
       <div class="top-buttons">
         <button class="edit-name-button" @click="modal = true">
           <div>{{ name }}</div>
@@ -20,7 +20,7 @@
           </div>
         </button>
         <button v-if="!showCopiedToClipboard" class="button invite" @click="copyToClipboard()">
-          <div>{{('invite_players') }}</div>
+          <div>{{ "Invite players"}}</div>
           <div>
             <svg xmlns="http://www.w3.org/2000/svg" width="24px" height="24px" viewBox="0 0 24 24" version="1.1">
               <path style=" stroke:none;fill-rule:nonzero;fill:rgb(0%,0%,0%);fill-opacity:1;"

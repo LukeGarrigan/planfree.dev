@@ -2,8 +2,8 @@
     <div class="modal-container">
         <div class="modal">
             <div class="settings-container">
-                <div class="settings-heading">{{ $t(title) }}</div>
-                <div class="settings-subheading">{{ $t(subTitle) }}</div>
+                <div class="settings-heading">{{ "Share this game" }}</div>
+                <div class="settings-subheading">{{ "Invite your team to join the game" }}</div>
                 <div class="settings-content">
 
                     <button v-if="!value" class="button" @click="() => share(`QR`)">
@@ -78,7 +78,7 @@
                     <div v-if="value">
                         <qrcode-vue :value="value" :level="level" :render-as="renderAs" />
                     </div>
-                    <button class="button" @click="() => share(`close`)">
+                    <button :class="{ 'button':true, 'close-only': value  }"  @click="() => share(`close`)">
                         <svg xmlns="http://www.w3.org/2000/svg" width="48" height="48" viewBox="0 0 24 24"
                             fill="none">
                             <path
@@ -187,7 +187,9 @@ async function share(type: string) {
         flex-direction: row;
         gap: 1em;
     }
-
+    .close-only{
+        justify-content: center;
+    }
     .button {
         user-select: none;
         display: flex;

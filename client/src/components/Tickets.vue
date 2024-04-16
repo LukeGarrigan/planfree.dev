@@ -110,7 +110,6 @@ span {
   padding: 5px;
   border-radius: 50%;
   color: black;
-  width: 18px;
   height: 18px;
   display: inline-block;
   text-align: center;

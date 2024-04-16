@@ -28,9 +28,9 @@ let tickets = [];
 let gameType = [];
 
 let gameTypes = [
-    { name: 'Fib', values: [1, 2, 3, 5, 8, 13, 21, 34, 55, 89, '?']},
-    { name: 'T-Shirt', values: ['XXS', 'XS', 'S', 'M', 'L', 'XL', '?']},
-    { name: 'Powers of 2', values: [0, 1, 2, 4, 8, 16,32,64, '?']},
+    { name: 'Fib', values: [1, 2, 3, 5, 8, 13, 21, 34, 55, 89, '?'] },
+    { name: 'T-Shirt', values: ['XXS', 'XS', 'S', 'M', 'L', 'XL', '?'] },
+    { name: 'Powers of 2', values: [0, 1, 2, 4, 8, 16, 32, 64, '?'] },
 ]
 
 io.on('connection', (socket) => {
@@ -95,7 +95,7 @@ io.on('connection', (socket) => {
         gameType.find(p => p.roomId == roomId).gameType = newGameType;
         updateClientsInRoom(roomId);
     });
-    
+
     socket.on('disconnect', () => {
         const player = players.find(player => player.id === socket.id);
         console.log(`Player ${player.name} has disconnected`);
@@ -159,42 +159,41 @@ function showVotes(roomId) {
     const roomTickets = tickets.filter(p => p.roomId == roomId);
     // find the text in the gametype where the index is the closest
     let closest = 0;
-    const average = getAverage(roomId);
+    const average = Math.round(getAverage(roomId),2);
     if (roomTickets) {
         const fib = gameType.find(p => p.roomId == roomId).gameType.values
-        closest = 0;
-        let smallestDiff = Number.MAX_VALUE;
-        for (const item of fib) {
-            // get the index of the item in the fib array
-            const number = fib.indexOf(item);
-            const difference = Math.abs(number - average);
-            if (difference <= smallestDiff) {
-                smallestDiff = difference;
-                closest = number;
-            }
+        closest = fib.find(p => p >= average);
+        if(!closest){
+            closest = fib[Math.ceil(average)];
         }
         const ticket = roomTickets.find(f => f.votingOn);
         if (ticket) {
-            ticket.score =  gameType.find(p => p.roomId == roomId).gameType.values[closest];
+            ticket.score = closest;
         }
     }
 
-    const nearest = gameType.find(p => p.roomId == roomId).gameType.values[closest];
     let avg = '';
-    if (average.toString().indexOf(".") > -1) { 
-        // get the full number rounding it down
-        let myAvg = Math.floor(average);
-        avg = gameType.find(p => p.roomId == roomId).gameType.values[myAvg]
-        // set myAvg to the full number rounding up
-        myAvg = Math.ceil(average);
-        avg += ' ' + gameType.find(p => p.roomId == roomId).gameType.values[myAvg];
+    var nearest = gameType.find(p => p.roomId == roomId).gameType.values.find(x => x >= average);
+    // if we dont get a nearest value then we assume the values are NON numeric ie: T-Shirt sizing
+    if (!nearest) {
+        // then we use the keys as the values
+        nearest = gameType.find(p => p.roomId == roomId).gameType.values[Math.ceil(average)];
+        if (average.toString().indexOf(".") > -1) {
+            let myAvg = Math.ceil(average);
+            avg = gameType.find(p => p.roomId == roomId).gameType.values[myAvg];
+        }
+        else {
+            avg = gameType.find(p => p.roomId == roomId).gameType.values.find((v, k) =>{
+                return k >= average
+            } );
+        }
     }
     else {
-        avg = gameType.find(p => p.roomId == roomId).gameType.values[average];
+        avg =  average;
     }
     io.to(roomId).emit('show', { average: avg, closest: nearest });
 }
- 
+
 function getAverage(roomId) {
     const roomPlayers = players.filter(p => p.roomId == roomId);
     const roomGameType = gameType.find(p => p.roomId == roomId).gameType
@@ -204,7 +203,12 @@ function getAverage(roomId) {
         if (player.vote && player.vote !== "?") {
             // get the current index of the vote
             const index = roomGameType.values.indexOf(player.vote);
-            total += parseInt(index);
+            let numberValue = Number(player.vote);
+            if (isNaN(numberValue)) {
+                numberValue = index;
+            }
+
+            total += parseInt(numberValue);
             count++;
         }
     }

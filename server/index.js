@@ -159,39 +159,41 @@ function showVotes(roomId) {
     const roomTickets = tickets.filter(p => p.roomId == roomId);
     // find the text in the gametype where the index is the closest
     let closest = 0;
-    const average = Math.round(getAverage(roomId),2);
-    if (roomTickets) {
-        const fib = gameType.find(p => p.roomId == roomId).gameType.values
-        closest = fib.find(p => p >= average);
-        if(!closest){
-            closest = fib[Math.ceil(average)];
+    const average = getAverage(roomId);
+    const fib = gameType.find(p => p.roomId == roomId).gameType.values
+    let upwards = Math.abs(fib.find(p => p >= average)- average);
+    let downWards = Math.abs(fib.findLast(p => p <= average) - average);
+    // the game type is not numeric use indexes instead
+    if(isNaN(upwards)){
+        upwards = fib.find((v, k) => k >= average);
+        downWards = fib.findLast((v, k) => k <= average);
+        if(upwards < downWards){
+            closest = fib.find((v,k) => k >= average);
         }
+        else{
+            closest = fib.findLast((v,k) => k <= average);
+        }  
+        avg = fib[Math.floor(average)];  
+    }
+    else
+    {
+        if(upwards < downWards){
+            closest = fib.find(p => p >= average);
+        }
+        else{
+            closest = fib.findLast(p => p <= average);
+        }
+        avg = average;
+    }
+    
+    if (roomTickets.length>0) {
         const ticket = roomTickets.find(f => f.votingOn);
-        if (ticket) {
+        if (ticket) { 
             ticket.score = closest;
         }
     }
 
-    let avg = '';
-    var nearest = gameType.find(p => p.roomId == roomId).gameType.values.find(x => x >= average);
-    // if we dont get a nearest value then we assume the values are NON numeric ie: T-Shirt sizing
-    if (!nearest) {
-        // then we use the keys as the values
-        nearest = gameType.find(p => p.roomId == roomId).gameType.values[Math.ceil(average)];
-        if (average.toString().indexOf(".") > -1) {
-            let myAvg = Math.ceil(average);
-            avg = gameType.find(p => p.roomId == roomId).gameType.values[myAvg];
-        }
-        else {
-            avg = gameType.find(p => p.roomId == roomId).gameType.values.find((v, k) =>{
-                return k >= average
-            } );
-        }
-    }
-    else {
-        avg =  average;
-    }
-    io.to(roomId).emit('show', { average: avg, closest: nearest });
+    io.to(roomId).emit('show', { average: avg, closest: closest });
 }
 
 function getAverage(roomId) {

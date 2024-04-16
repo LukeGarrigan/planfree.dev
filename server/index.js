@@ -39,8 +39,8 @@ io.on('connection', (socket) => {
     if (!roomId) {
         roomId = short.generate();
         socket.emit('room', roomId);
-        socket.emit('gameTypes', gameTypes)
     }
+    socket.emit('gameTypes', gameTypes)
     socket.join(roomId);
 
     players.push({ id: socket.id, name: '', roomId: roomId });

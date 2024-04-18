@@ -2,7 +2,7 @@
     <div class="modal-container">
         <div class="modal">
             <div class="settings-container">
-                <div class="settings-heading">{{ "Invite your team" }}</div>
+                <div class="settings-heading">{{ $t("invite_your_team") }}</div>
                 <div class="settings-content">
 
                     <button v-if="!showQRCode" class="button" @click="showQR()">
@@ -44,7 +44,7 @@
                             <path style=" stroke:none;fill-rule:nonzero;fill:rgb(0%,0%,0%);fill-opacity:1;"
                                 d="M 18.667969 37.332031 L 21.332031 37.332031 L 21.332031 34.667969 L 24 34.667969 L 24 32 L 21.332031 32 L 21.332031 26.667969 L 18.667969 26.667969 Z M 18.667969 37.332031 " />
                         </svg>
-                        <span>QR Code</span>
+                        <span>{{ $t("qr_code_text") }}</span>
                     </button>
 
                     <button v-if="!showQRCode" class="button" @click="() => share()">
@@ -63,7 +63,7 @@
                                 stroke="#1C274C" stroke-width="1.5" />
                         </svg>
 
-                        <span>Share</span>
+                        <span>{{$t("share_text")}} </span>
                     </button>
                     <button v-if="!showQRCode" :class="{ 'button': true}"
                         @click="copyLink()">
@@ -72,7 +72,7 @@
                             <path
                                 d="M16 1H4c-1.1 0-2 .9-2 2v14h2V3h12V1zm3 4H8c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h11c1.1 0 2-.9 2-2V7c0-1.1-.9-2-2-2zm0 16H8V7h11v14z" />
                         </svg>
-                        <span>Copy to Clipboard</span>
+                        <span>{{ $t("copy_to_clip") }}</span>
                     </button>
                     <div v-if="showQRCode">
                         <qrcode-vue :value="value" :level="level" :render-as="renderAs" />
@@ -83,7 +83,7 @@
                                 d="M20.7457 3.32851C20.3552 2.93798 19.722 2.93798 19.3315 3.32851L12.0371 10.6229L4.74275 3.32851C4.35223 2.93798 3.71906 2.93798 3.32854 3.32851C2.93801 3.71903 2.93801 4.3522 3.32854 4.74272L10.6229 12.0371L3.32856 19.3314C2.93803 19.722 2.93803 20.3551 3.32856 20.7457C3.71908 21.1362 4.35225 21.1362 4.74277 20.7457L12.0371 13.4513L19.3315 20.7457C19.722 21.1362 20.3552 21.1362 20.7457 20.7457C21.1362 20.3551 21.1362 19.722 20.7457 19.3315L13.4513 12.0371L20.7457 4.74272C21.1362 4.3522 21.1362 3.71903 20.7457 3.32851Z"
                                 fill="#0F0F0F" />
                         </svg>
-                        <span>Close</span>
+                        <span>{{ $t("close_text") }}</span>
                     </button>
                 </div>
             </div>

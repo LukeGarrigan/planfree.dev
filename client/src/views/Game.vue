@@ -20,7 +20,6 @@
           </div>
         </button>
         <button
-            v-if="!showCopiedToClipboard"
             class="button invite"
             @click="copyToClipboard()"
         >
@@ -41,13 +40,6 @@
                                 stroke="#1C274C" stroke-width="1.5" />
                         </svg>
           </div>
-        </button>
-        <button
-            v-if="!modal && showCopiedToClipboard"
-            class="button invite copied no-hover"
-        >
-          <div>{{$t("copy_to_clip")}}</div>
-          <div></div>
         </button>
         <button class="fib-button" @click="toggleTickets">
           <svg xmlns="http://www.w3.org/2000/svg" height="24" viewBox="0 -960 960 960" width="24">
@@ -144,7 +136,6 @@ import Sharing from "../components/SharingModal.vue";
 
 let showInstallPwa = ref(false);
 const modal = ref(true);
-const showCopiedToClipboard = ref(false);
 const name = ref("");
 const showTickets = ref(false);
 const {votingOnName, tickets} = useTickets();

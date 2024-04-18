@@ -5,7 +5,7 @@
                 <div class="settings-heading">{{ "Invite your team" }}</div>
                 <div class="settings-content">
 
-                    <button v-if="!showQRCode" class="button" @click="() => showQR()">
+                    <button v-if="!showQRCode" class="button" @click="showQR()">
                         <svg xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" width="48px"
                             height="48px" viewBox="0 0 48 48" version="1.1">
                             <path style=" stroke:none;fill-rule:nonzero;fill:rgb(0%,0%,0%);fill-opacity:1;"
@@ -25,8 +25,7 @@
                             <path style=" stroke:none;fill-rule:nonzero;fill:rgb(0%,0%,0%);fill-opacity:1;"
                                 d="M 26.667969 8 L 26.667969 10.667969 L 29.332031 10.667969 L 29.332031 5.332031 L 18.667969 5.332031 L 18.667969 10.667969 L 21.332031 10.667969 L 21.332031 8 Z M 26.667969 8 " />
                             <path style=" stroke:none;fill-rule:nonzero;fill:rgb(0%,0%,0%);fill-opacity:1;"
-                                d="M 5.332031 18.667969 L 8 18.667969 L 8 24 L 5.332031 24 Z M 5.332031 18.667969 " />
-                            <path style=" stroke:none;fill-rule:nonzero;fill:rgb(0%,0%,0%);fill-opacity:1;"
+                                d="M 5.332031 18.667969 L 8 18.667969 L 8 24 L 5.332031 24 Z M 5.332031 18.667969 " /> <path style=" stroke:none;fill-rule:nonzero;fill:rgb(0%,0%,0%);fill-opacity:1;"
                                 d="M 16 21.332031 L 16 24 L 13.332031 24 L 13.332031 18.667969 L 10.667969 18.667969 L 10.667969 24 L 8 24 L 8 26.667969 L 5.332031 26.667969 L 5.332031 29.332031 L 10.667969 29.332031 L 10.667969 26.667969 L 13.332031 26.667969 L 13.332031 29.332031 L 16 29.332031 L 16 26.667969 L 18.667969 26.667969 L 18.667969 21.332031 Z M 16 21.332031 " />
                             <path style=" stroke:none;fill-rule:nonzero;fill:rgb(0%,0%,0%);fill-opacity:1;"
                                 d="M 26.667969 21.332031 L 29.332031 21.332031 L 29.332031 24 L 32 24 L 32 21.332031 L 34.667969 21.332031 L 34.667969 18.667969 L 29.332031 18.667969 L 29.332031 13.332031 L 26.667969 13.332031 L 26.667969 16 L 24 16 L 24 18.667969 L 26.667969 18.667969 Z M 26.667969 21.332031 " />
@@ -67,7 +66,7 @@
                         <span>Share</span>
                     </button>
                     <button v-if="!showQRCode" :class="{ 'button': true}"
-                        @click="() => copyLink()">
+                        @click="copyLink()">
                         <svg xmlns="http://www.w3.org/2000/svg" height="48" viewBox="0 0 24 24" width="48">
                             <path d="M0 0h24v24H0V0z" fill="none" />
                             <path
@@ -78,7 +77,7 @@
                     <div v-if="showQRCode">
                         <qrcode-vue :value="value" :level="level" :render-as="renderAs" />
                     </div>
-                    <button :class="{ 'button': true }" @click="() => close()">
+                    <button :class="{ 'button': true }" @click="close()">
                         <svg xmlns="http://www.w3.org/2000/svg" width="48" height="48" viewBox="0 0 24 24" fill="none">
                             <path
                                 d="M20.7457 3.32851C20.3552 2.93798 19.722 2.93798 19.3315 3.32851L12.0371 10.6229L4.74275 3.32851C4.35223 2.93798 3.71906 2.93798 3.32854 3.32851C2.93801 3.71903 2.93801 4.3522 3.32854 4.74272L10.6229 12.0371L3.32856 19.3314C2.93803 19.722 2.93803 20.3551 3.32856 20.7457C3.71908 21.1362 4.35225 21.1362 4.74277 20.7457L12.0371 13.4513L19.3315 20.7457C19.722 21.1362 20.3552 21.1362 20.7457 20.7457C21.1362 20.3551 21.1362 19.722 20.7457 19.3315L13.4513 12.0371L20.7457 4.74272C21.1362 4.3522 21.1362 3.71903 20.7457 3.32851Z"
@@ -108,7 +107,7 @@ async function showQR() {
     showQRCode.value = true;
 }
 
-async function close() {
+function close() {
     showQRCode.value = false;
     emit('dismissModal')
 }
@@ -117,6 +116,7 @@ async function close() {
 async function copyLink() {
     value.value = undefined;
     navigator.clipboard.writeText(window.location.href);
+    close();
 }
 
 async function share() {
@@ -128,7 +128,7 @@ async function share() {
     } catch (err) {
         console.error(`The URL could not be shared: ${err}`);
     }
-    emit('dismissModal')
+    close();
 }
 </script>
 

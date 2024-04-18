@@ -12,6 +12,7 @@
     "@vue/compat": "^3.4.21",
     "core-js": "^3.25.0",
     "i18next-vue": "^4.0.0",
+    "qrcode.vue": "^3.4.1",
     "socket.io-client": "^4.5.1",
     "uuid": "^9.0.1",
     "vue": "^3.4.21",

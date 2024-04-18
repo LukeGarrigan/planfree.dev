@@ -1,31 +1,21 @@
 <template>
   <div>
     <h1 class="screen-reader-only">{{ $t('lobby_header') }}</h1>
-
     <Modal
         v-if="modal"
         title=  'display_name_title'
         @completed="enteredName"
     ></Modal>
-
-    <div v-if="!modal" class="home">
+    <Sharing v-if="showShareModal" title='share_modal_title' subTitle='share_modal_subtitle' @dismissModal="dismissModal"></Sharing>
+    <div v-if="!modal && !showShareModal" class="home">
       <div class="top-buttons">
-
-
         <button class="edit-name-button" @click="modal = true">
           <div>{{ name }}</div>
           <div>
-            <svg
-                xmlns="http://www.w3.org/2000/svg"
-                height="24px"
-                viewBox="0 0 24 24"
-                width="24px"
-                fill="#000000"
-            >
-              <path d="M0 0h24v24H0V0z" fill="none"/>
+            <svg xmlns="http://www.w3.org/2000/svg" height="24px" viewBox="0 0 24 24" width="24px" fill="#000000">
+              <path d="M0 0h24v24H0V0z" fill="none" />
               <path
-                  d="M14.06 9.02l.92.92L5.92 19H5v-.92l9.06-9.06M17.66 3c-.25 0-.51.1-.7.29l-1.83 1.83 3.75 3.75 1.83-1.83c.39-.39.39-1.02 0-1.41l-2.34-2.34c-.2-.2-.45-.29-.71-.29zm-3.6 3.19L3 17.25V21h3.75L17.81 9.94l-3.75-3.75z"
-              />
+                d="M14.06 9.02l.92.92L5.92 19H5v-.92l9.06-9.06M17.66 3c-.25 0-.51.1-.7.29l-1.83 1.83 3.75 3.75 1.83-1.83c.39-.39.39-1.02 0-1.41l-2.34-2.34c-.2-.2-.45-.29-.71-.29zm-3.6 3.19L3 17.25V21h3.75L17.81 9.94l-3.75-3.75z" />
             </svg>
           </div>
         </button>
@@ -36,17 +26,20 @@
         >
           <div>{{ $t('invite_players') }}</div>
           <div>
-            <svg
-                xmlns="http://www.w3.org/2000/svg"
-                height="24"
-                viewBox="0 0 24 24"
-                width="24"
-            >
-              <path d="M0 0h24v24H0V0z" fill="none"/>
-              <path
-                  d="M16 1H4c-1.1 0-2 .9-2 2v14h2V3h12V1zm3 4H8c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h11c1.1 0 2-.9 2-2V7c0-1.1-.9-2-2-2zm0 16H8V7h11v14z"
-              />
-            </svg>
+            <svg width="24px" height="24px" viewBox="0 0 24 24" fill="none"
+                            xmlns="http://www.w3.org/2000/svg">
+                            <path
+                                d="M9 12C9 13.3807 7.88071 14.5 6.5 14.5C5.11929 14.5 4 13.3807 4 12C4 10.6193 5.11929 9.5 6.5 9.5C7.88071 9.5 9 10.6193 9 12Z"
+                                stroke="#1C274C" stroke-width="1.5" />
+                            <path d="M14 6.5L9 10" stroke="#1C274C" stroke-width="1.5" stroke-linecap="round" />
+                            <path d="M14 17.5L9 14" stroke="#1C274C" stroke-width="1.5" stroke-linecap="round" />
+                            <path
+                                d="M19 18.5C19 19.8807 17.8807 21 16.5 21C15.1193 21 14 19.8807 14 18.5C14 17.1193 15.1193 16 16.5 16C17.8807 16 19 17.1193 19 18.5Z"
+                                stroke="#1C274C" stroke-width="1.5" />
+                            <path
+                                d="M19 5.5C19 6.88071 17.8807 8 16.5 8C15.1193 8 14 6.88071 14 5.5C14 4.11929 15.1193 3 16.5 3C17.8807 3 19 4.11929 19 5.5Z"
+                                stroke="#1C274C" stroke-width="1.5" />
+                        </svg>
           </div>
         </button>
         <button
@@ -59,7 +52,7 @@
         <button class="fib-button" @click="toggleTickets">
           <svg xmlns="http://www.w3.org/2000/svg" height="24" viewBox="0 -960 960 960" width="24">
             <path
-                d="M200-120q-33 0-56.5-23.5T120-200v-560q0-33 23.5-56.5T200-840h440l200 200v440q0 33-23.5 56.5T760-120H200Zm0-80h560v-400H600v-160H200v560Zm80-80h400v-80H280v80Zm0-320h200v-80H280v80Zm0 160h400v-80H280v80Zm-80-320v160-160 560-560Z"/>
+              d="M200-120q-33 0-56.5-23.5T120-200v-560q0-33 23.5-56.5T200-840h440l200 200v440q0 33-23.5 56.5T760-120H200Zm0-80h560v-400H600v-160H200v560Zm80-80h400v-80H280v80Zm0-320h200v-80H280v80Zm0 160h400v-80H280v80Zm-80-320v160-160 560-560Z" />
           </svg>
         </button>
       </div>
@@ -76,11 +69,7 @@
       <button v-if="!playerHasVoted() && !showVotes" class="button no-hover">
         <span>{{$t("cast_votes")}}</span>
       </button>
-      <button
-          v-if="playerHasVoted() && !showVotes"
-          class="button"
-          @click="showVotesClicked()"
-      >
+      <button v-if="playerHasVoted() && !showVotes" class="button" @click="showVotesClicked()">
         <span>Show votes!</span>
       </button>
       <button
@@ -144,13 +133,14 @@
 <script setup lang="ts">
 import Modal from "@/components/Modal.vue";
 import Player from "@/view-models/player";
-import {io} from "socket.io-client";
-import {computed, onMounted, ref} from "vue";
-import {useRoute} from "vue-router";
+import { io } from "socket.io-client";
+import { computed, onMounted, ref } from "vue";
+import { useRoute } from "vue-router";
 import Tickets from "@/components/Tickets.vue";
-import {useTickets} from "@/composables/useTickets";
-import {useGameEngine} from "@/composables/useGameEngine";
+import { useTickets } from "@/composables/useTickets";
+import { useGameEngine } from "@/composables/useGameEngine";
 import PFLittleButton from "@/components/PFLittleButton.vue";
+import Sharing from "../components/SharingModal.vue";
 
 let showInstallPwa = ref(false);
 const modal = ref(true);
@@ -159,6 +149,7 @@ const name = ref("");
 const showTickets = ref(false);
 const {votingOnName, tickets} = useTickets();
 const {socket, setSocket, players, showVotes, countdown, currentVote} = useGameEngine();
+const showShareModal = ref(false);
 
 let deferredPrompt: any;
 window.addEventListener('beforeinstallprompt', (e) => {
@@ -166,6 +157,10 @@ window.addEventListener('beforeinstallprompt', (e) => {
   deferredPrompt = e;
   showInstallPwa.value = true;
 });
+
+async function dismissModal() {
+  showShareModal.value = false;
+}
 
 function installPWA() {
   deferredPrompt.prompt();
@@ -221,19 +216,12 @@ function enteredName(updatedName: string) {
 
 function playerHasVoted() {
   return (
-      players.value.filter((p: Player) => p.vote !== null && p.vote !== undefined).length > 0
+    players.value.filter((p: Player) => p.vote !== null && p.vote !== undefined).length > 0
   );
 }
 
 function copyToClipboard() {
-  const tempInput = document.createElement("input");
-  tempInput.value = window.location.href;
-  document.body.appendChild(tempInput);
-  tempInput.select();
-  document.execCommand("copy");
-  document.body.removeChild(tempInput);
-  showCopiedToClipboard.value = true;
-  setTimeout(() => (showCopiedToClipboard.value = false), 3000);
+  showShareModal.value = true;
 }
 
 const average = computed(() => {
@@ -273,9 +261,9 @@ function goToGithub() {
 function joiningAGame() {
   const currentState = socket.value;
   return (
-      currentState &&
-      Object.keys(currentState).length === 0 &&
-      currentState.constructor === Object
+    currentState &&
+    Object.keys(currentState).length === 0 &&
+    currentState.constructor === Object
   );
 }
 
@@ -303,7 +291,7 @@ const toggleTickets = () => showTickets.value = !showTickets.value;
     height: 80px;
     background: #f3f0f1;
     box-shadow: -6px -6px 10px rgba(255, 255, 255, 0.8),
-    6px 6px 10px rgba(0, 0, 0, 0.2);
+      6px 6px 10px rgba(0, 0, 0, 0.2);
     color: #161b1f;
     display: flex;
     justify-content: center;
@@ -345,19 +333,19 @@ const toggleTickets = () => showTickets.value = !showTickets.value;
   cursor: pointer;
   transition: all 0.1s ease-in-out;
   box-shadow: -6px -6px 10px rgba(255, 255, 255, 0.8),
-  6px 6px 10px rgba(0, 0, 0, 0.2);
+    6px 6px 10px rgba(0, 0, 0, 0.2);
   color: #161b1f;
 
   &:hover {
     opacity: 0.3;
     box-shadow: -6px -6px 10px rgba(255, 255, 255, 0.8),
-    6px 6px 10px rgba(0, 0, 0, 0.2);
+      6px 6px 10px rgba(0, 0, 0, 0.2);
   }
 
   &:active {
     opacity: 1;
     box-shadow: inset -4px -4px 8px rgba(255, 255, 255, 0.5),
-    inset 8px 8px 16px rgba(0, 0, 0, 0.1);
+      inset 8px 8px 16px rgba(0, 0, 0, 0.1);
   }
 
 }
@@ -412,7 +400,6 @@ const toggleTickets = () => showTickets.value = !showTickets.value;
       position: relative;
       left: 2px;
       top: 3px;
-      fill: #161b1f;
     }
   }
 
@@ -505,7 +492,7 @@ span {
     height: 100px;
     transition: all 0.1s ease-in-out;
     box-shadow: -6px -6px 10px rgba(255, 255, 255, 0.8),
-    6px 6px 10px rgba(0, 0, 0, 0.2);
+      6px 6px 10px rgba(0, 0, 0, 0.2);
 
     user-select: none;
     font-family: "Montserrat", sans-serif;
@@ -546,20 +533,20 @@ span {
   height: 70px;
   transition: all 0.1s ease-in-out;
   box-shadow: -6px -6px 10px rgba(255, 255, 255, 0.8),
-  6px 6px 10px rgba(0, 0, 0, 0.2);
+    6px 6px 10px rgba(0, 0, 0, 0.2);
   color: #161b1f;
 
   &:not(.current) {
     &:hover {
       opacity: 0.3;
       box-shadow: -6px -6px 10px rgba(255, 255, 255, 0.8),
-      6px 6px 10px rgba(0, 0, 0, 0.2);
+        6px 6px 10px rgba(0, 0, 0, 0.2);
     }
 
     &:active {
       opacity: 1;
       box-shadow: inset -4px -4px 8px rgba(255, 255, 255, 0.5),
-      inset 8px 8px 16px rgba(0, 0, 0, 0.1);
+        inset 8px 8px 16px rgba(0, 0, 0, 0.1);
     }
   }
 

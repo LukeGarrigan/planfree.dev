@@ -393,7 +393,6 @@ const toggleTickets = () => showTickets.value = !showTickets.value;
       position: relative;
       left: 2px;
       top: 3px;
-      fill: #161b1f;
     }
   }
 

@@ -18,9 +18,6 @@
     "vue-loader": "^17.4.2",
     "vue-router": "^4.3.0"
   },
-  "engines": {
-    "node": "18.9.0"
-  },
   "devDependencies": {
     "@typescript-eslint/eslint-plugin": "^7.5.0",
     "@typescript-eslint/parser": "^7.5.0",

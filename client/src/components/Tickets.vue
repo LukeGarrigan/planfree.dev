@@ -5,7 +5,8 @@
       <ul>
         <li v-for="ticket in tickets">
           <div class="ticket" @click="voteOn(ticket)">
-            <h4 :class="{ voting : ticket.votingOn }">{{ ticket.name }} <span v-if="ticket.score">{{ ticket.score }}</span></h4>
+            <h4 :class="{ voting: ticket.votingOn }">{{ ticket.name }} <span v-if="ticket.score">{{ ticket.score
+                }}</span></h4>
             <PFLittleButton class="delete-button" type="delete" @clicked="deleteTicket(ticket.id)"></PFLittleButton>
           </div>
         </li>
@@ -17,15 +18,13 @@
 <script setup lang="ts">
 
 import PFInput from "@/components/PFInput.vue";
-import {computed, ref, watch} from "vue";
-import {v4 as uuidv4} from 'uuid';
-import {useTickets} from "@/composables/useTickets";
+import { ref } from "vue";
+import { v4 as uuidv4 } from 'uuid';
+import { useTickets } from "@/composables/useTickets";
 import Ticket from "@/view-models/tickets";
-import {useGameEngine} from "@/composables/useGameEngine";
 import PFLittleButton from "@/components/PFLittleButton.vue";
 
 const { tickets, votingOnId, ticketUpdated } = useTickets();
-const { countdown } = useGameEngine();
 
 let ticketName = ref('');
 
@@ -33,7 +32,11 @@ const addedTicket = () => {
   tickets.value.push({
     name: ticketName.value,
     voted: false,
-    id: uuidv4()
+    id: uuidv4(),
+    average: '0', 
+    closest: '0',
+    score: '0',
+    votingOn: false
   });
   ticketName.value = '';
   ticketUpdated();
@@ -84,9 +87,11 @@ function voteOn(ticket: Ticket) {
   overflow-wrap: break-word;
   gap: 10px;
   font-family: "Montserrat", sans-serif;
+
   .delete-button {
     visibility: hidden;
   }
+
   &:hover {
     .delete-button {
       visibility: visible;
@@ -105,10 +110,8 @@ span {
   padding: 5px;
   border-radius: 50%;
   color: black;
-  width: 18px;
   height: 18px;
   display: inline-block;
   text-align: center;
 }
-
 </style>

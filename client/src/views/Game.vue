@@ -6,8 +6,14 @@
         title="Choose your display name"
         @completed="enteredName"
     ></Modal>
+    <Settings
+      v-if="settings"
+      title="Settings"
+      @saveSettings="saveSettings"
+    ></Settings>
     <Sharing v-if="showShareModal" title='share_modal_title' subTitle='share_modal_subtitle' @dismissModal="dismissModal"></Sharing>
-    <div v-if="!modal && !showShareModal" class="home">
+    <div v-if="!modal && !settings && !showShareModal" class="home">
+
       <div class="top-buttons">
         <button class="edit-name-button" @click="modal = true">
           <div>{{ name }}</div>
@@ -53,6 +59,7 @@
       <div class="top-left">
         <PFLittleButton type="github" popover-text="View repo" @clicked="goToGithub()"></PFLittleButton>
         <PFLittleButton type="pwa" popover-text="Install as app" @clicked="installPWA()"></PFLittleButton>
+        <PFLittleButton type="settings" popover-text="Settings" @clicked="()=>{settings = true;}"></PFLittleButton>
 
         <div class="voting-on" v-if="votingOnName">
           <p class="voting-on-label">Voting on: <b>{{ votingOnName }}</b></p>
@@ -87,20 +94,7 @@
 
       <div class="options" v-if="!showVotes || (showVotes && countdown !== 0)">
         <button
-            v-for="vote in [
-            '0',
-            '1',
-            '2',
-            '3',
-            '5',
-            '8',
-            '13',
-            '21',
-            '34',
-            '55',
-            '89',
-            '?',
-          ]"
+            v-for="vote in gameFormat?.values"
             :key="`vote-${vote}`"
             class="fib-button"
             :class="{ current: currentVote === vote }"
@@ -112,8 +106,8 @@
       </div>
       <div class="results-container" v-if="showVotes && countdown === 0">
         <div class="results">
-          <div class="average">Average: {{ getAverage() }}</div>
-          <div class="popular">Closest: {{ getClosest() }}</div>
+          <div class="average">Average: {{ averageValue }}</div>
+          <div class="popular">Closest: {{ closestValue }}</div>
         </div>
       </div>
       <div class="tickets" v-show="showTickets">
@@ -133,23 +127,33 @@ import Tickets from "@/components/Tickets.vue";
 import { useTickets } from "@/composables/useTickets";
 import { useGameEngine } from "@/composables/useGameEngine";
 import PFLittleButton from "@/components/PFLittleButton.vue";
+import Settings from "../components/SettingsModal.vue";
 import Sharing from "../components/SharingModal.vue";
+import GameFormat from "@/view-models/gameFormat";
 
 let showInstallPwa = ref(false);
 const modal = ref(true);
+const settings = ref(false)
 const showCopiedToClipboard = ref(false);
 const name = ref("");
 const showTickets = ref(false);
 const {votingOnName, tickets} = useTickets();
-const {socket, setSocket, players, showVotes, countdown, currentVote} = useGameEngine();
+const {socket, setSocket, players, showVotes, countdown, currentVote, gameFormat, closestValue, averageValue} = useGameEngine();
 const showShareModal = ref(false);
 
 let deferredPrompt: any;
+
 window.addEventListener('beforeinstallprompt', (e) => {
   e.preventDefault();
   deferredPrompt = e;
   showInstallPwa.value = true;
 });
+
+function saveSettings(gameType: GameFormat) {
+  settings.value = false;
+  // emit to the server
+  socket.value.emit("gameTypeChanged", gameType);
+}
 
 async function dismissModal() {
   showShareModal.value = false;
@@ -215,36 +219,6 @@ function playerHasVoted() {
 
 function copyToClipboard() {
   showShareModal.value = true;
-}
-
-const average = computed(() => {
-  let count = 0;
-  let total = 0;
-  for (const player of players.value) {
-    if (player.vote && player.vote !== "?") {
-      total += parseInt(player.vote);
-      count++;
-    }
-  }
-  return total / count;
-})
-
-function getAverage() {
-  return (average.value).toFixed(1).replace(/\.0+$/, "");
-}
-
-function getClosest() {
-  const fib = [0, 1, 2, 3, 5, 8, 13, 21, 34, 55, 89]
-  let closest = 0;
-  let smallestDiff = Number.MAX_VALUE;
-  for (const number of fib) {
-    const difference = Math.abs(number - average.value);
-    if (difference < smallestDiff) {
-      smallestDiff = difference;
-      closest = number;
-    }
-  }
-  return closest;
 }
 
 function goToGithub() {
@@ -315,7 +289,6 @@ const toggleTickets = () => showTickets.value = !showTickets.value;
   align-items: center;
   justify-content: center;
   position: absolute;
-  z-index: 9999;
   top: 45%;
   width: 320px;
   height: 80px;

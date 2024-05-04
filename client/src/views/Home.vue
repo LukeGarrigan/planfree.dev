@@ -23,27 +23,27 @@
           >
             <rect x="0" y="10" width="4" height="10" fill="#333" opacity="0.2">
               <animate attributeName="opacity" attributeType="XML" values="0.2; 1; .2" begin="0s" dur="0.6s"
-                repeatCount="indefinite" />
+                       repeatCount="indefinite"/>
               <animate attributeName="height" attributeType="XML" values="10; 20; 10" begin="0s" dur="0.6s"
-                repeatCount="indefinite" />
+                       repeatCount="indefinite"/>
               <animate attributeName="y" attributeType="XML" values="10; 5; 10" begin="0s" dur="0.6s"
-                repeatCount="indefinite" />
+                       repeatCount="indefinite"/>
             </rect>
             <rect x="8" y="10" width="4" height="10" fill="#333" opacity="0.2">
               <animate attributeName="opacity" attributeType="XML" values="0.2; 1; .2" begin="0.15s" dur="0.6s"
-                repeatCount="indefinite" />
+                       repeatCount="indefinite"/>
               <animate attributeName="height" attributeType="XML" values="10; 20; 10" begin="0.15s" dur="0.6s"
-                repeatCount="indefinite" />
+                       repeatCount="indefinite"/>
               <animate attributeName="y" attributeType="XML" values="10; 5; 10" begin="0.15s" dur="0.6s"
-                repeatCount="indefinite" />
+                       repeatCount="indefinite"/>
             </rect>
             <rect x="16" y="10" width="4" height="10" fill="#333" opacity="0.2">
               <animate attributeName="opacity" attributeType="XML" values="0.2; 1; .2" begin="0.3s" dur="0.6s"
-                repeatCount="indefinite" />
+                       repeatCount="indefinite"/>
               <animate attributeName="height" attributeType="XML" values="10; 20; 10" begin="0.3s" dur="0.6s"
-                repeatCount="indefinite" />
+                       repeatCount="indefinite"/>
               <animate attributeName="y" attributeType="XML" values="10; 5; 10" begin="0.3s" dur="0.6s"
-                repeatCount="indefinite" />
+                       repeatCount="indefinite"/>
             </rect>
           </svg>
         </button>
@@ -59,7 +59,7 @@ import {ref} from 'vue';
 import {useGameEngine} from "@/composables/useGameEngine";
 import GameFormat from "@/view-models/gameFormat";
 
-const { socket, setSocket  } = useGameEngine();
+const {socket, setSocket} = useGameEngine();
 const clickedStart = ref(false);
 const hasStarted = ref(false);
 
@@ -74,7 +74,7 @@ function startGame() {
   setSocket(newSocket);
   socket.value.on("room", (roomId: string) => {
     hasStarted.value = true;
-    router.push({ path: `/game/${roomId}` });
+    router.push({path: `/game/${roomId}`});
   });
   socket.value.on("gameTypes", (gameTypes: GameFormat[]) => {
     localStorage.setItem("gameTypes", JSON.stringify(gameTypes));
@@ -98,28 +98,6 @@ function startGame() {
   align-items: center;
   justify-content: center;
   width: 800px;
-}
-
-.free-poker-header {
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  position: relative;
-  height: 80%;
-  width: 100%;
-
-  h1 {
-    user-select: none;
-    font-size: 3.2em;
-
-    span {
-      color: #54e8dd;
-      background: black;
-      border-radius: 10px;
-      width: 7rem;
-      display: inline-block;
-    }
-  }
 }
 
 .start-game {
@@ -146,19 +124,19 @@ function startGame() {
   cursor: pointer;
   transition: all 0.1s ease-in-out;
   box-shadow: -6px -6px 10px rgba(255, 255, 255, 0.8),
-    6px 6px 10px rgba(0, 0, 0, 0.2);
+  6px 6px 10px rgba(0, 0, 0, 0.2);
   color: #161b1f;
 
   &:hover {
     opacity: 0.3;
     box-shadow: -6px -6px 10px rgba(255, 255, 255, 0.8),
-      6px 6px 10px rgba(0, 0, 0, 0.2);
+    6px 6px 10px rgba(0, 0, 0, 0.2);
   }
 
   &:active {
     opacity: 1;
     box-shadow: inset -4px -4px 8px rgba(255, 255, 255, 0.5),
-      inset 8px 8px 16px rgba(0, 0, 0, 0.1);
+    inset 8px 8px 16px rgba(0, 0, 0, 0.1);
   }
 
   span {
@@ -171,17 +149,39 @@ function startGame() {
 .disabled {
   opacity: 1;
   box-shadow: inset -4px -4px 8px rgba(255, 255, 255, 0.5),
-    inset 8px 8px 16px rgba(0, 0, 0, 0.1);
+  inset 8px 8px 16px rgba(0, 0, 0, 0.1);
 
   &:hover {
     opacity: 1;
     box-shadow: inset -4px -4px 8px rgba(255, 255, 255, 0.5),
-      inset 8px 8px 16px rgba(0, 0, 0, 0.1);
+    inset 8px 8px 16px rgba(0, 0, 0, 0.1);
   }
 }
 
 svg rect {
   fill: #54e8dd;
+}
+
+.free-poker-header {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  position: relative;
+  height: 80%;
+  width: 100%;
+
+  h1 {
+    user-select: none;
+    font-size: 3.2em;
+
+    span {
+      color: #54e8dd;
+      background: black;
+      border-radius: 10px;
+      width: 7rem;
+      display: inline-block;
+    }
+  }
 }
 
 

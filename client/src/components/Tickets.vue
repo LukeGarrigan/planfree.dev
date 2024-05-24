@@ -25,7 +25,7 @@ import {useTickets} from "@/composables/useTickets";
 import Ticket from "@/view-models/tickets";
 import PFLittleButton from "@/components/PFLittleButton.vue";
 
-const {tickets, votingOnId, ticketUpdated} = useTickets();
+const {tickets, ticketUpdated} = useTickets();
 
 let ticketName = ref('');
 

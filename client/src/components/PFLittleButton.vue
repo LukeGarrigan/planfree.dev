@@ -25,8 +25,6 @@
 
 <script setup lang="ts">
 
-import {ref} from "vue";
-
 const props = defineProps({
   type: {
     type: String,
@@ -37,8 +35,6 @@ const props = defineProps({
     default: ''
   },
 })
-
-let model = ref(props.Value);
 
 const emit = defineEmits(['clicked']);
 

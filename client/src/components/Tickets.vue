@@ -1,6 +1,6 @@
 <template>
   <div class="tickets-wrapper">
-    <PFInput v-model="ticketName" @completed="addedTicket" placeholder="Add issue title"></PFInput>
+    <PFInput v-model="ticketName" @completed="addedTicket" placeholder="issue_title"></PFInput>
     <div class="tickets-container">
       <ul>
         <li v-for="ticket in tickets">

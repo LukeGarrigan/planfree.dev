@@ -19,10 +19,7 @@
             </svg>
           </div>
         </button>
-        <button
-            class="button invite"
-            @click="copyToClipboard()"
-        >
+         <button v-if="!showCopiedToClipboard" class="button invite" @click="copyToClipboard()">
           <div>{{ $t('invite_players') }}</div>
           <div>
             <svg width="24px" height="24px" viewBox="0 0 24 24" fill="none"
@@ -40,6 +37,10 @@
                                 stroke="#1C274C" stroke-width="1.5" />
                         </svg>
           </div>
+        </button>
+        <button v-if="!modal && showCopiedToClipboard" class="button invite copied no-hover">
+          <div>{{ ("copy_to_clip") }}</div>
+          <div></div>
         </button>
         <button class="fib-button" @click="toggleTickets">
           <svg xmlns="http://www.w3.org/2000/svg" height="24" viewBox="0 -960 960 960" width="24">

@@ -62,7 +62,6 @@
                                 d="M19 5.5C19 6.88071 17.8807 8 16.5 8C15.1193 8 14 6.88071 14 5.5C14 4.11929 15.1193 3 16.5 3C17.8807 3 19 4.11929 19 5.5Z"
                                 stroke="#1C274C" stroke-width="1.5" />
                         </svg>
-
                         <span>{{$t("share_text")}} </span>
                     </button>
                     <button v-if="!showQRCode" :class="{ 'button': true}"

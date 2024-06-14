@@ -2,7 +2,7 @@
   <div class="modal-container">
     <div class="modal">
       <div class="settings-container">
-        <div class="settings-heading">{{ "Invite your team" }}</div>
+        <div class="settings-heading">{{ "Invite the team" }}</div>
         <div class="settings-content">
 
           <button v-if="!showQRCode" class="button" @click="showQR()">

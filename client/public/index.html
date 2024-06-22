@@ -1,8 +1,6 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-
-    <!-- Global site tag (gtag.js) - Google Analytics -->
     <script async src="https://www.googletagmanager.com/gtag/js?id=G-WZ4VDSTB2K"></script>
     <script>
         window.dataLayer = window.dataLayer || [];
@@ -48,6 +46,7 @@
 </noscript>
 <script>
     if ('serviceWorker' in navigator) {
+        console.log('Registering service worker');
         navigator.serviceWorker.register('./service-worker.js');
     }
 </script>

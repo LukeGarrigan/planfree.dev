@@ -4,7 +4,6 @@
       <div class="settings-container">
         <div class="settings-heading">{{ "Invite the team" }}</div>
         <div class="settings-content">
-
           <button v-if="!showQRCode" class="button" @click="showQR()">
             <svg xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" width="48px"
                  height="48px" viewBox="0 0 48 48" version="1.1">
@@ -75,9 +74,11 @@
             </svg>
             <span>Copy to Clipboard</span>
           </button>
+
           <div v-if="showQRCode">
             <qrcode-vue :value="value" :level="level" :render-as="renderAs"/>
           </div>
+
           <button :class="{ 'button': true }" @click="close()">
             <svg xmlns="http://www.w3.org/2000/svg" width="48" height="48" viewBox="0 0 24 24" fill="none">
               <path
@@ -133,9 +134,7 @@ async function share() {
 }
 </script>
 
-<!-- Add "scoped" attribute to limit CSS to this component only -->
 <style scoped lang="scss">
-
 
 .modal-container {
   width: 100%;

@@ -18,12 +18,12 @@
 
 <script setup lang="ts">
 
-import PFInput from "@/components/PFInput.vue";
+import PFInput from "@/components/Input.vue";
 import {ref} from "vue";
 import {v4 as uuidv4} from 'uuid';
 import {useTickets} from "@/composables/useTickets";
 import Ticket from "@/view-models/tickets";
-import PFLittleButton from "@/components/PFLittleButton.vue";
+import PFLittleButton from "@/components/LittleButton.vue";
 
 const {tickets, ticketUpdated} = useTickets();
 

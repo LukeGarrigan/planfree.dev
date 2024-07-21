@@ -127,7 +127,7 @@ import {useRoute} from "vue-router";
 import Tickets from "@/components/Tickets.vue";
 import {useTickets} from "@/composables/useTickets";
 import {useGameEngine} from "@/composables/useGameEngine";
-import PFLittleButton from "@/components/PFLittleButton.vue";
+import PFLittleButton from "@/components/LittleButton.vue";
 import Settings from "../components/SettingsModal.vue";
 import Sharing from "../components/SharingModal.vue";
 import GameFormat from "@/view-models/gameFormat";

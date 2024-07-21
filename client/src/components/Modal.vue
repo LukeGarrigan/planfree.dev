@@ -11,7 +11,7 @@
 
 <script setup lang="ts">
 import {onMounted, ref} from 'vue';
-import PFInput from "@/components/PFInput.vue";
+import PFInput from "@/components/Input.vue";
 
 defineProps<{
   title: string

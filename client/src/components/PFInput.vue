@@ -9,7 +9,7 @@
         class="input"
         :maxlength="props.maxLength"
         minlength="1"
-        :placeholder="placeholder"
+        :placeholder="$t(placeholder)"
         @keypress.enter="completed"
     />
 

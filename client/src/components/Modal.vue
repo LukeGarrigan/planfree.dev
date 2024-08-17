@@ -1,7 +1,7 @@
 <template>
   <div class="modal-container">
     <div class="modal">
-      <span><label for="selectNameInput">{{ title }}</label></span>
+      <span><label for="selectNameInput">{{ $t(title) }}</label></span>
       <div class="input-container">
         <PFInput v-model="name" @completed="completed" :max-length="25"></PFInput>
       </div>

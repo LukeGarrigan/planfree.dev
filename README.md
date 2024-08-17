@@ -25,5 +25,5 @@ Try it out with your team, it's currently live at [planfree.dev](https://www.pla
 
 ## Setup Local Dev  
 
-- [Server](./server/README)
-- [Client](./client/ReadMe.md)
+- [Server](./server/README.md)
+- [Client](./client/README.md)

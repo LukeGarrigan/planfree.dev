@@ -70,6 +70,10 @@ function startGame() {
       alert("Looks like there's a problem connecting you to the server 😕");
     }
   }, 5000);
+  registerSocket();
+}
+
+function registerSocket() {
   const newSocket = io(process.env.VUE_APP_SERVER);
   setSocket(newSocket);
   socket.value.on("room", (roomId: string) => {

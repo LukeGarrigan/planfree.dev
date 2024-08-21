@@ -69,7 +69,7 @@ function startGame() {
     if (!hasStarted.value) {
       alert("Looks like there's a problem connecting you to the server 😕");
     }
-  }, 5000);
+  }, 6000);
   registerSocket();
 }
 

@@ -162,7 +162,6 @@ window.addEventListener('beforeinstallprompt', (e) => {
 
 function saveSettings(gameType: GameFormat) {
   settings.value = false;
-  // emit to the server
   socket.value.emit("gameTypeChanged", gameType);
 }
 

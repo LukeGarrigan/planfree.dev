@@ -9,6 +9,11 @@
                         @click="() => saveSettings(vote)">
                         <span>{{ vote.name }}</span>
                     </button>
+
+                  <button class="button"
+                          @click="close()">
+                    <span>Close</span>
+                  </button>
                 </div>
             </div>
         </div>
@@ -20,9 +25,13 @@ import GameFormat from '@/view-models/gameFormat';
 import { defineEmits } from 'vue';
 let gameFormats = JSON.parse(localStorage.getItem('gameTypes'));
 
-const emit = defineEmits(['saveSettings'])
+const emit = defineEmits(['saveSettings', 'close'])
 function saveSettings(vote: GameFormat) {
     emit('saveSettings', vote);
+}
+
+function close() {
+  emit('close');
 }
 </script>
 

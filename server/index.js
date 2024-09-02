@@ -19,15 +19,19 @@ app.get('/', (req, res) => {
     res.send('<h1>Hello world</h1>');
 });
 
-console.log(process.env.ORIGIN);
 http.listen(process.env.PORT || 3000, () => {
-    console.log('listening on *:3000');
+    console.log(`listening on *:${process.env.PORT || 3000}`);
 });
-
 
 let players = [];
 let tickets = [];
+let gameType = [];
 
+let gameTypes = [
+    { name: 'Fib', values: [1, 2, 3, 5, 8, 13, 21, 34, 55, 89, '?'] },
+    { name: 'T-Shirt', values: ['XXS', 'XS', 'S', 'M', 'L', 'XL', '?'] },
+    { name: 'Powers of 2', values: [0, 1, 2, 4, 8, 16, 32, 64, '?'] },
+]
 
 io.on('connection', (socket) => {
     console.log('A user connected', socket.id);
@@ -36,9 +40,12 @@ io.on('connection', (socket) => {
         roomId = short.generate();
         socket.emit('room', roomId);
     }
+    socket.emit('gameTypes', gameTypes)
     socket.join(roomId);
 
-    players.push({id: socket.id, name: '', roomId: roomId});
+    players.push({ id: socket.id, name: '', roomId: roomId });
+    gameType.push({ id: socket.id, gameType: gameTypes[0], roomId: roomId });
+
     socket.on('name', (name) => {
         let player = players.find(p => p.id == socket.id);
         console.log(`User entered name ${name}`);
@@ -84,13 +91,17 @@ io.on('connection', (socket) => {
         updateClientsInRoom(roomId);
     });
 
+    socket.on('gameTypeChanged', (newGameType) => {
+        gameType.find(p => p.roomId == roomId).gameType = newGameType;
+        updateClientsInRoom(roomId);
+    });
+
     socket.on('disconnect', () => {
         const player = players.find(player => player.id === socket.id);
         console.log(`Player ${player.name} has disconnected`);
         players = players.filter(player => player.id !== socket.id);
         updateClientsInRoom(roomId);
     });
-
 
     // keeping the connection alive
     socket.on('pong', () => {
@@ -102,15 +113,19 @@ io.on('connection', (socket) => {
 function updateClientsInRoom(roomId) {
     const roomPlayers = players.filter(p => p.roomId == roomId);
     const roomTickets = tickets.filter(p => p.roomId == roomId);
+    const roomGameType = gameType.find(p => p.roomId == roomId).gameType ?? gameTypes[0];
     io.to(roomId).emit('update', {
         players: roomPlayers,
-        tickets: roomTickets
+        tickets: roomTickets,
+        gameType: roomGameType
     });
 }
 
 function restartGame(roomId) {
     const roomPlayers = players.filter(p => p.roomId == roomId);
     const roomTickets = tickets.filter(p => p.roomId == roomId);
+    const roomGameType = gameType.find(p => p.roomId == roomId).gameType ?? gameTypes[0];
+
     roomPlayers.forEach(p => p.vote = undefined);
 
     const ticketVotingOn = roomTickets.find(f => f.votingOn);
@@ -125,7 +140,8 @@ function restartGame(roomId) {
     io.to(roomId).emit('restart');
     io.to(roomId).emit('update', {
         players: roomPlayers,
-        tickets: roomTickets
+        tickets: roomTickets,
+        gameType: roomGameType
     });
 }
 
@@ -141,36 +157,60 @@ function logRooms() {
 
 function showVotes(roomId) {
     const roomTickets = tickets.filter(p => p.roomId == roomId);
-
-    if (roomTickets) {
-        const average = getAverage(roomId);
-        const fib = [0, 1, 2, 3, 5, 8, 13, 21, 34, 55, 89]
-        let closest = 0;
-        let smallestDiff = Number.MAX_VALUE;
-        for (const number of fib) {
-            const difference = Math.abs(number - average);
-            if (difference < smallestDiff) {
-                smallestDiff = difference;
-                closest = number;
-            }
+    // find the text in the gametype where the index is the closest
+    let closest = 0;
+    const average = getAverage(roomId);
+    const fib = gameType.find(p => p.roomId == roomId).gameType.values
+    let upwards = Math.abs(fib.find(p => p >= average)- average);
+    let downWards = Math.abs(fib.findLast(p => p <= average) - average);
+    // the game type is not numeric use indexes instead
+    if(isNaN(upwards)){
+        upwards = fib.find((v, k) => k >= average);
+        downWards = fib.findLast((v, k) => k <= average);
+        if(upwards < downWards){
+            closest = fib.find((v,k) => k >= average);
         }
-
+        else{
+            closest = fib.findLast((v,k) => k <= average);
+        }  
+        avg = fib[Math.floor(average)];  
+    }
+    else
+    {
+        if(upwards < downWards){
+            closest = fib.find(p => p >= average);
+        }
+        else{
+            closest = fib.findLast(p => p <= average);
+        }
+        avg = average;
+    }
+    
+    if (roomTickets.length>0) {
         const ticket = roomTickets.find(f => f.votingOn);
-        if (ticket) {
+        if (ticket) { 
             ticket.score = closest;
         }
     }
 
-    io.to(roomId).emit('show');
+    io.to(roomId).emit('show', { average: avg, closest: closest });
 }
 
 function getAverage(roomId) {
     const roomPlayers = players.filter(p => p.roomId == roomId);
+    const roomGameType = gameType.find(p => p.roomId == roomId).gameType
     let count = 0;
     let total = 0;
-    for (const player of players) {
+    for (const player of roomPlayers) {
         if (player.vote && player.vote !== "?") {
-            total += parseInt(player.vote);
+            // get the current index of the vote
+            const index = roomGameType.values.indexOf(player.vote);
+            let numberValue = Number(player.vote);
+            if (isNaN(numberValue)) {
+                numberValue = index;
+            }
+
+            total += parseInt(numberValue);
             count++;
         }
     }

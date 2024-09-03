@@ -14,6 +14,7 @@ html, body {
   background: #f3f0f1;
 
 }
+
 #planfree {
   font-family: Avenir, Helvetica, Arial, sans-serif;
   -webkit-font-smoothing: antialiased;
@@ -29,6 +30,7 @@ html, body {
 
 #nav {
   padding: 30px;
+
   a {
     font-weight: bold;
     color: #2c3e50;
@@ -39,7 +41,7 @@ html, body {
   }
 }
 
-p, h1, h2, h3, h4{
+p, h1, h2, h3, h4 {
   margin: 0;
 }
 </style>

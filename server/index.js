@@ -9,11 +9,10 @@ const io = require("socket.io")(http, {
     }
 });
 
-// keeping the connection alive
 setInterval(() => {
     io.emit('ping');
     logRooms();
-}, 8000);
+}, 20000);
 
 app.get('/', (req, res) => {
     res.send('<h1>Hello world</h1>');
@@ -78,6 +77,11 @@ io.on('connection', (socket) => {
         restartGame(roomId);
     });
 
+    socket.on('gameTypeChanged', (newGameType) => {
+        gameType.find(p => p.roomId == roomId).gameType = newGameType;
+        updateClientsInRoom(roomId);
+    });
+
     socket.on('ticket', (updatedTickets) => {
         tickets = tickets.filter(ticket => ticket.roomId !== roomId);
         for (const ticket of updatedTickets) {
@@ -91,11 +95,6 @@ io.on('connection', (socket) => {
         updateClientsInRoom(roomId);
     });
 
-    socket.on('gameTypeChanged', (newGameType) => {
-        gameType.find(p => p.roomId == roomId).gameType = newGameType;
-        updateClientsInRoom(roomId);
-    });
-
     socket.on('disconnect', () => {
         const player = players.find(player => player.id === socket.id);
         console.log(`Player ${player.name} has disconnected`);
@@ -103,11 +102,10 @@ io.on('connection', (socket) => {
         updateClientsInRoom(roomId);
     });
 
-    // keeping the connection alive
     socket.on('pong', () => {
         let player = players.find(p => p.id == socket.id);
+        // keeping the connection alive
     })
-
 });
 
 function updateClientsInRoom(roomId) {
@@ -126,10 +124,10 @@ function restartGame(roomId) {
     const roomTickets = tickets.filter(p => p.roomId == roomId);
     const roomGameType = gameType.find(p => p.roomId == roomId).gameType ?? gameTypes[0];
 
-    roomPlayers.forEach(p => p.vote = undefined);
+    roomPlayers.forEach(p => p.vote = undefined); // reset all the player's votes
 
     const ticketVotingOn = roomTickets.find(f => f.votingOn);
-    if (!(ticketVotingOn && !ticketVotingOn.score)) { // they haven't chosen a new ticket in wrapup
+    if (!(ticketVotingOn && !ticketVotingOn.score)) {
         roomTickets.forEach(p => p.votingOn = false);
         const ticketToVoteOn = roomTickets.find(t => !t.score);
         if (ticketToVoteOn) {

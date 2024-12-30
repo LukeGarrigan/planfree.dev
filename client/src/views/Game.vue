@@ -107,14 +107,8 @@
       </div>
       <div class="results-container" v-if="showVotes && countdown === 0">
         <div class="results">
-          <div class="average">{{$t("average_text")}} {{ getAverage() }}</div>
-          <div class="popular">{{$t("closest_text")}} {{ getClosest() }}</div>
-<div>
-????????
-          <div class="average">Average: {{ averageValue }}</div>
-          <div class="popular">Closest: {{ closestValue }}</div>
-    ????????
-</div>
+          <div class="average">{{$t("average_text")}} {{ averageValue }}</div>
+          <div class="popular">{{$t("closest_text")}} {{ closestValue }}</div>
         </div>
       </div>
       <div class="tickets" v-show="showTickets">

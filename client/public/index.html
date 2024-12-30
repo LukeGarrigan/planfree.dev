@@ -1,49 +1,55 @@
 <!DOCTYPE html>
 <html lang="en">
-  <head>
-
-    <!-- Global site tag (gtag.js) - Google Analytics -->
+<head>
     <script async src="https://www.googletagmanager.com/gtag/js?id=G-WZ4VDSTB2K"></script>
     <script>
-      window.dataLayer = window.dataLayer || [];
-      function gtag(){dataLayer.push(arguments);}
-      gtag('js', new Date());
+        window.dataLayer = window.dataLayer || [];
 
-      gtag('config', 'G-WZ4VDSTB2K');
+        function gtag() {
+            dataLayer.push(arguments);
+        }
+
+        gtag('js', new Date());
+
+        gtag('config', 'G-WZ4VDSTB2K');
     </script>
+    <script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-1483238520339743"
+            crossorigin="anonymous"></script>
     <meta charset="utf-8">
     <meta http-equiv="X-UA-Compatible" content="IE=edge">
     <meta name="viewport" content="width=device-width,initial-scale=1.0">
-    <meta name="description" content="Set up your planning poker session in seconds with no sign up. planfree.dev is a completely free planning poker tool to make your estimating process easier and fun.">
+    <meta name="google-adsense-account" content="ca-pub-1483238520339743">
+    <meta name="description"
+          content="Set up your planning poker session in seconds with no sign up. planfree.dev is a completely free planning poker tool to make your estimating process easier and fun.">
     <link rel="icon" href="<%= BASE_URL %>favicon.ico">
     <link rel="manifest" href="manifest.json">
     <title>Free Planning Poker Online | No sign up required</title>
-    <script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-1483238520339743" crossorigin="anonymous"></script>
     <script src="https://www.googleoptimize.com/optimize.js?id=OPT-NFG2TCH"></script>
-  </head>
-  <body>
-    <script type="module">
-      import Typebot from 'https://cdn.jsdelivr.net/npm/@typebot.io/js@0.0/dist/web.js'
-    
-      Typebot.initBubble({
+</head>
+<body>
+<script type="module">
+    import Typebot from 'https://cdn.jsdelivr.net/npm/@typebot.io/js@0.0/dist/web.js'
+
+    Typebot.initBubble({
         typebot: "my-typebot-2cmn1n3",
         theme: {
-          button: { backgroundColor: "#54e8dd", iconColor: "#000000" },
-          previewMessage: { backgroundColor: "54e8dd", textColor: "black" },
-          chatWindow: { backgroundColor: "54e8dd" },
+            button: {backgroundColor: "#54e8dd", iconColor: "#000000"},
+            previewMessage: {backgroundColor: "54e8dd", textColor: "black"},
+            chatWindow: {backgroundColor: "54e8dd"},
         },
-      });
-    </script>
-    
-    <noscript>
-      <strong>We're sorry but <%= htmlWebpackPlugin.options.title %> doesn't work properly without JavaScript enabled. Please enable it to continue.</strong>
-    </noscript>
-    <script>
-      if ('serviceWorker' in navigator) {
+    });
+</script>
+
+<noscript>
+    <strong>We're sorry but <%= htmlWebpackPlugin.options.title %> doesn't work properly without JavaScript enabled.
+        Please enable it to continue.</strong>
+</noscript>
+<script>
+    if ('serviceWorker' in navigator) {
         navigator.serviceWorker.register('./service-worker.js');
-      }
-    </script>
-    <div id="planfree" role="main"></div>
-    <!-- built files will be auto injected -->
-  </body>
+    }
+</script>
+<div id="planfree" role="main"></div>
+<!-- built files will be auto injected -->
+</body>
 </html>

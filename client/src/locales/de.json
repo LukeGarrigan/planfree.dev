@@ -8,7 +8,7 @@
         "cast_votes": "Gib deine Stimmen ab",
         "voting_on": "Abstimmung über:",
         "install_as_app": "Als App installieren",
-        "view_repo": "Repository anzeigen",
+        "open_repo": "Repository anzeigen",
         "copy_to_clip": "Kopieren",
         "invite_players": "Spieler einladen",
         "display_name_title": "Wähle deinen Anzeigenamen",
@@ -20,6 +20,7 @@
         "share_text": "Teilen", 
         "close_text": "Schließen",
         "invite_your_team": "Laden Sie Ihr Team ein", 
-        "qr_code_text": "QR Code"
+        "qr_code_text": "QR Code",
+        "settings": "Einstellungen"
     }
 }

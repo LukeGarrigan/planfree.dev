@@ -30,7 +30,7 @@
 
 <script setup lang="ts">
 
-import {computed, ref, watch} from "vue";
+import {ref} from "vue";
 
 const props = defineProps({
   modelValue: {
@@ -63,7 +63,6 @@ const completed = () => {
 }
 </script>
 
-<!-- Add "scoped" attribute to limit CSS to this component only -->
 <style scoped lang="scss">
 .input-container {
   display: flex;

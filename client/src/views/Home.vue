@@ -22,82 +22,28 @@
               xml:space="preserve"
           >
             <rect x="0" y="10" width="4" height="10" fill="#333" opacity="0.2">
-              <animate
-                  attributeName="opacity"
-                  attributeType="XML"
-                  values="0.2; 1; .2"
-                  begin="0s"
-                  dur="0.6s"
-                  repeatCount="indefinite"
-              />
-              <animate
-                  attributeName="height"
-                  attributeType="XML"
-                  values="10; 20; 10"
-                  begin="0s"
-                  dur="0.6s"
-                  repeatCount="indefinite"
-              />
-              <animate
-                  attributeName="y"
-                  attributeType="XML"
-                  values="10; 5; 10"
-                  begin="0s"
-                  dur="0.6s"
-                  repeatCount="indefinite"
-              />
+              <animate attributeName="opacity" attributeType="XML" values="0.2; 1; .2" begin="0s" dur="0.6s"
+                       repeatCount="indefinite"/>
+              <animate attributeName="height" attributeType="XML" values="10; 20; 10" begin="0s" dur="0.6s"
+                       repeatCount="indefinite"/>
+              <animate attributeName="y" attributeType="XML" values="10; 5; 10" begin="0s" dur="0.6s"
+                       repeatCount="indefinite"/>
             </rect>
             <rect x="8" y="10" width="4" height="10" fill="#333" opacity="0.2">
-              <animate
-                  attributeName="opacity"
-                  attributeType="XML"
-                  values="0.2; 1; .2"
-                  begin="0.15s"
-                  dur="0.6s"
-                  repeatCount="indefinite"
-              />
-              <animate
-                  attributeName="height"
-                  attributeType="XML"
-                  values="10; 20; 10"
-                  begin="0.15s"
-                  dur="0.6s"
-                  repeatCount="indefinite"
-              />
-              <animate
-                  attributeName="y"
-                  attributeType="XML"
-                  values="10; 5; 10"
-                  begin="0.15s"
-                  dur="0.6s"
-                  repeatCount="indefinite"
-              />
+              <animate attributeName="opacity" attributeType="XML" values="0.2; 1; .2" begin="0.15s" dur="0.6s"
+                       repeatCount="indefinite"/>
+              <animate attributeName="height" attributeType="XML" values="10; 20; 10" begin="0.15s" dur="0.6s"
+                       repeatCount="indefinite"/>
+              <animate attributeName="y" attributeType="XML" values="10; 5; 10" begin="0.15s" dur="0.6s"
+                       repeatCount="indefinite"/>
             </rect>
             <rect x="16" y="10" width="4" height="10" fill="#333" opacity="0.2">
-              <animate
-                  attributeName="opacity"
-                  attributeType="XML"
-                  values="0.2; 1; .2"
-                  begin="0.3s"
-                  dur="0.6s"
-                  repeatCount="indefinite"
-              />
-              <animate
-                  attributeName="height"
-                  attributeType="XML"
-                  values="10; 20; 10"
-                  begin="0.3s"
-                  dur="0.6s"
-                  repeatCount="indefinite"
-              />
-              <animate
-                  attributeName="y"
-                  attributeType="XML"
-                  values="10; 5; 10"
-                  begin="0.3s"
-                  dur="0.6s"
-                  repeatCount="indefinite"
-              />
+              <animate attributeName="opacity" attributeType="XML" values="0.2; 1; .2" begin="0.3s" dur="0.6s"
+                       repeatCount="indefinite"/>
+              <animate attributeName="height" attributeType="XML" values="10; 20; 10" begin="0.3s" dur="0.6s"
+                       repeatCount="indefinite"/>
+              <animate attributeName="y" attributeType="XML" values="10; 5; 10" begin="0.3s" dur="0.6s"
+                       repeatCount="indefinite"/>
             </rect>
           </svg>
         </button>
@@ -112,7 +58,9 @@ import {io} from "socket.io-client";
 import {ref} from 'vue';
 import {useGameEngine} from "@/composables/useGameEngine";
 import { useTranslation } from "i18next-vue";
-const { socket, setSocket  } = useGameEngine();
+import GameFormat from "@/view-models/gameFormat";
+
+const {socket, setSocket} = useGameEngine();
 const clickedStart = ref(false);
 const hasStarted = ref(false);
 const { t } = useTranslation();
@@ -123,12 +71,19 @@ function startGame() {
     if (!hasStarted.value) {
       alert(t("connection_issue"));
     }
-  }, 5000);
+  }, 6000);
+  registerSocket();
+}
+
+function registerSocket() {
   const newSocket = io(process.env.VUE_APP_SERVER);
   setSocket(newSocket);
   socket.value.on("room", (roomId: string) => {
     hasStarted.value = true;
-    router.push({ path: `/game/${roomId}` });
+    router.push({path: `/game/${roomId}`});
+  });
+  socket.value.on("gameTypes", (gameTypes: GameFormat[]) => {
+    localStorage.setItem("gameTypes", JSON.stringify(gameTypes));
   });
 }
 </script>
@@ -188,7 +143,6 @@ function startGame() {
   align-items: center;
   justify-content: center;
   position: absolute;
-  z-index: 9999;
   width: 320px;
   height: 80px;
   background: #f3f0f1;
@@ -234,6 +188,28 @@ function startGame() {
 
 svg rect {
   fill: #54e8dd;
+}
+
+.free-poker-header {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  position: relative;
+  height: 80%;
+  width: 100%;
+
+  h1 {
+    user-select: none;
+    font-size: 3.2em;
+
+    span {
+      color: #54e8dd;
+      background: black;
+      border-radius: 10px;
+      width: 7rem;
+      display: inline-block;
+    }
+  }
 }
 
 

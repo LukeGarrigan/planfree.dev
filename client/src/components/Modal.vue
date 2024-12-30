@@ -10,31 +10,31 @@
 </template>
 
 <script setup lang="ts">
-  import {onMounted, ref} from 'vue';
-  import PFInput from "@/components/PFInput.vue";
-  const props = defineProps<{
-    title: string
-  }>()
+import {onMounted, ref} from 'vue';
+import PFInput from "@/components/Input.vue";
 
-  const emit = defineEmits(['completed'])
+defineProps<{
+  title: string
+}>()
 
-  const name = ref('');
-   onMounted(() => {
-    const input = document.getElementById('selectNameInput');
-    if (input) {
-      input.focus();
-    }
-  })
+const emit = defineEmits(['completed'])
 
-  function completed() {
-    if (name.value && name.value.trim()) {
-      emit('completed', name.value);
-    }
+const name = ref('');
+onMounted(() => {
+  const input = document.getElementById('selectNameInput');
+  if (input) {
+    input.focus();
   }
+})
+
+function completed() {
+  if (name.value && name.value.trim()) {
+    emit('completed', name.value);
+  }
+}
 
 </script>
 
-<!-- Add "scoped" attribute to limit CSS to this component only -->
 <style scoped lang="scss">
 .modal-container {
   width: 100%;
@@ -52,7 +52,7 @@
   position: absolute;
   border-radius: 15px;
   box-shadow: -6px -6px 10px rgba(255, 255, 255, 0.8),
-    6px 6px 10px rgba(0, 0, 0, 0.2);
+  6px 6px 10px rgba(0, 0, 0, 0.2);
   color: #161b1f;
   display: flex;
   align-items: center;

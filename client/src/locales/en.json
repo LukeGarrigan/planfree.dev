@@ -8,7 +8,7 @@
         "cast_votes": "Cast your votes",
         "voting_on": "Voting on:",
         "install_as_app": "Install as app",
-        "view_repo": "View repo",
+        "open_repo": "Open repo",
         "copy_to_clip": "Copy to clipboard",        
         "invite_players": "Invite players",
         "display_name_title": "Choose your display name",
@@ -20,6 +20,7 @@
         "share_text": "Share", 
         "close_text": "Close", 
         "invite_your_team": "Invite your team", 
-        "qr_code_text": "QR Code"
+        "qr_code_text": "QR Code", 
+        "settings": "Settings"
     }
 }

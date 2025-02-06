@@ -16,7 +16,7 @@
         "create_room": "Create Room",
         "scrum_made_easy": "Scrum poker made simple and",
         "free": "free",
-        "connection_issue": "Looks like there's a problem connecting you to the server 😕",
+        "connection_issue": "Unable to connect to the server. Please check your internet connection or try again later.",
         "share_text": "Share", 
         "close_text": "Close", 
         "invite_your_team": "Invite your team", 

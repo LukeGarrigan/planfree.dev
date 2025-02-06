@@ -19,7 +19,7 @@
       <path
           d="M7 17v-2H3.5q-.625 0-1.062-.438Q2 14.125 2 13.5v-9q0-.625.438-1.062Q2.875 3 3.5 3H11v1.5H3.5v9h13V11H18v2.5q0 .625-.438 1.062Q17.125 15 16.5 15H13v2Zm7.479-6L11 7.521l1.062-1.063 1.688 1.688V3h1.5v5.104l1.688-1.687L18 7.479Z"/>
     </svg>
-    <div v-if="popoverText" class="popover">{{ props.popoverText }}</div>
+    <div v-if="popoverText" class="popover">{{ $t(props.popoverText) }}</div>
   </button>
 </template>
 

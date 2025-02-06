@@ -1,0 +1,26 @@
+{
+    "translation": {
+        "average_text": "Durchschnitt:",
+        "closest_text": "Nächster:",
+        "issue_title": "Problem titel",
+        "vote_next_issue": "Stimme für das nächste Problem ab!",
+        "start_new_game": "Neues Spiel starten!",
+        "cast_votes": "Gib deine Stimmen ab",
+        "voting_on": "Abstimmung über:",
+        "install_as_app": "Als App installieren",
+        "open_repo": "Repository anzeigen",
+        "copy_to_clip": "Kopieren",
+        "invite_players": "Spieler einladen",
+        "display_name_title": "Wähle deinen Anzeigenamen",
+        "lobby_header":"Planfree.dev Spielelobby",
+        "create_room": "Raum erstellen",
+        "scrum_made_easy": "Scrum-Poker einfach und",
+        "free": "kostenlos",
+        "connection_issue": "Verbindung zum Server nicht möglich. Bitte überprüfen Sie Ihre Internetverbindung oder versuchen Sie es später erneut.", 
+        "share_text": "Teilen", 
+        "close_text": "Schließen",
+        "invite_your_team": "Laden Sie Ihr Team ein", 
+        "qr_code_text": "QR Code",
+        "settings": "Einstellungen"
+    }
+}

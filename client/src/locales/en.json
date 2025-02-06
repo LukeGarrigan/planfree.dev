@@ -1,0 +1,26 @@
+{
+    "translation": {
+        "average_text": "Average:",
+        "closest_text": "Closest:",
+        "issue_title": "Issue title",
+        "vote_next_issue": "Vote on the next issue!",
+        "start_new_game": "Start new game!",
+        "cast_votes": "Cast your votes",
+        "voting_on": "Voting on:",
+        "install_as_app": "Install as app",
+        "open_repo": "Open repo",
+        "copy_to_clip": "Copy to clipboard",        
+        "invite_players": "Invite players",
+        "display_name_title": "Choose your display name",
+        "lobby_header":"Planfree.dev game lobby",
+        "create_room": "Create Room",
+        "scrum_made_easy": "Scrum poker made simple and",
+        "free": "free",
+        "connection_issue": "Unable to connect to the server. Please check your internet connection or try again later.",
+        "share_text": "Share", 
+        "close_text": "Close", 
+        "invite_your_team": "Invite your team", 
+        "qr_code_text": "QR Code", 
+        "settings": "Settings"
+    }
+}

@@ -1,9 +1,9 @@
 <?xml version="1.0" encoding="utf-8" standalone="yes"?>
 <rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom">
   <channel>
-    <title>Categories on My Docs</title>
+    <title>Categories on Planfree.dev</title>
     <link>http://localhost:1313/categories/</link>
-    <description>Recent content in Categories on My Docs</description>
+    <description>Recent content in Categories on Planfree.dev</description>
     <generator>Hugo</generator>
     <language>en</language>
     <copyright>Copyright (c) 2020-2024 Thulite</copyright>

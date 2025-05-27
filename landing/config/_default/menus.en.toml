@@ -1,0 +1,21 @@
+############# English navigation ##############
+
+# main menu
+[[main]]
+name = "Home"
+url = "/"
+weight = 1
+
+[[main]]
+name = "About"
+url = "/about"
+weight = 2
+
+[[main]]
+name = "Privacy"
+url = "/privacy-policy"
+weight = 3
+
+[[main]]
+name = "Blog"
+url = "/blog"

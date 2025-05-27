@@ -17,11 +17,12 @@
   display: flex;
   align-items: center;
   justify-content: center;
-  gap: 10px;
+  gap: 16px;
   margin-top: 10px;
   font-family: "Montserrat", sans-serif;
   .link {
     text-decoration: none;
+    color: #2c3e50;
   }
 }
 

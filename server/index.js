@@ -27,7 +27,7 @@ let tickets = [];
 let gameType = [];
 
 let gameTypes = [
-    { name: 'Fib', values: [1, 2, 3, 5, 8, 13, 21, 34, 55, 89, '?'] },
+    { name: 'Fibonacci', values: [1, 2, 3, 5, 8, 13, 21, 34, 55, 89, '?'] },
     { name: 'T-Shirt', values: ['XXS', 'XS', 'S', 'M', 'L', 'XL', '?'] },
     { name: 'Powers of 2', values: [0, 1, 2, 4, 8, 16, 32, 64, '?'] },
 ]

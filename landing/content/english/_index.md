@@ -7,5 +7,5 @@ banner:
   button:
     enable: true
     label: "Create Room"
-    link: "https://github.com/lukegarrigan/planfree"
+    link: "http://localhost:9999"
 ---

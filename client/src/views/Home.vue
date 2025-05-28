@@ -1,66 +1,17 @@
-<template>
-  <NavigationBar/>
-  <div class="home">
-    <div class="container">
-      <div class="free-poker-header">
-        <h1>Scrum poker made simple and <span>free</span>.</h1>
-      </div>
-      <div class="start-game">
-        <button
-            class="button"
-            :class="{ disabled: clickedStart }"
-            @click="startGame()"
-            :disabled="clickedStart"
-            aria-disabled="clickedStart"
-        >
-          <span v-if="!clickedStart">Create room</span>
-          <svg
-              v-if="clickedStart"
-              version="1.1"
-              id="Layer_1"
-              xmlns="http://www.w3.org/2000/svg"
-              xmlns:xlink="http://www.w3.org/1999/xlink"
-              x="0px"
-              y="0px"
-              width="24px"
-              height="30px"
-              viewBox="0 0 24 30"
-              style="enable-background: new 0 0 50 50"
-              xml:space="preserve"
-          >
-            <rect x="0" y="10" width="4" height="10" fill="#333" opacity="0.2">
-              <animate attributeName="opacity" attributeType="XML" values="0.2; 1; .2" begin="0s" dur="0.6s" repeatCount="indefinite" />
-              <animate attributeName="height" attributeType="XML" values="10; 20; 10" begin="0s" dur="0.6s" repeatCount="indefinite" />
-              <animate attributeName="y" attributeType="XML" values="10; 5; 10" begin="0s" dur="0.6s" repeatCount="indefinite" />
-            </rect>
-            <rect x="8" y="10" width="4" height="10" fill="#333" opacity="0.2">
-              <animate attributeName="opacity" attributeType="XML" values="0.2; 1; .2" begin="0.15s" dur="0.6s" repeatCount="indefinite" />
-              <animate attributeName="height" attributeType="XML" values="10; 20; 10" begin="0.15s" dur="0.6s" repeatCount="indefinite" />
-              <animate attributeName="y" attributeType="XML" values="10; 5; 10" begin="0.15s" dur="0.6s" repeatCount="indefinite" />
-            </rect>
-            <rect x="16" y="10" width="4" height="10" fill="#333" opacity="0.2">
-              <animate attributeName="opacity" attributeType="XML" values="0.2; 1; .2" begin="0.3s" dur="0.6s" repeatCount="indefinite" />
-              <animate attributeName="height" attributeType="XML" values="10; 20; 10" begin="0.3s" dur="0.6s" repeatCount="indefinite" />
-              <animate attributeName="y" attributeType="XML" values="10; 5; 10" begin="0.3s" dur="0.6s" repeatCount="indefinite" />
-            </rect>
-          </svg>
-        </button>
-      </div>
-    </div>
-  </div>
-</template>
-
 <script setup lang="ts">
 import router from "@/router";
 import { io } from "socket.io-client";
-import { ref } from "vue";
+import { ref, onMounted } from "vue";
 import { useGameEngine } from "@/composables/useGameEngine";
 import GameFormat from "@/view-models/gameFormat";
-import NavigationBar from "@/components/NavigationBar.vue";
 
 const { socket, setSocket } = useGameEngine();
 const clickedStart = ref(false);
 const hasStarted = ref(false);
+
+onMounted(() => {
+  startGame();
+})
 
 function startGame() {
   clickedStart.value = true;

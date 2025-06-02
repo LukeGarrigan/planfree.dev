@@ -11,7 +11,7 @@ logo_height = "32px"
 # if logo_webp set false, will not generate WEBP version of logo | default is true
 logo_webp = true
 # logo text will only show when logo is missing.
-logo_text = "Hugoplate"
+logo_text = "Planfree.dev"
 # navbar fixed to top
 navbar_fixed = true
 # theme-mode
@@ -22,7 +22,7 @@ mainSections = ["blog"]
 # contact form action
 contact_form_action = "#" # contact form works with [https://airform.io/] or [https://formspree.io]
 # google tag manager, see https://developers.google.com/tag-manager/
-google_tag_manager = "" # example: G-XXXXXXXXXX
+google_tag_manager = "G-WZ4VDSTB2K" # example: G-XXXXXXXXXX
 google_adsense = ""     # example: ca-pub-xxxxxxxxxxxxxxxx
 # custom script on header, example: custom_script= "<script>console.log(\"Hello World\")</script>"
 custom_script = ""
@@ -59,11 +59,33 @@ content = "You must replace the **baseURL** in **hugo.toml** file when deploying
 # seo meta data for OpenGraph / Twitter Card
 # seo module: https://github.com/gethugothemes/hugo-modules/tree/master/seo-tools/basic-seo
 [metadata]
-keywords = ["Boilerplate", "Hugo"]
-description = "Hugo & Tailwindcss Starter"
-author = "zeon.studio"
-twitter = "zeon_studio"
-image = "images/og-image.png"
+keywords = [
+  "planning poker",
+  "agile planning poker",
+  "online planning poker",
+  "scrum planning poker",
+  "free planning poker tool",
+  "free scrum estimation tool",
+  "free online planning poker",
+  "free agile estimation tool",
+  "remote planning poker",
+  "online scrum estimation",
+  "virtual planning poker",
+  "team estimation online",
+  "agile estimation tool",
+  "scrum point estimation",
+  "poker estimation for agile",
+  "sprint planning poker",
+  "free agile planning poker for teams",
+  "best online planning poker tool",
+  "real-time planning poker app",
+  "planning poker with story points",
+  "planfree"
+]
+description = "Planning poker, made simple and free"
+author = "Luke Garrigan"
+twitter = "lukegarrigan"
+image = "images/planfreescreeny.png"
 
 
 # site verifications
@@ -105,5 +127,5 @@ map_marker = "images/marker.png"
 [subscription]
 enable = false
 # mailchimp subsciption
-mailchimp_form_action = "https://gmail.us4.list-manage.com/subscribe/post?u=463ee871f45d2d93748e77cad&amp;id=a0a2c6d074" # replace this url with yours
+mailchimp_form_action = "" # replace this url with yours
 mailchimp_form_name = "b_463ee871f45d2d93748e77cad_a0a2c6d074"

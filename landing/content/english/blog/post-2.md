@@ -3,7 +3,6 @@ title: "Planning Poker Without the Pain: How Planfree.dev Became Our Go-To Tool"
 meta_title: "Planning Poker Made Simple — Why We Use Planfree.dev"
 description: "A story about ditching bloated tools and embracing a free, fast alternative for agile estimation: Planfree.dev."
 date: 2025-05-27T00:00:00Z
-image: "/images/sprint-planning.png"
 categories: ["Workflow", "Agile", "Team Culture"]
 author: "Luke Garrigan"
 tags: ["planning", "free-tools", "teamwork", "agile"]

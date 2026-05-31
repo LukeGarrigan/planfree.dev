@@ -3,7 +3,6 @@ title: "I Needed a Planning Tool That Didn’t Suck — So I Built Planfree.dev"
 meta_title: "The Story Behind Planfree.dev"
 description: "A dev’s story of building a free agile planning tool out of frustration—and how it grew into a community favorite."
 date: 2025-05-27T00:00:00Z
-image: "/images/founder-story.png"
 categories: ["Story", "DevTools", "Startups"]
 author: "Luke Garrigan"
 tags: ["founder", "side-project", "opensource", "agile"]

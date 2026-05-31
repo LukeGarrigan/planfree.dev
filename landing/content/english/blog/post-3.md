@@ -3,7 +3,6 @@ title: "The Best Free Planning Poker Tool for Agile Teams in 2025"
 meta_title: "Free Planning Poker Tool for Agile Teams — Planfree.dev"
 description: "Looking for a completely free and easy-to-use planning poker tool? Here's why Planfree.dev is perfect for agile teams."
 date: 2025-05-27T00:00:00Z
-image: "/images/planning-poker-tools.png"
 categories: ["Agile", "Tools", "Scrum"]
 author: "Luke Garrigan"
 tags: ["scrum", "planning-poker", "planfree", "free-agile-tool"]

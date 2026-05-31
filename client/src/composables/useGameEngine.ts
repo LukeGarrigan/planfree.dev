@@ -14,6 +14,7 @@ const gameFormat = ref<GameFormat>();
 const closestValue: any = ref(null);
 const averageValue: any = ref(null);
 const tickets = ref<Ticket[]>([]);
+const teamName = ref("");
 
 export function useGameEngine() {
     function setSocket(newSocket: any) {
@@ -26,6 +27,7 @@ export function useGameEngine() {
             players.value = game.players;
             tickets.value = game.tickets;
             gameFormat.value = game.gameType;
+            teamName.value = game.teamName ?? "";
         });
 
         socket.value.on("gameTypes", (gameTypes: []) => {
@@ -68,6 +70,7 @@ export function useGameEngine() {
         tickets,
         gameFormat,
         closestValue,
-        averageValue
+        averageValue,
+        teamName
     };
 }

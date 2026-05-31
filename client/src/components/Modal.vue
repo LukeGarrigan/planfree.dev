@@ -2,9 +2,9 @@
   <div class="modal-overlay">
     <div class="modal" @click.stop>
       <label for="selectNameInput" class="heading">{{ title }}</label>
-      <p class="subheading">This is how your teammates will see you</p>
+      <p class="subheading">{{ subheading }}</p>
       <div class="input-container">
-        <PFInput v-model="name" @completed="completed" :max-length="25" placeholder="e.g. Alex"></PFInput>
+        <PFInput v-model="name" @completed="completed" :max-length="maxLength" :placeholder="placeholder"></PFInput>
       </div>
     </div>
   </div>
@@ -14,9 +14,16 @@
 import {onMounted, ref} from 'vue';
 import PFInput from "@/components/Input.vue";
 
-defineProps<{
+withDefaults(defineProps<{
   title: string
-}>()
+  subheading?: string
+  placeholder?: string
+  maxLength?: number
+}>(), {
+  subheading: 'This is how your teammates will see you',
+  placeholder: 'e.g. Alex',
+  maxLength: 25
+})
 
 const emit = defineEmits(['completed'])
 

@@ -15,6 +15,9 @@
     <Sharing v-if="showShareModal" @dismissModal="dismissModal"></Sharing>
     <div v-if="!modal" class="home">
 
+      <div v-if="teamName" class="team-name">{{ teamName }}</div>
+
+
       <div class="top-buttons">
         <button class="edit-name-button" @click="modal = true">
           <div>{{ name }}</div>
@@ -147,7 +150,8 @@ const {
   currentVote,
   gameFormat,
   closestValue,
-  averageValue
+  averageValue,
+  teamName
 } = useGameEngine();
 const showShareModal = ref(false);
 
@@ -427,6 +431,35 @@ const toggleTickets = () => showTickets.value = !showTickets.value;
   position: absolute;
   width: 0px;
   overflow: hidden;
+}
+
+.team-name {
+  position: absolute;
+  top: 2%;
+  left: 50%;
+  transform: translateX(-50%);
+  height: 70px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  max-width: 40vw;
+  font-family: "Montserrat", sans-serif;
+  font-size: 26px;
+  font-weight: 400;
+  color: #161b1f;
+  user-select: none;
+  text-align: center;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+@media only screen and (max-width: 700px) {
+  .team-name {
+    height: 50px;
+    font-size: 20px;
+    max-width: 40vw;
+  }
 }
 
 .copied {

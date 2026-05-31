@@ -6,4 +6,5 @@ export default interface Game {
     players: Player[];
     tickets: Ticket[];
     gameType: GameFormat;
+    teamName: string;
 }

@@ -8,13 +8,12 @@
     ></Modal>
     <Settings
         v-if="settings"
-        title="Settings"
+        :current="gameFormat?.name"
         @saveSettings="saveSettings"
         @close="settings = false"
     ></Settings>
-    <Sharing v-if="showShareModal" title='share_modal_title' subTitle='share_modal_subtitle'
-             @dismissModal="dismissModal"></Sharing>
-    <div v-if="!modal && !settings && !showShareModal" class="home">
+    <Sharing v-if="showShareModal" @dismissModal="dismissModal"></Sharing>
+    <div v-if="!modal" class="home">
 
       <div class="top-buttons">
         <button class="edit-name-button" @click="modal = true">

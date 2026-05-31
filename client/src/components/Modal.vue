@@ -1,9 +1,10 @@
 <template>
-  <div class="modal-container">
-    <div class="modal">
-      <span><label for="selectNameInput">{{ title }}</label></span>
+  <div class="modal-overlay">
+    <div class="modal" @click.stop>
+      <label for="selectNameInput" class="heading">{{ title }}</label>
+      <p class="subheading">This is how your teammates will see you</p>
       <div class="input-container">
-        <PFInput v-model="name" @completed="completed" :max-length="25"></PFInput>
+        <PFInput v-model="name" @completed="completed" :max-length="25" placeholder="e.g. Alex"></PFInput>
       </div>
     </div>
   </div>
@@ -36,23 +37,24 @@ function completed() {
 </script>
 
 <style scoped lang="scss">
-.modal-container {
-  width: 100%;
-  height: 100%;
-  //background: pink;
+.modal-overlay {
+  position: fixed;
+  inset: 0;
+  z-index: 1000;
   display: flex;
+  align-items: center;
   justify-content: center;
-  position: absolute;
+  background: rgba(22, 27, 31, 0.35);
+  backdrop-filter: blur(2px);
 }
 
 .modal {
-  width: 400px;
-  height: 220px;
-  top: 35%;
-  position: absolute;
-  border-radius: 15px;
-  box-shadow: -6px -6px 10px rgba(255, 255, 255, 0.8),
-  6px 6px 10px rgba(0, 0, 0, 0.2);
+  width: 90%;
+  max-width: 400px;
+  padding: 32px 28px;
+  border-radius: 20px;
+  background: #f3f0f1;
+  box-shadow: 0 16px 48px rgba(0, 0, 0, 0.3);
   color: #161b1f;
   display: flex;
   align-items: center;
@@ -64,10 +66,19 @@ function completed() {
   }
 }
 
-span {
-  line-height: 80px;
+.heading {
   font-family: "Montserrat", sans-serif;
-  font-size: 26px;
-  font-weight: semibold;
+  font-size: 22px;
+  font-weight: 600;
+  text-align: center;
+  margin-bottom: 6px;
+}
+
+.subheading {
+  font-family: "Montserrat", sans-serif;
+  font-size: 14px;
+  opacity: 0.6;
+  text-align: center;
+  margin: 0 0 20px;
 }
 </style>

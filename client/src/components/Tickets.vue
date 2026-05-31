@@ -1,5 +1,15 @@
 <template>
   <div class="tickets-wrapper">
+    <div class="tickets-header">
+      <span class="tickets-title">Issues</span>
+      <button class="close-tickets" aria-label="Close issues" @click="emit('close')">
+        <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none">
+          <path
+              d="M20.7457 3.32851C20.3552 2.93798 19.722 2.93798 19.3315 3.32851L12.0371 10.6229L4.74275 3.32851C4.35223 2.93798 3.71906 2.93798 3.32854 3.32851C2.93801 3.71903 2.93801 4.3522 3.32854 4.74272L10.6229 12.0371L3.32856 19.3314C2.93803 19.722 2.93803 20.3551 3.32856 20.7457C3.71908 21.1362 4.35225 21.1362 4.74277 20.7457L12.0371 13.4513L19.3315 20.7457C19.722 21.1362 20.3552 21.1362 20.7457 20.7457C21.1362 20.3551 21.1362 19.722 20.7457 19.3315L13.4513 12.0371L20.7457 4.74272C21.1362 4.3522 21.1362 3.71903 20.7457 3.32851Z"
+              fill="#0F0F0F"/>
+        </svg>
+      </button>
+    </div>
     <PFInput v-model="ticketName" @completed="addedTicket" placeholder="Add issue title"></PFInput>
     <div class="tickets-container">
       <ul>
@@ -26,6 +36,8 @@ import Ticket from "@/view-models/tickets";
 import PFLittleButton from "@/components/LittleButton.vue";
 
 const {tickets, ticketUpdated} = useTickets();
+
+const emit = defineEmits(['close']);
 
 let ticketName = ref('');
 
@@ -69,6 +81,50 @@ function voteOn(ticket: Ticket) {
   text-align: left;
   overflow-wrap: break-word;
   word-wrap: break-word;
+
+  /* Make the add-issue input fill the panel rather than its fixed 295px width
+     so it never overflows the (narrower) panel on small screens. */
+  :deep(.input-container) {
+    width: 100%;
+  }
+
+  :deep(.input) {
+    flex: 1;
+    width: auto;
+    min-width: 0;
+  }
+}
+
+.tickets-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 8px;
+}
+
+.tickets-title {
+  font-family: "Montserrat", sans-serif;
+  font-size: 16px;
+  font-weight: 600;
+  color: #161b1f;
+}
+
+.close-tickets {
+  width: 32px;
+  height: 32px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border: none;
+  border-radius: 50%;
+  background: transparent;
+  cursor: pointer;
+  opacity: 0.5;
+  transition: opacity 0.15s ease;
+
+  &:hover {
+    opacity: 1;
+  }
 }
 
 .tickets-container {
@@ -106,7 +162,7 @@ function voteOn(ticket: Ticket) {
   }
 }
 
-span {
+.ticket h4 span {
   background: #54e8dd;
   padding: 5px;
   border-radius: 50%;
@@ -114,5 +170,33 @@ span {
   height: 18px;
   display: inline-block;
   text-align: center;
+}
+
+@media only screen and (max-width: 700px) {
+  /* Full-width bottom sheet instead of a fixed 360px panel off the edge */
+  .tickets-wrapper {
+    right: 12px;
+    left: 12px;
+    bottom: 12px;
+    top: auto;
+    transform: none;
+    width: auto;
+    height: 50%;
+    padding: 12px;
+    box-sizing: border-box;
+    background: #f3f0f1;
+    border-radius: 16px;
+    box-shadow: 0 -8px 24px rgba(0, 0, 0, 0.18);
+    z-index: 20;
+  }
+
+  .tickets-container {
+    height: calc(100% - 100px);
+  }
+
+  /* No :hover on touch — keep delete reachable so tickets can be removed */
+  .ticket .delete-button {
+    visibility: visible;
+  }
 }
 </style>

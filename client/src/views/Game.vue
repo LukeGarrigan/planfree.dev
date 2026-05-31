@@ -115,7 +115,7 @@
         </div>
       </div>
       <div class="tickets" v-show="showTickets">
-        <Tickets></Tickets>
+        <Tickets @close="showTickets = false"></Tickets>
       </div>
     </div>
   </div>
@@ -361,8 +361,138 @@ const toggleTickets = () => showTickets.value = !showTickets.value;
 }
 
 @media only screen and (max-width: 700px) {
+  /* Compact top toolbar that can't overflow the viewport */
+  .top-buttons {
+    gap: 8px;
+    top: 8px;
+    right: 8px;
+    left: 8px;
+    width: auto;
+    justify-content: flex-end;
+    align-items: center;
+
+    .invite {
+      width: auto;
+      min-width: 0;
+      height: 46px;
+      font-size: 15px;
+      padding: 0 14px;
+      gap: 6px;
+
+      svg {
+        left: 0;
+        top: 0;
+        width: 20px;
+        height: 20px;
+      }
+    }
+
+    .edit-name-button {
+      height: 46px;
+      font-size: 15px;
+      padding: 0 12px;
+      max-width: 30vw;
+
+      /* truncate long names instead of pushing siblings off-screen */
+      & > div:first-child {
+        overflow: hidden;
+        text-overflow: ellipsis;
+        white-space: nowrap;
+      }
+    }
+
+    .fib-button {
+      width: 46px;
+      height: 46px;
+    }
+  }
+
+  /* Keep PWA-install and Settings reachable on mobile (was hidden). GitHub is
+     the least useful control on a phone, so drop it to make room. */
   .top-left {
-    visibility: hidden;
+    top: 12px;
+    left: 12px;
+    z-index: 5;
+    gap: 8px;
+
+    .little-button:first-child {
+      display: none;
+    }
+
+    .voting-on {
+      display: none;
+    }
+  }
+
+  /* Team name sits on its own line just below the toolbar row */
+  .team-name {
+    top: 62px;
+    height: auto;
+    font-size: 18px;
+    max-width: 80vw;
+  }
+
+  /* Let player cards wrap into rows instead of overflowing sideways */
+  .home {
+    flex-wrap: wrap;
+    align-content: flex-start;
+  }
+
+  .players {
+    top: 7em;
+    width: 33vw;
+    min-width: 88px;
+    height: 150px;
+
+    .player {
+      width: 56px;
+      height: 72px;
+    }
+
+    .name {
+      margin-top: 0.5em;
+      font-size: 18px;
+    }
+  }
+
+  /* Central action button fits narrow screens; drop sticky tap-hover fade */
+  .button {
+    width: 88vw;
+    max-width: 320px;
+
+    &:hover {
+      opacity: 1;
+    }
+  }
+
+  /* Tighter voting options so more fit per row */
+  .options {
+    gap: 12px;
+    bottom: 3%;
+  }
+
+  .options .fib-button {
+    width: 60px;
+    height: 64px;
+
+    &:not(.current):hover {
+      opacity: 1;
+    }
+  }
+
+  .results-container {
+    bottom: 3%;
+  }
+}
+
+@media only screen and (max-width: 400px) {
+  /* On very small screens shrink the invite control to its icon */
+  .top-buttons .invite > div:first-child {
+    display: none;
+  }
+
+  .top-buttons .invite {
+    padding: 0 12px;
   }
 }
 
@@ -460,14 +590,6 @@ const toggleTickets = () => showTickets.value = !showTickets.value;
   white-space: nowrap;
   overflow: hidden;
   text-overflow: ellipsis;
-}
-
-@media only screen and (max-width: 700px) {
-  .team-name {
-    height: 50px;
-    font-size: 20px;
-    max-width: 40vw;
-  }
 }
 
 .copied {

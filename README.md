@@ -16,9 +16,6 @@ Try it out with your team, it's currently live at [planfree.dev](https://www.pla
   <a href="https://GitHub.com/LukeGarrigan/planfree.dev/issues/">
       <img src="https://img.shields.io/github/issues/LukeGarrigan/planfree.dev.svg">
   </a>
-  <a href="https://dl.circleci.com/status-badge/redirect/gh/LukeGarrigan/planfree.dev/tree/main">
-      <img src="https://dl.circleci.com/status-badge/img/gh/LukeGarrigan/planfree.dev/tree/main.svg?style=svg">
-  </a>
 </p>
 
 ![image](https://user-images.githubusercontent.com/12545967/124085610-2351dc80-da48-11eb-960d-af548db474e9.png)

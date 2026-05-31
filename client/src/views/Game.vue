@@ -626,8 +626,8 @@ const toggleTickets = () => showTickets.value = !showTickets.value;
   }
 }
 
-@media only screen and (max-width: 400px) {
-  /* On very small screens shrink the invite + issues controls to their icons */
+@media only screen and (max-width: 600px) {
+  /* On smaller screens shrink the invite + issues controls to their icons */
   .top-buttons .invite > div:first-child,
   .top-buttons .issues-button > div:first-child {
     display: none;
@@ -652,7 +652,8 @@ const toggleTickets = () => showTickets.value = !showTickets.value;
     position: relative;
     user-select: none;
     gap: 10px;
-    width: 300px;
+    width: auto;
+    padding: 0 28px;
     height: 70px;
     font-size: 26px;
 

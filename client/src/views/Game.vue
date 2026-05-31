@@ -343,6 +343,16 @@ const toggleTickets = () => showTickets.value = !showTickets.value;
     margin-top: 1em;
     text-align: center;
     font-size: 26px;
+    /* Cap to the player cell and break long names so they wrap inside their own
+       card instead of overlapping neighbours. */
+    max-width: 100%;
+    overflow-wrap: anywhere;
+
+    span {
+      /* Override the global 26px span rule so the name follows the cell's
+         font-size (including the smaller mobile size). */
+      font-size: inherit;
+    }
   }
 
   .voted {
@@ -511,12 +521,21 @@ const toggleTickets = () => showTickets.value = !showTickets.value;
 }
 
 @media only screen and (max-width: 700px) {
-  /* Tighten the single top bar to the viewport edges */
+  /* Tighten the single top bar and keep it pinned while the board scrolls on
+     crowded mobile rooms. */
   .top-bar {
-    top: 8px;
-    left: 8px;
-    right: 8px;
+    position: sticky;
+    top: 0;
+    z-index: 5;
+    background: var(--surface);
     gap: 8px;
+  }
+
+  /* The board scrolls as a whole when players + button outgrow the screen;
+     reserve space so the last content clears the pinned voting cards. */
+  .home {
+    overflow-y: auto;
+    padding-bottom: 220px;
   }
 
   /* Compact top toolbar that can't overflow the viewport */
@@ -574,8 +593,11 @@ const toggleTickets = () => showTickets.value = !showTickets.value;
     font-size: 18px;
   }
 
-  /* Pack the wrapped player cards from the top of the board area */
+  /* Size the player grid to its contents and pack from the top, so the action
+     button that follows it gets pushed further down as more players join. */
   .players-row {
+    order: 1;
+    flex: 0 0 auto;
     align-content: flex-start;
     padding-top: 1em;
   }
@@ -583,7 +605,9 @@ const toggleTickets = () => showTickets.value = !showTickets.value;
   .players {
     width: 33vw;
     min-width: 88px;
-    height: 150px;
+    /* Grow for multi-line wrapped names rather than clipping/overlapping. */
+    min-height: 150px;
+    height: auto;
 
     .player {
       width: 56px;
@@ -596,10 +620,15 @@ const toggleTickets = () => showTickets.value = !showTickets.value;
     }
   }
 
-  /* Central action button fits narrow screens; drop sticky tap-hover fade */
+  /* Flow the action button in below the player grid (order keeps it after the
+     grid even though it's earlier in the DOM), so players push it down rather
+     than an absolutely-centred button being painted over. Drop the hover fade. */
   .button {
+    position: static;
+    order: 2;
     width: 88vw;
     max-width: 320px;
+    margin: 12px 0;
 
     &:hover {
       opacity: 1;

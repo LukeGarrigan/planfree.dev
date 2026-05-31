@@ -10,8 +10,6 @@
         autocomplete="off"
         data-1p-ignore
         data-lpignore="true"
-        :readonly="locked"
-        @focus="locked = false"
         :maxlength="props.maxLength"
         minlength="1"
         :placeholder="placeholder"
@@ -53,10 +51,6 @@ const props = defineProps({
 })
 
 let model = ref(props.modelValue);
-
-// Render readonly until first focus so Chrome's autofill (which ignores
-// autocomplete="off" for cards/passwords) can't inject saved bank cards.
-const locked = ref(true);
 
 const emit = defineEmits(['update:modelValue', 'completed']);
 

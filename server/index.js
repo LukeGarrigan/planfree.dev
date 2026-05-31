@@ -25,6 +25,7 @@ http.listen(process.env.PORT || 3000, () => {
 let players = [];
 let tickets = [];
 let gameType = [];
+let teams = [];
 
 let gameTypes = [
     { name: 'Fibonacci', values: [1, 2, 3, 5, 8, 13, 21, 34, 55, 89, '?'] },
@@ -37,6 +38,10 @@ io.on('connection', (socket) => {
     let roomId = socket.handshake.query['roomId'];
     if (!roomId) {
         roomId = short.generate();
+        const teamName = socket.handshake.query['teamName'];
+        if (teamName) {
+            teams.push({ roomId: roomId, name: teamName });
+        }
         socket.emit('room', roomId);
     }
     socket.emit('gameTypes', gameTypes)
@@ -115,8 +120,13 @@ function updateClientsInRoom(roomId) {
     io.to(roomId).emit('update', {
         players: roomPlayers,
         tickets: roomTickets,
-        gameType: roomGameType
+        gameType: roomGameType,
+        teamName: getTeamName(roomId)
     });
+}
+
+function getTeamName(roomId) {
+    return teams.find(t => t.roomId == roomId)?.name ?? '';
 }
 
 function restartGame(roomId) {
@@ -139,7 +149,8 @@ function restartGame(roomId) {
     io.to(roomId).emit('update', {
         players: roomPlayers,
         tickets: roomTickets,
-        gameType: roomGameType
+        gameType: roomGameType,
+        teamName: getTeamName(roomId)
     });
 }
 

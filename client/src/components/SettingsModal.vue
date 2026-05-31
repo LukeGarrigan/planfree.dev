@@ -21,6 +21,8 @@
             autocomplete="off"
             data-1p-ignore
             data-lpignore="true"
+            :readonly="teamFieldLocked"
+            @focus="teamFieldLocked = false"
             maxlength="30"
             placeholder="e.g. The Avengers"
             @keypress.enter="commitTeamName"
@@ -68,6 +70,10 @@ const gameFormats = JSON.parse(localStorage.getItem('gameTypes') || '[]');
 const emit = defineEmits(['saveSettings', 'saveTeamName', 'close']);
 
 const teamNameDraft = ref(props.teamName ?? '');
+
+// Render readonly until first focus so Chrome's autofill (which treats a
+// "name" field as a cardholder-name field) can't inject saved bank cards.
+const teamFieldLocked = ref(true);
 
 function commitTeamName() {
   const next = teamNameDraft.value.trim();

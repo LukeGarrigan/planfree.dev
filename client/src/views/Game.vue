@@ -48,12 +48,11 @@
             <button class="menu-item" role="menuitem" @click="goToGithub()">View on GitHub</button>
           </div>
         </div>
+        <div v-if="teamName" class="team-name">{{ teamName }}</div>
         <div class="voting-on" v-if="votingOnName">
           <p class="voting-on-label">Voting on: <b>{{ votingOnName }}</b></p>
         </div>
       </div>
-
-      <div v-if="teamName" class="team-name">{{ teamName }}</div>
 
       <div class="top-buttons">
         <button v-if="!showCopiedToClipboard" class="button invite" @click="copyToClipboard()">
@@ -689,13 +688,11 @@ const toggleTickets = () => showTickets.value = !showTickets.value;
 }
 
 .team-name {
-  /* Middle item of the top bar: takes the space between the menu and the
-     action buttons, centres its text, and ellipsises when squeezed. */
-  flex: 1 1 auto;
-  min-width: 0;
+  /* Sits in the left group, directly beside the menu trigger. Sized to its
+     content (capped so long names ellipsise rather than push the menu away). */
+  max-width: 30vw;
   height: 70px;
   line-height: 70px;
-  text-align: center;
   font-family: "Montserrat", sans-serif;
   font-size: 26px;
   font-weight: 400;
@@ -704,6 +701,11 @@ const toggleTickets = () => showTickets.value = !showTickets.value;
   white-space: nowrap;
   overflow: hidden;
   text-overflow: ellipsis;
+  /* Accent underline, matching the "Voting on" ticket styling. */
+  text-decoration: underline;
+  text-decoration-color: var(--accent);
+  text-decoration-thickness: 2px;
+  text-underline-offset: 6px;
 }
 
 .copied {

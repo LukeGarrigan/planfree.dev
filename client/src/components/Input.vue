@@ -19,7 +19,7 @@
           height="24px"
           viewBox="0 0 24 24"
           width="24px"
-          fill="#000000"
+          fill="currentColor"
       >
         <path d="M0 0h24v24H0z" fill="none"/>
         <path d="M10 6L8.59 7.41 13.17 12l-4.58 4.59L10 18l6-6z"/>
@@ -69,14 +69,18 @@ const completed = () => {
 }
 
 .enter-button {
-  //background: #54e8dd;
-  background: white;
+  background: var(--surface-input);
+  color: var(--text);
   border: none;
   cursor: pointer;
   border-top-right-radius: 10px;
   border-bottom-right-radius: 10px;
   width: 50px;
   height: 45px;
+
+  svg {
+    fill: currentColor;
+  }
 }
 
 input {
@@ -88,12 +92,13 @@ input {
   font-size: 20px;
   border-top-left-radius: 10px;
   border-bottom-left-radius: 10px;
-  color: #161b1f;
+  background: var(--surface-input);
+  color: var(--text);
   padding: 8px 50px 8px 8px;
 }
 
 input::placeholder {
-  color: #a0a0a0; /* Lighter/dimmer color for the placeholder */
+  color: var(--text-muted); /* Lighter/dimmer color for the placeholder */
   font-size: 20px; /* Smaller font size for the placeholder */
   padding-left: 10px;
 }

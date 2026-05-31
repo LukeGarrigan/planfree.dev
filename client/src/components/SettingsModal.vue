@@ -5,7 +5,7 @@
         <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none">
           <path
               d="M20.7457 3.32851C20.3552 2.93798 19.722 2.93798 19.3315 3.32851L12.0371 10.6229L4.74275 3.32851C4.35223 2.93798 3.71906 2.93798 3.32854 3.32851C2.93801 3.71903 2.93801 4.3522 3.32854 4.74272L10.6229 12.0371L3.32856 19.3314C2.93803 19.722 2.93803 20.3551 3.32856 20.7457C3.71908 21.1362 4.35225 21.1362 4.74277 20.7457L12.0371 13.4513L19.3315 20.7457C19.722 21.1362 20.3552 21.1362 20.7457 20.7457C21.1362 20.3551 21.1362 19.722 20.7457 19.3315L13.4513 12.0371L20.7457 4.74272C21.1362 4.3522 21.1362 3.71903 20.7457 3.32851Z"
-              fill="#0F0F0F"/>
+              fill="currentColor"/>
         </svg>
       </button>
 
@@ -71,7 +71,7 @@ onUnmounted(() => window.removeEventListener('keydown', onKeydown));
   display: flex;
   align-items: center;
   justify-content: center;
-  background: rgba(22, 27, 31, 0.35);
+  background: var(--overlay);
   backdrop-filter: blur(2px);
 }
 
@@ -81,9 +81,9 @@ onUnmounted(() => window.removeEventListener('keydown', onKeydown));
   max-width: 460px;
   padding: 32px 28px;
   border-radius: 20px;
-  background: #f3f0f1;
-  color: #161b1f;
-  box-shadow: 0 16px 48px rgba(0, 0, 0, 0.3);
+  background: var(--surface);
+  color: var(--text);
+  box-shadow: var(--shadow-modal);
   font-family: "Montserrat", sans-serif;
 }
 
@@ -99,6 +99,7 @@ onUnmounted(() => window.removeEventListener('keydown', onKeydown));
   border: none;
   border-radius: 50%;
   background: transparent;
+  color: var(--text);
   cursor: pointer;
   opacity: 0.5;
   transition: opacity 0.15s ease;
@@ -134,18 +135,18 @@ onUnmounted(() => window.removeEventListener('keydown', onKeydown));
   padding: 16px;
   border: 2px solid transparent;
   border-radius: 16px;
-  background: #ece8e9;
+  background: var(--surface-sunken);
   cursor: pointer;
   text-align: left;
   transition: border-color 0.15s ease, background 0.15s ease;
 
   &:hover {
-    background: #e6e1e2;
+    background: var(--surface-sunken-hover);
   }
 
   &.active {
-    border-color: #54e8dd;
-    background: #fff;
+    border-color: var(--accent);
+    background: var(--surface-input);
   }
 }
 
@@ -159,14 +160,14 @@ onUnmounted(() => window.removeEventListener('keydown', onKeydown));
   font-family: "Montserrat", sans-serif;
   font-size: 18px;
   font-weight: 600;
-  color: #161b1f;
+  color: var(--text);
 }
 
 .badge {
   font-size: 12px;
   font-weight: 600;
-  color: #161b1f;
-  background: #54e8dd;
+  color: var(--accent-text);
+  background: var(--accent);
   border-radius: 10px;
   padding: 2px 10px;
 }
@@ -185,8 +186,8 @@ onUnmounted(() => window.removeEventListener('keydown', onKeydown));
   height: 26px;
   padding: 0 7px;
   border-radius: 8px;
-  background: #f3f0f1;
-  color: #161b1f;
+  background: var(--surface);
+  color: var(--text);
   font-family: "Montserrat", sans-serif;
   font-size: 13px;
   font-weight: 500;

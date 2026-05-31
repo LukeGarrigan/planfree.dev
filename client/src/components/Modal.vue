@@ -54,7 +54,7 @@ function completed() {
   display: flex;
   align-items: center;
   justify-content: center;
-  background: rgba(22, 27, 31, 0.35);
+  background: var(--overlay);
   backdrop-filter: blur(2px);
 }
 
@@ -63,9 +63,9 @@ function completed() {
   max-width: 400px;
   padding: 32px 28px;
   border-radius: 20px;
-  background: #f3f0f1;
-  box-shadow: 0 16px 48px rgba(0, 0, 0, 0.3);
-  color: #161b1f;
+  background: var(--surface);
+  box-shadow: var(--shadow-modal);
+  color: var(--text);
   display: flex;
   align-items: center;
   justify-content: center;

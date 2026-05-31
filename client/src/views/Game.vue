@@ -23,7 +23,7 @@
         <button class="edit-name-button" @click="modal = true">
           <div>{{ name }}</div>
           <div>
-            <svg xmlns="http://www.w3.org/2000/svg" height="24px" viewBox="0 0 24 24" width="24px" fill="#000000">
+            <svg xmlns="http://www.w3.org/2000/svg" height="24px" viewBox="0 0 24 24" width="24px" fill="currentColor">
               <path d="M0 0h24v24H0V0z" fill="none"/>
               <path
                   d="M14.06 9.02l.92.92L5.92 19H5v-.92l9.06-9.06M17.66 3c-.25 0-.51.1-.7.29l-1.83 1.83 3.75 3.75 1.83-1.83c.39-.39.39-1.02 0-1.41l-2.34-2.34c-.2-.2-.45-.29-.71-.29zm-3.6 3.19L3 17.25V21h3.75L17.81 9.94l-3.75-3.75z"/>
@@ -37,15 +37,15 @@
                  xmlns="http://www.w3.org/2000/svg">
               <path
                   d="M9 12C9 13.3807 7.88071 14.5 6.5 14.5C5.11929 14.5 4 13.3807 4 12C4 10.6193 5.11929 9.5 6.5 9.5C7.88071 9.5 9 10.6193 9 12Z"
-                  stroke="#1C274C" stroke-width="1.5"/>
-              <path d="M14 6.5L9 10" stroke="#1C274C" stroke-width="1.5" stroke-linecap="round"/>
-              <path d="M14 17.5L9 14" stroke="#1C274C" stroke-width="1.5" stroke-linecap="round"/>
+                  stroke="currentColor" stroke-width="1.5"/>
+              <path d="M14 6.5L9 10" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/>
+              <path d="M14 17.5L9 14" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/>
               <path
                   d="M19 18.5C19 19.8807 17.8807 21 16.5 21C15.1193 21 14 19.8807 14 18.5C14 17.1193 15.1193 16 16.5 16C17.8807 16 19 17.1193 19 18.5Z"
-                  stroke="#1C274C" stroke-width="1.5"/>
+                  stroke="currentColor" stroke-width="1.5"/>
               <path
                   d="M19 5.5C19 6.88071 17.8807 8 16.5 8C15.1193 8 14 6.88071 14 5.5C14 4.11929 15.1193 3 16.5 3C17.8807 3 19 4.11929 19 5.5Z"
-                  stroke="#1C274C" stroke-width="1.5"/>
+                  stroke="currentColor" stroke-width="1.5"/>
             </svg>
           </div>
         </button>
@@ -54,7 +54,7 @@
           <div></div>
         </button>
         <button class="fib-button" @click="toggleTickets">
-          <svg xmlns="http://www.w3.org/2000/svg" height="24" viewBox="0 -960 960 960" width="24">
+          <svg xmlns="http://www.w3.org/2000/svg" height="24" viewBox="0 -960 960 960" width="24" fill="currentColor">
             <path
                 d="M200-120q-33 0-56.5-23.5T120-200v-560q0-33 23.5-56.5T200-840h440l200 200v440q0 33-23.5 56.5T760-120H200Zm0-80h560v-400H600v-160H200v560Zm80-80h400v-80H280v80Zm0-320h200v-80H280v80Zm0 160h400v-80H280v80Zm-80-320v160-160 560-560Z"/>
           </svg>
@@ -65,6 +65,11 @@
         <PFLittleButton type="github" popover-text="Open repo" @clicked="goToGithub()"></PFLittleButton>
         <PFLittleButton type="pwa" popover-text="Install as app" @clicked="installPWA()"></PFLittleButton>
         <PFLittleButton type="settings" popover-text="Settings" @clicked="()=>{settings = true;}"></PFLittleButton>
+        <PFLittleButton
+            :type="isDark ? 'sun' : 'moon'"
+            :popover-text="isDark ? 'Light mode' : 'Dark mode'"
+            @clicked="toggleTheme()"
+        ></PFLittleButton>
         <div class="voting-on" v-if="votingOnName">
           <p class="voting-on-label">Voting on: <b>{{ votingOnName }}</b></p>
         </div>
@@ -130,6 +135,7 @@ import {useRoute} from "vue-router";
 import Tickets from "@/components/Tickets.vue";
 import {useTickets} from "@/composables/useTickets";
 import {useGameEngine} from "@/composables/useGameEngine";
+import {useTheme} from "@/composables/useTheme";
 import PFLittleButton from "@/components/LittleButton.vue";
 import Settings from "../components/SettingsModal.vue";
 import Sharing from "../components/SharingModal.vue";
@@ -160,6 +166,7 @@ const {
   teamName
 } = useGameEngine();
 const showShareModal = ref(false);
+const {isDark, toggleTheme} = useTheme();
 
 let deferredPrompt: any;
 
@@ -278,10 +285,9 @@ const toggleTickets = () => showTickets.value = !showTickets.value;
     cursor: default;
     width: 64px;
     height: 80px;
-    background: #f3f0f1;
-    box-shadow: -6px -6px 10px rgba(255, 255, 255, 0.8),
-    6px 6px 10px rgba(0, 0, 0, 0.2);
-    color: #161b1f;
+    background: var(--surface);
+    box-shadow: var(--shadow-raised);
+    color: var(--text);
     display: flex;
     justify-content: center;
     align-items: center;
@@ -294,7 +300,7 @@ const toggleTickets = () => showTickets.value = !showTickets.value;
   }
 
   .voted {
-    background: #54e8dd;
+    background: var(--accent);
   }
 }
 
@@ -314,26 +320,23 @@ const toggleTickets = () => showTickets.value = !showTickets.value;
   top: 45%;
   width: 320px;
   height: 80px;
-  background: #f3f0f1;
+  background: var(--surface);
   border-radius: 32px;
   text-align: center;
   border: none;
   cursor: pointer;
   transition: all 0.1s ease-in-out;
-  box-shadow: -6px -6px 10px rgba(255, 255, 255, 0.8),
-  6px 6px 10px rgba(0, 0, 0, 0.2);
-  color: #161b1f;
+  box-shadow: var(--shadow-raised);
+  color: var(--text);
 
   &:hover {
     opacity: 0.3;
-    box-shadow: -6px -6px 10px rgba(255, 255, 255, 0.8),
-    6px 6px 10px rgba(0, 0, 0, 0.2);
+    box-shadow: var(--shadow-raised);
   }
 
   &:active {
     opacity: 1;
-    box-shadow: inset -4px -4px 8px rgba(255, 255, 255, 0.5),
-    inset 8px 8px 16px rgba(0, 0, 0, 0.1);
+    box-shadow: var(--shadow-pressed);
   }
 
 }
@@ -526,7 +529,8 @@ const toggleTickets = () => showTickets.value = !showTickets.value;
     user-select: none;
     height: 70px;
     font-size: 26px;
-    background: #f3f0f1;
+    background: var(--surface);
+    color: var(--text);
     border-radius: 32px;
     border: none;
     display: flex;
@@ -552,7 +556,7 @@ const toggleTickets = () => showTickets.value = !showTickets.value;
       height: 2px;
       bottom: 10px;
       right: 10px;
-      background-color: #000;
+      background-color: var(--text);
       transform: scaleX(0);
       transition: transform 0.3s ease;
     }
@@ -584,7 +588,7 @@ const toggleTickets = () => showTickets.value = !showTickets.value;
   font-family: "Montserrat", sans-serif;
   font-size: 26px;
   font-weight: 400;
-  color: #161b1f;
+  color: var(--text);
   user-select: none;
   text-align: center;
   white-space: nowrap;
@@ -593,7 +597,7 @@ const toggleTickets = () => showTickets.value = !showTickets.value;
 }
 
 .copied {
-  background: #54e8dd;
+  background: var(--accent);
 }
 
 .no-hover {
@@ -604,7 +608,7 @@ span {
   font-family: "Montserrat", sans-serif;
   font-size: 26px;
   font-weight: semibold;
-  color: #161b1f;
+  color: var(--text);
   user-select: none;
 }
 
@@ -618,20 +622,19 @@ span {
   width: 90%;
   bottom: 5%;
   font-size: 20px;
-  color: #54e8dd;
+  color: var(--accent);
 
   .results {
     display: flex;
     flex-direction: column;
     justify-content: center;
-    background: #161b1f;
+    background: var(--inverse-surface);
     border-radius: 26px;
     border: none;
     width: 250px;
     height: 100px;
     transition: all 0.1s ease-in-out;
-    box-shadow: -6px -6px 10px rgba(255, 255, 255, 0.8),
-    6px 6px 10px rgba(0, 0, 0, 0.2);
+    box-shadow: var(--shadow-raised);
 
     user-select: none;
     font-family: "Montserrat", sans-serif;
@@ -663,7 +666,7 @@ span {
   display: flex;
   align-items: center;
   justify-content: center;
-  background: #f3f0f1;
+  background: var(--surface);
   border-radius: 26px;
   text-align: center;
   border: none;
@@ -671,26 +674,23 @@ span {
   width: 64px;
   height: 70px;
   transition: all 0.1s ease-in-out;
-  box-shadow: -6px -6px 10px rgba(255, 255, 255, 0.8),
-  6px 6px 10px rgba(0, 0, 0, 0.2);
-  color: #161b1f;
+  box-shadow: var(--shadow-raised);
+  color: var(--text);
 
   &:not(.current) {
     &:hover {
       opacity: 0.3;
-      box-shadow: -6px -6px 10px rgba(255, 255, 255, 0.8),
-      6px 6px 10px rgba(0, 0, 0, 0.2);
+      box-shadow: var(--shadow-raised);
     }
 
     &:active {
       opacity: 1;
-      box-shadow: inset -4px -4px 8px rgba(255, 255, 255, 0.5),
-      inset 8px 8px 16px rgba(0, 0, 0, 0.1);
+      box-shadow: var(--shadow-pressed);
     }
   }
 
   &.current {
-    background: #54e8dd;
+    background: var(--accent);
   }
 }
 </style>

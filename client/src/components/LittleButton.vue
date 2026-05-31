@@ -19,6 +19,16 @@
       <path
           d="M7 17v-2H3.5q-.625 0-1.062-.438Q2 14.125 2 13.5v-9q0-.625.438-1.062Q2.875 3 3.5 3H11v1.5H3.5v9h13V11H18v2.5q0 .625-.438 1.062Q17.125 15 16.5 15H13v2Zm7.479-6L11 7.521l1.062-1.063 1.688 1.688V3h1.5v5.104l1.688-1.687L18 7.479Z"/>
     </svg>
+    <svg v-if="props.type == 'moon'" xmlns="http://www.w3.org/2000/svg" height="20" width="20" viewBox="0 0 24 24"
+         fill="currentColor">
+      <path
+          d="M12 3a9 9 0 1 0 9 9c0-.46-.04-.92-.1-1.36a5.39 5.39 0 0 1-4.4 2.26 5.4 5.4 0 0 1-5.4-5.4c0-1.86.94-3.5 2.36-4.46-.44-.06-.9-.1-1.36-.1Z"/>
+    </svg>
+    <svg v-if="props.type == 'sun'" xmlns="http://www.w3.org/2000/svg" height="20" width="20" viewBox="0 0 24 24"
+         fill="currentColor">
+      <path
+          d="M12 7a5 5 0 1 0 0 10 5 5 0 0 0 0-10Zm0-5a1 1 0 0 1 1 1v1.5a1 1 0 1 1-2 0V3a1 1 0 0 1 1-1Zm0 16.5a1 1 0 0 1 1 1V21a1 1 0 1 1-2 0v-1.5a1 1 0 0 1 1-1ZM3 11h1.5a1 1 0 1 1 0 2H3a1 1 0 1 1 0-2Zm16.5 0H21a1 1 0 1 1 0 2h-1.5a1 1 0 1 1 0-2ZM5.05 5.05a1 1 0 0 1 1.41 0l1.06 1.06a1 1 0 1 1-1.41 1.41L5.05 6.46a1 1 0 0 1 0-1.41Zm11.43 11.43a1 1 0 0 1 1.41 0l1.06 1.06a1 1 0 1 1-1.41 1.41l-1.06-1.06a1 1 0 0 1 0-1.41Zm2.47-11.43a1 1 0 0 1 0 1.41l-1.06 1.06a1 1 0 1 1-1.41-1.41l1.06-1.06a1 1 0 0 1 1.41 0ZM7.52 16.48a1 1 0 0 1 0 1.41l-1.06 1.06a1 1 0 0 1-1.41-1.41l1.06-1.06a1 1 0 0 1 1.41 0Z"/>
+    </svg>
     <div v-if="popoverText" class="popover">{{ props.popoverText }}</div>
   </button>
 </template>
@@ -47,25 +57,24 @@ const clicked = () => {
 
 .little-button {
   position: relative;
-  background: #f3f0f1;
+  background: var(--surface);
   border-radius: 32px;
   text-align: center;
   border: none;
   cursor: pointer;
   width: 30px;
   height: 30px;
-  box-shadow: -6px -6px 10px rgba(255, 255, 255, 0.8),
-  6px 6px 10px rgba(0, 0, 0, 0.2);
-  color: #161b1f;
+  box-shadow: var(--shadow-raised);
+  color: var(--text);
 
   svg {
     margin-top: 4px;
+    fill: currentColor;
   }
 
   &:hover {
     opacity: 0.3;
-    box-shadow: -6px -6px 10px rgba(255, 255, 255, 0.8),
-    6px 6px 10px rgba(0, 0, 0, 0.2);
+    box-shadow: var(--shadow-raised);
   }
 
 }
@@ -78,6 +87,7 @@ const clicked = () => {
   visibility: hidden;
   opacity: 0;
   width: 100px;
+  color: var(--text);
   transition: opacity 0.2s, visibility 0.2s;
 }
 

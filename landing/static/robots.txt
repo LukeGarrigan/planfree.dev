@@ -1,0 +1,4 @@
+User-agent: *
+Allow: /
+
+Sitemap: https://planfree.dev/sitemap.xml

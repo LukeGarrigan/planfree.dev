@@ -20,8 +20,16 @@
 {{ partialCached "site-verifications.html" . }}
 
 
+<!-- canonical url -->
+<link rel="canonical" href="{{ .Permalink }}" />
+
+
 <!-- opengraph and twitter card -->
 {{ partial "basic-seo.html" . }}
+
+
+<!-- structured data (JSON-LD) -->
+{{ partial "json-ld.html" . }}
 
 
 <!-- custom script -->

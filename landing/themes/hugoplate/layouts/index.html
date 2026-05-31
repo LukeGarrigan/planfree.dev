@@ -140,4 +140,26 @@
     {{ end }}
   {{ end }}
   <!-- /Testimonials -->
+
+  <!-- FAQ -->
+  {{ with .Params.faqs }}
+    <section class="section-sm">
+      <div class="container">
+        <div class="row justify-center">
+          <div class="md:col-10 lg:col-8 mx-auto mb-10 text-center">
+            <h2 class="mb-4">Frequently Asked Questions</h2>
+          </div>
+          <div class="md:col-10 lg:col-8 mx-auto">
+            {{ range . }}
+              <div class="mb-8">
+                <h3 class="h5 mb-2">{{ .question | markdownify }}</h3>
+                <p>{{ .answer | markdownify }}</p>
+              </div>
+            {{ end }}
+          </div>
+        </div>
+      </div>
+    </section>
+  {{ end }}
+  <!-- /FAQ -->
 {{ end }}

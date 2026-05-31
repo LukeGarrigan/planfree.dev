@@ -36,7 +36,7 @@ preloader = "" # use jpg, png, svg or gif format.
 [navigation_button]
 enable = true
 label = "Create Room"
-link = "http://localhost:9999"
+link = "https://app.planfree.dev"
 
 # search
 # search module: https://github.com/gethugothemes/hugo-modules/tree/master/search

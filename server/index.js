@@ -20,10 +20,10 @@ http.listen(process.env.PORT || 3000, () => {
     console.log(`listening on *:${process.env.PORT || 3000}`);
 });
 
-let players = [];
-let tickets = [];
-let gameType = [];
-let teams = [];
+// All room state lives here, keyed by roomId. Each entry is a self-contained
+// room: { players, tickets, gameType, teamName }. A room is created on first
+// connect and deleted when its last player disconnects, so nothing leaks.
+const rooms = new Map();
 
 let gameTypes = [
     { name: 'Fibonacci', values: [1, 2, 3, 5, 8, 13, 21, 34, 55, 89, '?'] },
@@ -31,24 +31,34 @@ let gameTypes = [
     { name: 'Powers of 2', values: [0, 1, 2, 4, 8, 16, 32, 64, '?'] },
 ]
 
+function getOrCreateRoom(roomId) {
+    let room = rooms.get(roomId);
+    if (!room) {
+        room = { players: [], tickets: [], gameType: gameTypes[0], teamName: '' };
+        rooms.set(roomId, room);
+    }
+    return room;
+}
+
 io.on('connection', (socket) => {
     console.log('A user connected', socket.id);
     let roomId = socket.handshake.query['roomId'];
-    let initialGameType = gameTypes[0];
     if (!roomId) {
         roomId = randomBytes(8).toString('hex');
+        const room = getOrCreateRoom(roomId);
         const teamName = socket.handshake.query['teamName'];
         if (teamName) {
-            teams.push({ roomId: roomId, name: teamName });
+            room.teamName = teamName;
         }
         // The room creator picks a deck on the "Name your team" screen. Look it
         // up by name so the server stays the source of truth for deck values.
         const chosenGameType = gameTypes.find(g => g.name === socket.handshake.query['gameType']);
         if (chosenGameType) {
-            initialGameType = chosenGameType;
+            room.gameType = chosenGameType;
         }
         socket.emit('room', roomId);
     }
+    const room = getOrCreateRoom(roomId);
     socket.emit('gameTypes', gameTypes)
     socket.join(roomId);
 
@@ -57,18 +67,18 @@ io.on('connection', (socket) => {
     // preserving their name and vote, instead of creating a duplicate.
     const userId = socket.handshake.query['userId'];
     const existingPlayer = userId
-        ? players.find(p => p.userId === userId && p.roomId === roomId)
+        ? room.players.find(p => p.userId === userId)
         : null;
     if (existingPlayer) {
         existingPlayer.id = socket.id;
     } else {
-        players.push({ id: socket.id, userId: userId, name: '', roomId: roomId });
+        room.players.push({ id: socket.id, userId: userId, name: '', vote: undefined });
     }
-    gameType.push({ id: socket.id, gameType: initialGameType, roomId: roomId });
 
     socket.on('name', (name) => {
-        let player = players.find(p => p.id == socket.id);
-        console.log(`User entered name ${name}`);
+        const room = rooms.get(roomId);
+        if (!room) return;
+        const player = room.players.find(p => p.id == socket.id);
         if (player) {
             console.log(`Changing name from ${player.name} to ${name}`)
             player.name = name;
@@ -77,14 +87,15 @@ io.on('connection', (socket) => {
     });
 
     socket.on('vote', (vote) => {
-        let player = players.find(p => p.id == socket.id);
+        const room = rooms.get(roomId);
+        if (!room) return;
+        const player = room.players.find(p => p.id == socket.id);
         if (player) {
             player.vote = vote;
+            console.log(`Player ${player.name} voted ${player.vote}`);
         }
-        console.log(`Player ${player.name} voted ${player.vote}`);
 
-        const playersInRoom = players.filter(p => p.roomId == roomId);
-        if (playersInRoom.every(p => p.vote)) {
+        if (room.players.every(p => p.vote)) {
             showVotes(roomId);
         }
         updateClientsInRoom(roomId);
@@ -99,32 +110,26 @@ io.on('connection', (socket) => {
     });
 
     socket.on('gameTypeChanged', (newGameType) => {
-        gameType.find(p => p.roomId == roomId).gameType = newGameType;
+        const room = rooms.get(roomId);
+        if (!room) return;
+        room.gameType = newGameType;
         updateClientsInRoom(roomId);
     });
 
     socket.on('teamNameChanged', (newTeamName) => {
-        const name = (newTeamName ?? '').trim();
-        const team = teams.find(t => t.roomId == roomId);
-        if (team) {
-            team.name = name;
-        } else {
-            // Room was created without a team name — create the entry now.
-            teams.push({ roomId: roomId, name: name });
-        }
+        const room = rooms.get(roomId);
+        if (!room) return;
+        room.teamName = (newTeamName ?? '').trim();
         updateClientsInRoom(roomId);
     });
 
     socket.on('ticket', (updatedTickets) => {
-        tickets = tickets.filter(ticket => ticket.roomId !== roomId);
-        for (const ticket of updatedTickets) {
-            ticket.roomId = roomId;
-        }
+        const room = rooms.get(roomId);
+        if (!room) return;
         if (updatedTickets.length === 1) {
             updatedTickets[0].votingOn = true;
         }
-
-        tickets.push(...updatedTickets)
+        room.tickets = updatedTickets;
         updateClientsInRoom(roomId);
     });
 
@@ -132,105 +137,99 @@ io.on('connection', (socket) => {
         // Only remove the player if this socket is still the one attached to
         // them. If they've already reconnected on a new socket, their player
         // slot now points at that socket and should be left intact.
-        const player = players.find(player => player.id === socket.id);
+        const room = rooms.get(roomId);
+        if (!room) return;
+        const player = room.players.find(player => player.id === socket.id);
         if (player) {
             console.log(`Player ${player.name} has disconnected`);
-            players = players.filter(p => p.id !== socket.id);
-            updateClientsInRoom(roomId);
+            room.players = room.players.filter(p => p.id !== socket.id);
+            // Drop the whole room once the last player leaves so room state
+            // (players, tickets, deck) doesn't accumulate forever.
+            if (room.players.length === 0) {
+                rooms.delete(roomId);
+            } else {
+                updateClientsInRoom(roomId);
+            }
         }
     });
 
     socket.on('pong', () => {
-        let player = players.find(p => p.id == socket.id);
         // keeping the connection alive
     })
 });
 
 function updateClientsInRoom(roomId) {
-    const roomPlayers = players.filter(p => p.roomId == roomId);
-    const roomTickets = tickets.filter(p => p.roomId == roomId);
-    const roomGameType = gameType.find(p => p.roomId == roomId).gameType ?? gameTypes[0];
+    const room = rooms.get(roomId);
+    if (!room) return;
     io.to(roomId).emit('update', {
-        players: roomPlayers,
-        tickets: roomTickets,
-        gameType: roomGameType,
-        teamName: getTeamName(roomId)
+        players: room.players,
+        tickets: room.tickets,
+        gameType: room.gameType ?? gameTypes[0],
+        teamName: room.teamName
     });
 }
 
-function getTeamName(roomId) {
-    return teams.find(t => t.roomId == roomId)?.name ?? '';
-}
-
 function restartGame(roomId) {
-    const roomPlayers = players.filter(p => p.roomId == roomId);
-    const roomTickets = tickets.filter(p => p.roomId == roomId);
-    const roomGameType = gameType.find(p => p.roomId == roomId).gameType ?? gameTypes[0];
+    const room = rooms.get(roomId);
+    if (!room) return;
 
-    roomPlayers.forEach(p => p.vote = undefined); // reset all the player's votes
+    room.players.forEach(p => p.vote = undefined); // reset all the player's votes
 
-    const ticketVotingOn = roomTickets.find(f => f.votingOn);
+    const ticketVotingOn = room.tickets.find(f => f.votingOn);
     if (!(ticketVotingOn && !ticketVotingOn.score)) {
-        roomTickets.forEach(p => p.votingOn = false);
-        const ticketToVoteOn = roomTickets.find(t => !t.score);
+        room.tickets.forEach(p => p.votingOn = false);
+        const ticketToVoteOn = room.tickets.find(t => !t.score);
         if (ticketToVoteOn) {
             ticketToVoteOn.votingOn = true;
         }
     }
-    console.log(`Restarted game with Players: ${roomPlayers.map(p => p.name).join(", ")}`);
+    console.log(`Restarted game with Players: ${room.players.map(p => p.name).join(", ")}`);
     io.to(roomId).emit('restart');
-    io.to(roomId).emit('update', {
-        players: roomPlayers,
-        tickets: roomTickets,
-        gameType: roomGameType,
-        teamName: getTeamName(roomId)
-    });
+    updateClientsInRoom(roomId);
 }
 
 function logRooms() {
-    const rooms = players.map(e => e.roomId);
-    if (rooms) {
-        for (const room of rooms.filter((val, i, arr) => arr.indexOf(val) == i)) {
-            const playersInRoom = players.filter(p => p.roomId == room).map(p => p.name);
-            console.log(`Room: ${room} - Players: ${playersInRoom.join(", ")}`);
-        }
+    for (const [roomId, room] of rooms) {
+        const playerNames = room.players.map(p => p.name);
+        console.log(`Room: ${roomId} - Players: ${playerNames.join(", ")}`);
     }
 }
 
 function showVotes(roomId) {
-    const roomTickets = tickets.filter(p => p.roomId == roomId);
+    const room = rooms.get(roomId);
+    if (!room) return;
     // find the text in the gametype where the index is the closest
     let closest = 0;
+    let avg;
     const average = getAverage(roomId);
-    const fib = gameType.find(p => p.roomId == roomId).gameType.values
-    let upwards = Math.abs(fib.find(p => p >= average)- average);
-    let downWards = Math.abs(fib.findLast(p => p <= average) - average);
+    const values = room.gameType.values;
+    let upwards = Math.abs(values.find(p => p >= average) - average);
+    let downWards = Math.abs(values.findLast(p => p <= average) - average);
     // the game type is not numeric use indexes instead
-    if(isNaN(upwards)){
-        upwards = fib.find((v, k) => k >= average);
-        downWards = fib.findLast((v, k) => k <= average);
-        if(upwards < downWards){
-            closest = fib.find((v,k) => k >= average);
+    if (isNaN(upwards)) {
+        upwards = values.find((v, k) => k >= average);
+        downWards = values.findLast((v, k) => k <= average);
+        if (upwards < downWards) {
+            closest = values.find((v, k) => k >= average);
         }
-        else{
-            closest = fib.findLast((v,k) => k <= average);
-        }  
-        avg = fib[Math.floor(average)];  
+        else {
+            closest = values.findLast((v, k) => k <= average);
+        }
+        avg = values[Math.floor(average)];
     }
-    else
-    {
-        if(upwards < downWards){
-            closest = fib.find(p => p >= average);
+    else {
+        if (upwards < downWards) {
+            closest = values.find(p => p >= average);
         }
-        else{
-            closest = fib.findLast(p => p <= average);
+        else {
+            closest = values.findLast(p => p <= average);
         }
         avg = average;
     }
-    
-    if (roomTickets.length>0) {
-        const ticket = roomTickets.find(f => f.votingOn);
-        if (ticket) { 
+
+    if (room.tickets.length > 0) {
+        const ticket = room.tickets.find(f => f.votingOn);
+        if (ticket) {
             ticket.score = closest;
         }
     }
@@ -239,11 +238,11 @@ function showVotes(roomId) {
 }
 
 function getAverage(roomId) {
-    const roomPlayers = players.filter(p => p.roomId == roomId);
-    const roomGameType = gameType.find(p => p.roomId == roomId).gameType
+    const room = rooms.get(roomId);
+    const roomGameType = room.gameType;
     let count = 0;
     let total = 0;
-    for (const player of roomPlayers) {
+    for (const player of room.players) {
         if (player.vote && player.vote !== "?") {
             // get the current index of the vote
             const index = roomGameType.values.indexOf(player.vote);

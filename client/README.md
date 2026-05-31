@@ -7,14 +7,20 @@
 npm install
 ```
 
-### Compiles and hot-reloads for development
+### Compiles and hot-reloads for development (Vite)
 ```
-npm run serve
+npm run dev
 ```
 
-### Lints and fixes files
+### Builds for production (outputs to dist/)
+```
+npm run build
+```
+
+### Lints (oxlint) and type-checks (vue-tsc)
 ```
 npm run lint
+npm run type-check
 ```
 
 # Additional steps

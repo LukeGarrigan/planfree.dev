@@ -30,7 +30,6 @@
 
 import PFInput from "@/components/Input.vue";
 import {ref} from "vue";
-import {v4 as uuidv4} from 'uuid';
 import {useTickets} from "@/composables/useTickets";
 import Ticket from "@/view-models/tickets";
 import PFLittleButton from "@/components/LittleButton.vue";
@@ -45,7 +44,7 @@ const addedTicket = () => {
   tickets.value.push({
     name: ticketName.value,
     voted: false,
-    id: uuidv4(),
+    id: crypto.randomUUID(),
     average: '0',
     closest: '0',
     score: '0',

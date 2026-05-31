@@ -30,7 +30,7 @@ function enteredTeamName(teamName: string) {
 }
 
 function registerSocket(teamName: string) {
-  const newSocket = io(process.env.VUE_APP_SERVER, {
+  const newSocket = io(import.meta.env.VITE_SERVER, {
     query: {
       teamName: teamName.trim(),
       userId: getUserId(),

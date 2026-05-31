@@ -225,7 +225,7 @@ function installPWA() {
 onMounted(() => {
   if (joiningAGame()) {
     const route = useRoute();
-    const newSocket = io(process.env.VUE_APP_SERVER, {
+    const newSocket = io(import.meta.env.VITE_SERVER, {
       query: {
         roomId: route.params.id,
         userId: getUserId(),

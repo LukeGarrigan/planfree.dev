@@ -16,7 +16,7 @@
         @keypress.enter="completed"
     />
 
-    <button class="enter-button" type="submit" aria-label="Use name" @click="completed">
+    <button class="enter-button" type="button" aria-label="Use name" @click="completed">
       <svg
           xmlns="http://www.w3.org/2000/svg"
           height="24px"

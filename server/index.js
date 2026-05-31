@@ -98,6 +98,18 @@ io.on('connection', (socket) => {
         updateClientsInRoom(roomId);
     });
 
+    socket.on('teamNameChanged', (newTeamName) => {
+        const name = (newTeamName ?? '').trim();
+        const team = teams.find(t => t.roomId == roomId);
+        if (team) {
+            team.name = name;
+        } else {
+            // Room was created without a team name — create the entry now.
+            teams.push({ roomId: roomId, name: name });
+        }
+        updateClientsInRoom(roomId);
+    });
+
     socket.on('ticket', (updatedTickets) => {
         tickets = tickets.filter(ticket => ticket.roomId !== roomId);
         for (const ticket of updatedTickets) {

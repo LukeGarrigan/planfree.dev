@@ -29,7 +29,6 @@
       <path
           d="M12 7a5 5 0 1 0 0 10 5 5 0 0 0 0-10Zm0-5a1 1 0 0 1 1 1v1.5a1 1 0 1 1-2 0V3a1 1 0 0 1 1-1Zm0 16.5a1 1 0 0 1 1 1V21a1 1 0 1 1-2 0v-1.5a1 1 0 0 1 1-1ZM3 11h1.5a1 1 0 1 1 0 2H3a1 1 0 1 1 0-2Zm16.5 0H21a1 1 0 1 1 0 2h-1.5a1 1 0 1 1 0-2ZM5.05 5.05a1 1 0 0 1 1.41 0l1.06 1.06a1 1 0 1 1-1.41 1.41L5.05 6.46a1 1 0 0 1 0-1.41Zm11.43 11.43a1 1 0 0 1 1.41 0l1.06 1.06a1 1 0 1 1-1.41 1.41l-1.06-1.06a1 1 0 0 1 0-1.41Zm2.47-11.43a1 1 0 0 1 0 1.41l-1.06 1.06a1 1 0 1 1-1.41-1.41l1.06-1.06a1 1 0 0 1 1.41 0ZM7.52 16.48a1 1 0 0 1 0 1.41l-1.06 1.06a1 1 0 0 1-1.41-1.41l1.06-1.06a1 1 0 0 1 1.41 0Z"/>
     </svg>
-    <div v-if="popoverText" class="popover">{{ props.popoverText }}</div>
   </button>
 </template>
 
@@ -39,10 +38,6 @@ const props = defineProps({
   type: {
     type: String,
     default: 'delete'
-  },
-  popoverText: {
-    type: String,
-    default: ''
   },
 })
 
@@ -77,22 +72,5 @@ const clicked = () => {
     box-shadow: var(--shadow-raised);
   }
 
-}
-
-.popover {
-  position: absolute;
-  bottom: 120%;
-  left: 50%;
-  transform: translateX(-50%);
-  visibility: hidden;
-  opacity: 0;
-  width: 100px;
-  color: var(--text);
-  transition: opacity 0.2s, visibility 0.2s;
-}
-
-.little-button:hover .popover {
-  visibility: visible;
-  opacity: 1;
 }
 </style>

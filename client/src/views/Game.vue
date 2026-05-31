@@ -10,26 +10,52 @@
     <Settings
         v-if="settings"
         :current="gameFormat?.name"
+        :team-name="teamName"
         @saveSettings="saveSettings"
+        @saveTeamName="saveTeamName"
         @close="settings = false"
     ></Settings>
     <Sharing v-if="showShareModal" @dismissModal="dismissModal"></Sharing>
     <div v-if="!modal" class="home">
 
+      <div class="top-bar">
+      <div class="top-left">
+        <div class="menu-wrapper">
+          <button class="menu-trigger" aria-label="Menu" @click="menuOpen = !menuOpen">
+            <svg xmlns="http://www.w3.org/2000/svg" height="26" width="26" viewBox="0 0 24 24" fill="currentColor">
+              <path
+                  d="M12 8a2 2 0 1 0 0-4 2 2 0 0 0 0 4Zm0 6a2 2 0 1 0 0-4 2 2 0 0 0 0 4Zm0 6a2 2 0 1 0 0-4 2 2 0 0 0 0 4Z"/>
+            </svg>
+          </button>
+          <div v-if="menuOpen" class="menu-backdrop" @click="menuOpen = false"></div>
+          <div v-if="menuOpen" class="menu" role="menu">
+            <button class="menu-item" role="menuitem" @click="toggleTheme()">
+              <svg v-if="isDark" class="menu-item-icon" xmlns="http://www.w3.org/2000/svg" height="18" width="18"
+                   viewBox="0 0 24 24" fill="currentColor">
+                <path
+                    d="M12 7a5 5 0 1 0 0 10 5 5 0 0 0 0-10Zm0-5a1 1 0 0 1 1 1v1.5a1 1 0 1 1-2 0V3a1 1 0 0 1 1-1Zm0 16.5a1 1 0 0 1 1 1V21a1 1 0 1 1-2 0v-1.5a1 1 0 0 1 1-1ZM3 11h1.5a1 1 0 1 1 0 2H3a1 1 0 1 1 0-2Zm16.5 0H21a1 1 0 1 1 0 2h-1.5a1 1 0 1 1 0-2ZM5.05 5.05a1 1 0 0 1 1.41 0l1.06 1.06a1 1 0 1 1-1.41 1.41L5.05 6.46a1 1 0 0 1 0-1.41Zm11.43 11.43a1 1 0 0 1 1.41 0l1.06 1.06a1 1 0 1 1-1.41 1.41l-1.06-1.06a1 1 0 0 1 0-1.41Zm2.47-11.43a1 1 0 0 1 0 1.41l-1.06 1.06a1 1 0 1 1-1.41-1.41l1.06-1.06a1 1 0 0 1 1.41 0ZM7.52 16.48a1 1 0 0 1 0 1.41l-1.06 1.06a1 1 0 0 1-1.41-1.41l1.06-1.06a1 1 0 0 1 1.41 0Z"/>
+              </svg>
+              <svg v-else class="menu-item-icon" xmlns="http://www.w3.org/2000/svg" height="18" width="18"
+                   viewBox="0 0 24 24" fill="currentColor">
+                <path
+                    d="M12 3a9 9 0 1 0 9 9c0-.46-.04-.92-.1-1.36a5.39 5.39 0 0 1-4.4 2.26 5.4 5.4 0 0 1-5.4-5.4c0-1.86.94-3.5 2.36-4.46-.44-.06-.9-.1-1.36-.1Z"/>
+              </svg>
+              <span>{{ isDark ? 'Light mode' : 'Dark mode' }}</span>
+            </button>
+            <button class="menu-item" role="menuitem" @click="editName()">Change name</button>
+            <button class="menu-item" role="menuitem" @click="openSettings()">Settings</button>
+            <button v-if="showInstallPwa" class="menu-item" role="menuitem" @click="installPWA()">Install app</button>
+            <button class="menu-item" role="menuitem" @click="goToGithub()">View on GitHub</button>
+          </div>
+        </div>
+        <div class="voting-on" v-if="votingOnName">
+          <p class="voting-on-label">Voting on: <b>{{ votingOnName }}</b></p>
+        </div>
+      </div>
+
       <div v-if="teamName" class="team-name">{{ teamName }}</div>
 
-
       <div class="top-buttons">
-        <button class="edit-name-button" @click="modal = true">
-          <div>{{ name }}</div>
-          <div>
-            <svg xmlns="http://www.w3.org/2000/svg" height="24px" viewBox="0 0 24 24" width="24px" fill="currentColor">
-              <path d="M0 0h24v24H0V0z" fill="none"/>
-              <path
-                  d="M14.06 9.02l.92.92L5.92 19H5v-.92l9.06-9.06M17.66 3c-.25 0-.51.1-.7.29l-1.83 1.83 3.75 3.75 1.83-1.83c.39-.39.39-1.02 0-1.41l-2.34-2.34c-.2-.2-.45-.29-.71-.29zm-3.6 3.19L3 17.25V21h3.75L17.81 9.94l-3.75-3.75z"/>
-            </svg>
-          </div>
-        </button>
         <button v-if="!showCopiedToClipboard" class="button invite" @click="copyToClipboard()">
           <div>{{ "Invite players" }}</div>
           <div>
@@ -53,26 +79,17 @@
           <div>{{ ("copy_to_clip") }}</div>
           <div></div>
         </button>
-        <button class="fib-button" @click="toggleTickets">
-          <svg xmlns="http://www.w3.org/2000/svg" height="24" viewBox="0 -960 960 960" width="24" fill="currentColor">
-            <path
-                d="M200-120q-33 0-56.5-23.5T120-200v-560q0-33 23.5-56.5T200-840h440l200 200v440q0 33-23.5 56.5T760-120H200Zm0-80h560v-400H600v-160H200v560Zm80-80h400v-80H280v80Zm0-320h200v-80H280v80Zm0 160h400v-80H280v80Zm-80-320v160-160 560-560Z"/>
-          </svg>
+        <button class="button issues-button" @click="toggleTickets">
+          <div>Stories</div>
+          <div>
+            <svg xmlns="http://www.w3.org/2000/svg" height="24" viewBox="0 -960 960 960" width="24" fill="currentColor">
+              <path
+                  d="M200-120q-33 0-56.5-23.5T120-200v-560q0-33 23.5-56.5T200-840h440l200 200v440q0 33-23.5 56.5T760-120H200Zm0-80h560v-400H600v-160H200v560Zm80-80h400v-80H280v80Zm0-320h200v-80H280v80Zm0 160h400v-80H280v80Zm-80-320v160-160 560-560Z"/>
+            </svg>
+          </div>
         </button>
       </div>
 
-      <div class="top-left">
-        <PFLittleButton type="github" popover-text="Open repo" @clicked="goToGithub()"></PFLittleButton>
-        <PFLittleButton type="pwa" popover-text="Install as app" @clicked="installPWA()"></PFLittleButton>
-        <PFLittleButton type="settings" popover-text="Settings" @clicked="()=>{settings = true;}"></PFLittleButton>
-        <PFLittleButton
-            :type="isDark ? 'sun' : 'moon'"
-            :popover-text="isDark ? 'Light mode' : 'Dark mode'"
-            @clicked="toggleTheme()"
-        ></PFLittleButton>
-        <div class="voting-on" v-if="votingOnName">
-          <p class="voting-on-label">Voting on: <b>{{ votingOnName }}</b></p>
-        </div>
       </div>
 
       <button v-if="!playerHasVoted() && !showVotes" class="button no-hover">
@@ -92,12 +109,14 @@
         <span>{{ countdown }}</span>
       </button>
 
-      <div class="players" v-for="player in players" :key="player.id">
-        <div class="player" :class="{ voted: player.vote }">
-          <span v-if="showVotes && countdown === 0">{{ player.vote }}</span>
-        </div>
-        <div class="name">
-          <span>{{ player.name }}</span>
+      <div class="players-row">
+        <div class="players" v-for="player in players" :key="player.id">
+          <div class="player" :class="{ voted: player.vote }">
+            <span v-if="showVotes && countdown === 0">{{ player.vote }}</span>
+          </div>
+          <div class="name">
+            <span>{{ player.name }}</span>
+          </div>
         </div>
       </div>
 
@@ -136,7 +155,6 @@ import Tickets from "@/components/Tickets.vue";
 import {useTickets} from "@/composables/useTickets";
 import {useGameEngine} from "@/composables/useGameEngine";
 import {useTheme} from "@/composables/useTheme";
-import PFLittleButton from "@/components/LittleButton.vue";
 import Settings from "../components/SettingsModal.vue";
 import Sharing from "../components/SharingModal.vue";
 import GameFormat from "@/view-models/gameFormat";
@@ -146,6 +164,7 @@ let showInstallPwa = ref(false);
 // Skip the name modal (start closed) if we already know this user's name.
 const modal = ref(!localStorage.getItem("name"));
 const settings = ref(false)
+const menuOpen = ref(false);
 const showCopiedToClipboard = ref(false);
 // Pre-fill with any previously used name so the modal opens populated. Read
 // synchronously here (not in onMounted) so the value exists before the Modal
@@ -181,11 +200,26 @@ function saveSettings(gameType: GameFormat) {
   socket.value.emit("gameTypeChanged", gameType);
 }
 
+function saveTeamName(newTeamName: string) {
+  socket.value.emit("teamNameChanged", newTeamName);
+}
+
 async function dismissModal() {
   showShareModal.value = false;
 }
 
+function editName() {
+  modal.value = true;
+  menuOpen.value = false;
+}
+
+function openSettings() {
+  settings.value = true;
+  menuOpen.value = false;
+}
+
 function installPWA() {
+  menuOpen.value = false;
   deferredPrompt.prompt();
 }
 
@@ -251,6 +285,7 @@ function copyToClipboard() {
 }
 
 function goToGithub() {
+  menuOpen.value = false;
   open("https://github.com/LukeGarrigan/planfree.dev");
 }
 
@@ -268,10 +303,22 @@ const toggleTickets = () => showTickets.value = !showTickets.value;
 </script>
 
 <style scoped lang="scss">
+.players-row {
+  /* Fills the space under the top bar and centres the player cards, so the
+     board flows below the header instead of sitting under an absolute bar. */
+  flex: 1 1 auto;
+  width: 100%;
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: center;
+  align-items: center;
+  align-content: center;
+  gap: 0 1em;
+}
+
 .players {
   user-select: none;
   position: relative;
-  top: 5em;
   width: 320px;
   height: 320px;
   display: flex;
@@ -306,7 +353,11 @@ const toggleTickets = () => showTickets.value = !showTickets.value;
 
 .home {
   display: flex;
-  justify-content: center;
+  flex-direction: column;
+  /* Centres children on the cross (horizontal) axis. The absolute .button /
+     .options / .results have no `left`, so they rely on this for centring —
+     the column equivalent of the old `justify-content: center`. */
+  align-items: center;
   height: 100%;
   width: 100%;
   box-sizing: border-box;
@@ -341,13 +392,110 @@ const toggleTickets = () => showTickets.value = !showTickets.value;
 
 }
 
+/* Single top bar: menu on the left, Invite/Stories on the right, all on one
+   flex baseline so the two groups always line up. Wraps the right-hand group
+   onto a second line (kept right-aligned) when there isn't room for one row.
+   It's an in-flow header (not absolute), so when it grows the board below
+   flows down to make room instead of being covered. */
+.top-bar {
+  flex: none;
+  width: 100%;
+  box-sizing: border-box;
+  padding: 2% 2% 0;
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 16px;
+}
+
 .top-left {
   display: flex;
   flex-direction: row;
-  left: 20px;
-  top: 35px;
-  position: absolute;
-  gap: 5px;
+  align-items: center;
+  gap: 16px;
+
+  .menu-wrapper {
+    position: relative;
+    display: flex;
+  }
+
+  .menu-trigger {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 70px;
+    height: 70px;
+    border: none;
+    border-radius: 32px;
+    background: var(--surface);
+    color: var(--text);
+    box-shadow: var(--shadow-raised);
+    cursor: pointer;
+    transition: all 0.1s ease-in-out;
+
+    &:hover {
+      opacity: 0.3;
+    }
+
+    &:active {
+      opacity: 1;
+      box-shadow: var(--shadow-pressed);
+    }
+  }
+
+  .menu-backdrop {
+    position: fixed;
+    inset: 0;
+    z-index: 10;
+  }
+
+  .menu {
+    position: absolute;
+    top: calc(100% + 8px);
+    left: 0;
+    z-index: 11;
+    display: flex;
+    flex-direction: column;
+    min-width: 170px;
+    padding: 8px;
+    gap: 2px;
+    background: var(--surface);
+    border-radius: 16px;
+    box-shadow: var(--shadow-modal);
+
+    .menu-item {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      width: 100%;
+      padding: 11px 14px;
+      background: transparent;
+      border: none;
+      border-radius: 10px;
+      cursor: pointer;
+      text-align: left;
+      font-family: "Montserrat", sans-serif;
+      font-size: 16px;
+      color: var(--text);
+
+      &:hover {
+        background: var(--surface-sunken-hover);
+      }
+
+      /* Override the global `span { font-size: 26px }` used for vote text. */
+      span {
+        font-size: 16px;
+        font-weight: 500;
+      }
+
+      .menu-item-icon {
+        flex: none;
+        width: 18px;
+        height: 18px;
+        fill: currentColor;
+      }
+    }
+  }
 
   .voting-on {
     font-family: "Montserrat", sans-serif;
@@ -364,17 +512,21 @@ const toggleTickets = () => showTickets.value = !showTickets.value;
 }
 
 @media only screen and (max-width: 700px) {
+  /* Tighten the single top bar to the viewport edges */
+  .top-bar {
+    top: 8px;
+    left: 8px;
+    right: 8px;
+    gap: 8px;
+  }
+
   /* Compact top toolbar that can't overflow the viewport */
   .top-buttons {
     gap: 8px;
-    top: 8px;
-    right: 8px;
-    left: 8px;
-    width: auto;
-    justify-content: flex-end;
-    align-items: center;
+    min-width: 0;
 
-    .invite {
+    .invite,
+    .issues-button {
       width: auto;
       min-width: 0;
       height: 46px;
@@ -390,36 +542,25 @@ const toggleTickets = () => showTickets.value = !showTickets.value;
       }
     }
 
-    .edit-name-button {
-      height: 46px;
-      font-size: 15px;
-      padding: 0 12px;
-      max-width: 30vw;
-
-      /* truncate long names instead of pushing siblings off-screen */
-      & > div:first-child {
-        overflow: hidden;
-        text-overflow: ellipsis;
-        white-space: nowrap;
-      }
-    }
-
     .fib-button {
       width: 46px;
       height: 46px;
     }
   }
 
-  /* Keep PWA-install and Settings reachable on mobile (was hidden). GitHub is
-     the least useful control on a phone, so drop it to make room. */
+  /* Overflow menu (theme / Settings / Install / GitHub) stays reachable on
+     mobile; the "Voting on" label is dropped to save horizontal room. */
   .top-left {
-    top: 12px;
-    left: 12px;
-    z-index: 5;
     gap: 8px;
 
-    .little-button:first-child {
-      display: none;
+    .menu-trigger {
+      width: 46px;
+      height: 46px;
+
+      svg {
+        width: 22px;
+        height: 22px;
+      }
     }
 
     .voting-on {
@@ -427,22 +568,20 @@ const toggleTickets = () => showTickets.value = !showTickets.value;
     }
   }
 
-  /* Team name sits on its own line just below the toolbar row */
+  /* Smaller team name to fit the compact bar; wraps with the rest when tight */
   .team-name {
-    top: 62px;
-    height: auto;
+    height: 46px;
+    line-height: 46px;
     font-size: 18px;
-    max-width: 80vw;
   }
 
-  /* Let player cards wrap into rows instead of overflowing sideways */
-  .home {
-    flex-wrap: wrap;
+  /* Pack the wrapped player cards from the top of the board area */
+  .players-row {
     align-content: flex-start;
+    padding-top: 1em;
   }
 
   .players {
-    top: 7em;
     width: 33vw;
     min-width: 88px;
     height: 150px;
@@ -489,12 +628,14 @@ const toggleTickets = () => showTickets.value = !showTickets.value;
 }
 
 @media only screen and (max-width: 400px) {
-  /* On very small screens shrink the invite control to its icon */
-  .top-buttons .invite > div:first-child {
+  /* On very small screens shrink the invite + issues controls to their icons */
+  .top-buttons .invite > div:first-child,
+  .top-buttons .issues-button > div:first-child {
     display: none;
   }
 
-  .top-buttons .invite {
+  .top-buttons .invite,
+  .top-buttons .issues-button {
     padding: 0 12px;
   }
 }
@@ -502,11 +643,10 @@ const toggleTickets = () => showTickets.value = !showTickets.value;
 .top-buttons {
   display: flex;
   flex-direction: row;
-  width: 100%;
-  position: absolute;
   justify-content: flex-end;
-  top: 2%;
-  right: 2%;
+  align-items: center;
+  /* Stay pinned right even when there's no team name filling the middle. */
+  margin-left: auto;
   gap: 20px;
 
   .invite {
@@ -524,49 +664,22 @@ const toggleTickets = () => showTickets.value = !showTickets.value;
     }
   }
 
-  .edit-name-button {
+  .issues-button {
     position: relative;
+    top: auto;
     user-select: none;
+    gap: 10px;
+    width: auto;
+    padding: 0 28px;
     height: 70px;
     font-size: 26px;
-    background: var(--surface);
-    color: var(--text);
-    border-radius: 32px;
-    border: none;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    gap: 10px;
-    opacity: 0.5;
-    cursor: pointer;
-
-    &:hover {
-      opacity: 1;
-    }
-
-    &:hover::before {
-      transform: scaleX(1);
-    }
-
-    &:before {
-      content: "";
-      position: absolute;
-      display: block;
-      width: 100%;
-      height: 2px;
-      bottom: 10px;
-      right: 10px;
-      background-color: var(--text);
-      transform: scaleX(0);
-      transition: transform 0.3s ease;
-    }
 
     svg {
       position: relative;
-      left: 2px;
       top: 3px;
     }
   }
+
 }
 
 .screen-reader-only {
@@ -576,21 +689,18 @@ const toggleTickets = () => showTickets.value = !showTickets.value;
 }
 
 .team-name {
-  position: absolute;
-  top: 2%;
-  left: 50%;
-  transform: translateX(-50%);
+  /* Middle item of the top bar: takes the space between the menu and the
+     action buttons, centres its text, and ellipsises when squeezed. */
+  flex: 1 1 auto;
+  min-width: 0;
   height: 70px;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  max-width: 40vw;
+  line-height: 70px;
+  text-align: center;
   font-family: "Montserrat", sans-serif;
   font-size: 26px;
   font-weight: 400;
   color: var(--text);
   user-select: none;
-  text-align: center;
   white-space: nowrap;
   overflow: hidden;
   text-overflow: ellipsis;

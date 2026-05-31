@@ -10,9 +10,24 @@
       </button>
 
       <div class="heading">Settings</div>
-      <p class="subheading">Choose your estimation deck</p>
 
-      <div class="options">
+      <div class="section">
+        <label class="section-label" for="teamNameInput">Team name</label>
+        <input
+            id="teamNameInput"
+            v-model="teamNameDraft"
+            class="team-input"
+            type="text"
+            maxlength="30"
+            placeholder="e.g. The Avengers"
+            @keypress.enter="commitTeamName"
+            @blur="commitTeamName"
+        />
+      </div>
+
+      <div class="section">
+        <p class="section-label">Estimation deck</p>
+        <div class="options">
         <button
             v-for="format in gameFormats"
             :key="format.name"
@@ -30,6 +45,7 @@
             </span>
           </div>
         </button>
+        </div>
       </div>
     </div>
   </div>
@@ -37,15 +53,26 @@
 
 <script setup lang="ts">
 import GameFormat from '@/view-models/gameFormat';
-import {onMounted, onUnmounted} from 'vue';
+import {onMounted, onUnmounted, ref} from 'vue';
 
-defineProps<{
+const props = defineProps<{
   current?: string;
+  teamName?: string;
 }>();
 
 const gameFormats = JSON.parse(localStorage.getItem('gameTypes') || '[]');
 
-const emit = defineEmits(['saveSettings', 'close']);
+const emit = defineEmits(['saveSettings', 'saveTeamName', 'close']);
+
+const teamNameDraft = ref(props.teamName ?? '');
+
+function commitTeamName() {
+  const next = teamNameDraft.value.trim();
+  // Only broadcast when it actually changed, so a blur with no edit is a no-op.
+  if (next && next !== (props.teamName ?? '')) {
+    emit('saveTeamName', next);
+  }
+}
 
 function saveSettings(format: GameFormat) {
   emit('saveSettings', format);
@@ -112,13 +139,46 @@ onUnmounted(() => window.removeEventListener('keydown', onKeydown));
 .heading {
   font-size: 24px;
   font-weight: 600;
-  margin-bottom: 6px;
+  margin-bottom: 20px;
 }
 
-.subheading {
+.section {
+  margin-bottom: 24px;
+
+  &:last-child {
+    margin-bottom: 0;
+  }
+}
+
+.section-label {
+  display: block;
   font-size: 15px;
+  font-weight: 600;
   opacity: 0.6;
-  margin: 0 0 20px;
+  margin: 0 0 12px;
+}
+
+.team-input {
+  box-sizing: border-box;
+  width: 100%;
+  height: 48px;
+  padding: 8px 14px;
+  border: 2px solid transparent;
+  border-radius: 12px;
+  background: var(--surface-input);
+  color: var(--text);
+  font-family: "Montserrat", sans-serif;
+  font-size: 17px;
+  outline: none;
+  transition: border-color 0.15s ease;
+
+  &:focus {
+    border-color: var(--accent);
+  }
+
+  &::placeholder {
+    color: var(--text-muted);
+  }
 }
 
 .options {

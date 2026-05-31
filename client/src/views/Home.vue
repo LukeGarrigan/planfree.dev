@@ -15,6 +15,7 @@ import { ref } from "vue";
 import { useGameEngine } from "@/composables/useGameEngine";
 import Modal from "@/components/Modal.vue";
 import GameFormat from "@/view-models/gameFormat";
+import { getUserId } from "@/utils/user";
 
 const { socket, setSocket } = useGameEngine();
 const hasStarted = ref(false);
@@ -32,6 +33,7 @@ function registerSocket(teamName: string) {
   const newSocket = io(process.env.VUE_APP_SERVER, {
     query: {
       teamName: teamName.trim(),
+      userId: getUserId(),
     },
   });
   setSocket(newSocket);

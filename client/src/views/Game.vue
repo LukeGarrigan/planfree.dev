@@ -4,6 +4,7 @@
     <Modal
         v-if="modal"
         title="Choose your display name"
+        :initial-value="name"
         @completed="enteredName"
     ></Modal>
     <Settings
@@ -133,12 +134,17 @@ import PFLittleButton from "@/components/LittleButton.vue";
 import Settings from "../components/SettingsModal.vue";
 import Sharing from "../components/SharingModal.vue";
 import GameFormat from "@/view-models/gameFormat";
+import { getUserId } from "@/utils/user";
 
 let showInstallPwa = ref(false);
-const modal = ref(true);
+// Skip the name modal (start closed) if we already know this user's name.
+const modal = ref(!localStorage.getItem("name"));
 const settings = ref(false)
 const showCopiedToClipboard = ref(false);
-const name = ref("");
+// Pre-fill with any previously used name so the modal opens populated. Read
+// synchronously here (not in onMounted) so the value exists before the Modal
+// child mounts and captures it.
+const name = ref(localStorage.getItem("name") ?? "");
 const showTickets = ref(false);
 const {votingOnName, tickets} = useTickets();
 const {
@@ -182,11 +188,13 @@ onMounted(() => {
     const newSocket = io(process.env.VUE_APP_SERVER, {
       query: {
         roomId: route.params.id,
+        userId: getUserId(),
       },
     });
     setSocket(newSocket);
   }
 
+  // Already know who this is — send the stored name and skip the modal.
   const storedName = localStorage.getItem("name");
   if (storedName) {
     enteredName(storedName);

@@ -47,7 +47,18 @@ io.on('connection', (socket) => {
     socket.emit('gameTypes', gameTypes)
     socket.join(roomId);
 
-    players.push({ id: socket.id, name: '', roomId: roomId });
+    // Recognise a returning user (reconnect/refresh/another tab) by their
+    // persistent userId and reattach them to their existing player slot,
+    // preserving their name and vote, instead of creating a duplicate.
+    const userId = socket.handshake.query['userId'];
+    const existingPlayer = userId
+        ? players.find(p => p.userId === userId && p.roomId === roomId)
+        : null;
+    if (existingPlayer) {
+        existingPlayer.id = socket.id;
+    } else {
+        players.push({ id: socket.id, userId: userId, name: '', roomId: roomId });
+    }
     gameType.push({ id: socket.id, gameType: gameTypes[0], roomId: roomId });
 
     socket.on('name', (name) => {
@@ -101,10 +112,15 @@ io.on('connection', (socket) => {
     });
 
     socket.on('disconnect', () => {
+        // Only remove the player if this socket is still the one attached to
+        // them. If they've already reconnected on a new socket, their player
+        // slot now points at that socket and should be left intact.
         const player = players.find(player => player.id === socket.id);
-        console.log(`Player ${player.name} has disconnected`);
-        players = players.filter(player => player.id !== socket.id);
-        updateClientsInRoom(roomId);
+        if (player) {
+            console.log(`Player ${player.name} has disconnected`);
+            players = players.filter(p => p.id !== socket.id);
+            updateClientsInRoom(roomId);
+        }
     });
 
     socket.on('pong', () => {

@@ -14,24 +14,27 @@
 import {onMounted, ref} from 'vue';
 import PFInput from "@/components/Input.vue";
 
-withDefaults(defineProps<{
+const props = withDefaults(defineProps<{
   title: string
   subheading?: string
   placeholder?: string
   maxLength?: number
+  initialValue?: string
 }>(), {
   subheading: 'This is how your teammates will see you',
   placeholder: 'e.g. Alex',
-  maxLength: 25
+  maxLength: 25,
+  initialValue: ''
 })
 
 const emit = defineEmits(['completed'])
 
-const name = ref('');
+const name = ref(props.initialValue);
 onMounted(() => {
-  const input = document.getElementById('selectNameInput');
+  const input = document.getElementById('selectNameInput') as HTMLInputElement | null;
   if (input) {
     input.focus();
+    input.select();
   }
 })
 

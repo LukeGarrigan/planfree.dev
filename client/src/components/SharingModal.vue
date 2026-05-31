@@ -22,6 +22,9 @@
             class="link-input"
             :value="link"
             readonly
+            autocomplete="off"
+            data-1p-ignore
+            data-lpignore="true"
             @focus="selectAll"
         />
         <button class="copy-btn" :class="{ copied }" @click="copyLink">

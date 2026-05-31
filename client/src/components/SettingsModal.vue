@@ -18,6 +18,9 @@
             v-model="teamNameDraft"
             class="team-input"
             type="text"
+            autocomplete="off"
+            data-1p-ignore
+            data-lpignore="true"
             maxlength="30"
             placeholder="e.g. The Avengers"
             @keypress.enter="commitTeamName"

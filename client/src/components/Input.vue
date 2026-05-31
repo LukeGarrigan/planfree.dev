@@ -7,6 +7,9 @@
         v-model="model"
         @input="updateValue"
         class="input"
+        autocomplete="off"
+        data-1p-ignore
+        data-lpignore="true"
         :maxlength="props.maxLength"
         minlength="1"
         :placeholder="placeholder"

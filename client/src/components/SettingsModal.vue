@@ -32,25 +32,7 @@
 
       <div class="section">
         <p class="section-label">Estimation deck</p>
-        <div class="options">
-        <button
-            v-for="format in gameFormats"
-            :key="format.name"
-            class="option"
-            :class="{ active: format.name === current }"
-            @click="() => saveSettings(format)"
-        >
-          <div class="option-top">
-            <span class="option-name">{{ format.name }}</span>
-            <span v-if="format.name === current" class="badge">Selected</span>
-          </div>
-          <div class="option-values">
-            <span v-for="value in format.values" :key="`${format.name}-${value}`" class="chip">
-              {{ value }}
-            </span>
-          </div>
-        </button>
-        </div>
+        <DeckPicker :formats="gameFormats" :selected="current" @select="saveSettings"></DeckPicker>
       </div>
     </div>
   </div>
@@ -59,6 +41,7 @@
 <script setup lang="ts">
 import GameFormat from '@/view-models/gameFormat';
 import {onMounted, onUnmounted, ref} from 'vue';
+import DeckPicker from '@/components/DeckPicker.vue';
 
 const props = defineProps<{
   current?: string;
@@ -190,76 +173,4 @@ onUnmounted(() => window.removeEventListener('keydown', onKeydown));
   }
 }
 
-.options {
-  display: flex;
-  flex-direction: column;
-  gap: 12px;
-}
-
-.option {
-  display: flex;
-  flex-direction: column;
-  gap: 10px;
-  width: 100%;
-  padding: 16px;
-  border: 2px solid transparent;
-  border-radius: 16px;
-  background: var(--surface-sunken);
-  cursor: pointer;
-  text-align: left;
-  transition: border-color 0.15s ease, background 0.15s ease;
-
-  &:hover {
-    background: var(--surface-sunken-hover);
-  }
-
-  &.active {
-    border-color: var(--accent);
-    background: var(--surface-input);
-  }
-}
-
-.option-top {
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-}
-
-.option-name {
-  font-family: "Montserrat", sans-serif;
-  font-size: 18px;
-  font-weight: 600;
-  color: var(--text);
-}
-
-.badge {
-  font-size: 12px;
-  font-weight: 600;
-  color: var(--accent-text);
-  background: var(--accent);
-  border-radius: 10px;
-  padding: 2px 10px;
-}
-
-.option-values {
-  display: flex;
-  flex-wrap: wrap;
-  gap: 6px;
-}
-
-.chip {
-  display: inline-flex;
-  align-items: center;
-  justify-content: center;
-  min-width: 26px;
-  height: 26px;
-  padding: 0 7px;
-  border-radius: 8px;
-  background: var(--surface);
-  color: var(--text);
-  font-family: "Montserrat", sans-serif;
-  font-size: 13px;
-  font-weight: 500;
-  box-shadow: inset 1px 1px 2px rgba(0, 0, 0, 0.08);
-}
 </style>

@@ -34,11 +34,18 @@ let gameTypes = [
 io.on('connection', (socket) => {
     console.log('A user connected', socket.id);
     let roomId = socket.handshake.query['roomId'];
+    let initialGameType = gameTypes[0];
     if (!roomId) {
         roomId = randomBytes(8).toString('hex');
         const teamName = socket.handshake.query['teamName'];
         if (teamName) {
             teams.push({ roomId: roomId, name: teamName });
+        }
+        // The room creator picks a deck on the "Name your team" screen. Look it
+        // up by name so the server stays the source of truth for deck values.
+        const chosenGameType = gameTypes.find(g => g.name === socket.handshake.query['gameType']);
+        if (chosenGameType) {
+            initialGameType = chosenGameType;
         }
         socket.emit('room', roomId);
     }
@@ -57,7 +64,7 @@ io.on('connection', (socket) => {
     } else {
         players.push({ id: socket.id, userId: userId, name: '', roomId: roomId });
     }
-    gameType.push({ id: socket.id, gameType: gameTypes[0], roomId: roomId });
+    gameType.push({ id: socket.id, gameType: initialGameType, roomId: roomId });
 
     socket.on('name', (name) => {
         let player = players.find(p => p.id == socket.id);

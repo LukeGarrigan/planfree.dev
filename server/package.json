@@ -4,15 +4,11 @@
   "description": "",
   "main": "index.js",
   "scripts": {
-    "start": "nodemon index.js"
+    "start": "node --watch --env-file-if-exists=.env index.js"
   },
   "author": "",
   "license": "ISC",
   "dependencies": {
-    "dotenv": "^16.4.5",
-    "express": "^4.19.2",
-    "nodemon": "^3.1.0",
-    "short-uuid": "^4.2.2",
-    "socket.io": "^4.7.5"
+    "socket.io": "^4.8.3"
   }
 }

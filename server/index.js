@@ -1,10 +1,12 @@
-const app = require('express')();
-const http = require('http').createServer(app);
-const short = require('short-uuid');
-require('dotenv').config()
+const http = require('http').createServer((req, res) => {
+    // Tiny health-check route (replaces the former single Express route).
+    res.writeHead(200, {'Content-Type': 'text/html'});
+    res.end('<h1>Hello world</h1>');
+});
+const {randomBytes} = require('node:crypto');
 const io = require("socket.io")(http, {
     cors: {
-        origin: process.env.ORIGIN || 'http://localhost:8081',
+        origin: process.env.ORIGIN || 'http://localhost:8080',
         methods: ["GET", "POST"]
     }
 });
@@ -13,10 +15,6 @@ setInterval(() => {
     io.emit('ping');
     logRooms();
 }, 20000);
-
-app.get('/', (req, res) => {
-    res.send('<h1>Hello world</h1>');
-});
 
 http.listen(process.env.PORT || 3000, () => {
     console.log(`listening on *:${process.env.PORT || 3000}`);
@@ -37,7 +35,7 @@ io.on('connection', (socket) => {
     console.log('A user connected', socket.id);
     let roomId = socket.handshake.query['roomId'];
     if (!roomId) {
-        roomId = short.generate();
+        roomId = randomBytes(8).toString('hex');
         const teamName = socket.handshake.query['teamName'];
         if (teamName) {
             teams.push({ roomId: roomId, name: teamName });

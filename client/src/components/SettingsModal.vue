@@ -52,6 +52,23 @@
             <span class="knob"></span>
           </button>
         </div>
+        <div class="toggle-row">
+          <div class="toggle-text">
+            <span class="toggle-label">Spectator mode</span>
+            <span class="toggle-hint">Watch the round without voting - you won't hold up the reveal</span>
+          </div>
+          <button
+              type="button"
+              class="toggle"
+              :class="{ on: spectatorDraft }"
+              role="switch"
+              :aria-checked="spectatorDraft"
+              aria-label="Spectator mode"
+              @click="toggleSpectator"
+          >
+            <span class="knob"></span>
+          </button>
+        </div>
       </div>
     </div>
   </div>
@@ -66,18 +83,25 @@ const props = defineProps<{
   current?: string;
   teamName?: string;
   autoReveal?: boolean;
+  spectator?: boolean;
 }>();
 
 const gameFormats = JSON.parse(localStorage.getItem('gameTypes') || '[]');
 
-const emit = defineEmits(['saveSettings', 'saveTeamName', 'saveAutoReveal', 'close']);
+const emit = defineEmits(['saveSettings', 'saveTeamName', 'saveAutoReveal', 'saveSpectator', 'close']);
 
 const teamNameDraft = ref(props.teamName ?? '');
 const autoRevealDraft = ref(props.autoReveal ?? true);
+const spectatorDraft = ref(props.spectator ?? false);
 
 function toggleAutoReveal() {
   autoRevealDraft.value = !autoRevealDraft.value;
   emit('saveAutoReveal', autoRevealDraft.value);
+}
+
+function toggleSpectator() {
+  spectatorDraft.value = !spectatorDraft.value;
+  emit('saveSpectator', spectatorDraft.value);
 }
 
 function commitTeamName() {
@@ -200,6 +224,12 @@ onUnmounted(() => window.removeEventListener('keydown', onKeydown));
   align-items: center;
   justify-content: space-between;
   gap: 16px;
+
+  /* Space consecutive toggles (auto-reveal / spectator) apart so they don't
+     read as one cramped block. */
+  & + .toggle-row {
+    margin-top: 18px;
+  }
 }
 
 .toggle-text {

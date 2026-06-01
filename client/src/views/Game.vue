@@ -12,9 +12,11 @@
         :current="gameFormat?.name"
         :team-name="teamName"
         :auto-reveal="autoReveal"
+        :spectator="spectator"
         @saveSettings="saveSettings"
         @saveTeamName="saveTeamName"
         @saveAutoReveal="saveAutoReveal"
+        @saveSpectator="saveSpectator"
         @close="settings = false"
     ></Settings>
     <Sharing v-if="showShareModal" @dismissModal="dismissModal"></Sharing>
@@ -46,6 +48,7 @@
             </button>
             <button class="menu-item" role="menuitem" @click="editName()">Change name</button>
             <button class="menu-item" role="menuitem" @click="openSettings()">Settings</button>
+            <button v-if="tickets && tickets.length" class="menu-item" role="menuitem" @click="exportResults()">Export results</button>
             <button v-if="showInstallPwa" class="menu-item" role="menuitem" @click="installPWA()">Install app</button>
             <button class="menu-item" role="menuitem" @click="goToGithub()">View on GitHub</button>
           </div>
@@ -93,10 +96,13 @@
 
       </div>
 
-      <button v-if="!playerHasVoted() && !showVotes" class="button no-hover">
+      <button v-if="spectator && !showVotes" class="button no-hover">
+        <span>You're spectating 👀</span>
+      </button>
+      <button v-if="!spectator && !playerHasVoted() && !showVotes" class="button no-hover">
         <span>Cast your votes</span>
       </button>
-      <button v-if="playerHasVoted() && !showVotes" class="button" @click="showVotesClicked()">
+      <button v-if="!spectator && playerHasVoted() && !showVotes" class="button" @click="showVotesClicked()">
         <span>Show votes!</span>
       </button>
       <button
@@ -112,8 +118,13 @@
 
       <div class="players-row">
         <div class="players" v-for="player in players" :key="player.id">
-          <div class="player" :class="{ voted: player.vote }">
-            <span v-if="showVotes && countdown === 0">{{ player.vote }}</span>
+          <div class="player" :class="{ voted: player.hasVoted, spectator: player.spectator }">
+            <span v-if="player.spectator" class="spectator-icon" aria-label="Spectator" title="Spectator">
+              <svg xmlns="http://www.w3.org/2000/svg" height="26" width="26" viewBox="0 0 24 24" fill="currentColor">
+                <path d="M12 5c-7 0-10 7-10 7s3 7 10 7 10-7 10-7-3-7-10-7Zm0 11a4 4 0 1 1 0-8 4 4 0 0 1 0 8Zm0-2a2 2 0 1 0 0-4 2 2 0 0 0 0 4Z"/>
+              </svg>
+            </span>
+            <span v-else-if="showVotes && countdown === 0">{{ player.vote }}</span>
           </div>
           <div class="name">
             <span>{{ player.name }}</span>
@@ -121,7 +132,7 @@
         </div>
       </div>
 
-      <div class="options" v-if="!showVotes || (showVotes && countdown !== 0)">
+      <div class="options" v-if="!spectator && (!showVotes || (showVotes && countdown !== 0))">
         <button
             v-for="vote in gameFormat?.values"
             :key="`vote-${vote}`"
@@ -134,9 +145,27 @@
         </button>
       </div>
       <div class="results-container" v-if="showVotes && countdown === 0">
-        <div class="results">
-          <div class="average">Average: {{ averageValue }}</div>
-          <div class="popular">Closest: {{ closestValue }}</div>
+        <div class="results-card">
+          <div class="distribution" v-if="distribution.length">
+            <div class="dist-item" v-for="d in distribution" :key="`dist-${d.value}`">
+              <div class="dist-count">{{ d.count }}</div>
+              <div class="dist-bar-track">
+                <div class="dist-bar" :style="{ height: barHeight(d.count) }"></div>
+              </div>
+              <div class="dist-value">{{ d.value }}</div>
+            </div>
+          </div>
+          <div class="results-summary">
+            <div class="stat">
+              <span class="stat-label">Average</span>
+              <span class="stat-value">{{ averageValue }}</span>
+            </div>
+            <div class="stat-divider"></div>
+            <div class="stat">
+              <span class="stat-label">Closest</span>
+              <span class="stat-value">{{ closestValue }}</span>
+            </div>
+          </div>
         </div>
       </div>
       <div class="tickets" v-show="showTickets">
@@ -172,6 +201,9 @@ const showCopiedToClipboard = ref(false);
 // child mounts and captures it.
 const name = ref(localStorage.getItem("name") ?? "");
 const showTickets = ref(false);
+// Persisted per-user preference: a spectator watches without voting. Sent to
+// the server on connect (handshake query) and whenever toggled in Settings.
+const spectator = ref(localStorage.getItem("spectator") === "true");
 const {votingOnName, tickets} = useTickets();
 const {
   socket,
@@ -183,6 +215,7 @@ const {
   gameFormat,
   closestValue,
   averageValue,
+  distribution,
   teamName,
   autoReveal
 } = useGameEngine();
@@ -208,6 +241,17 @@ function saveTeamName(newTeamName: string) {
 
 function saveAutoReveal(value: boolean) {
   socket.value.emit("autoRevealChanged", value);
+}
+
+function saveSpectator(value: boolean) {
+  spectator.value = value;
+  localStorage.setItem("spectator", String(value));
+  // Stepping out of voting clears our local card highlight; the server drops
+  // the server-side vote too.
+  if (value) {
+    currentVote.value = null;
+  }
+  socket.value.emit("spectatorChanged", value);
 }
 
 async function dismissModal() {
@@ -236,6 +280,7 @@ onMounted(() => {
       query: {
         roomId: route.params.id,
         userId: getUserId(),
+        spectator: spectator.value,
       },
     });
     setSocket(newSocket);
@@ -281,9 +326,16 @@ function enteredName(updatedName: string) {
 }
 
 function playerHasVoted() {
-  return (
-      players.value.filter((p: Player) => p.vote !== null && p.vote !== undefined).length > 0
-  );
+  // Votes are hidden until reveal, so rely on the server's `hasVoted` flag
+  // rather than the (absent) vote value to decide if "Show votes!" is offered.
+  return players.value.filter((p: Player) => p.hasVoted).length > 0;
+}
+
+// Scale each distribution bar against the tallest column so the spread reads at
+// a glance regardless of room size.
+function barHeight(count: number) {
+  const max = Math.max(1, ...distribution.value.map(d => d.count));
+  return `${Math.round((count / max) * 56) + 4}px`;
 }
 
 function copyToClipboard() {
@@ -293,6 +345,31 @@ function copyToClipboard() {
 function goToGithub() {
   menuOpen.value = false;
   open("https://github.com/LukeGarrigan/planfree.dev");
+}
+
+// Download the room's tickets and their agreed scores as a CSV the team can
+// keep — the only durable output of a session, since rooms are in-memory.
+function exportResults() {
+  menuOpen.value = false;
+  const cell = (v: unknown) => `"${String(v ?? "").replace(/"/g, '""')}"`;
+  const header = ["Ticket ID", "Title", "Score", "Link", "Description"];
+  const rows = tickets.value.map(t => [
+    t.ticketId,
+    t.title,
+    t.score && t.score !== "0" ? t.score : "",
+    t.link,
+    t.description,
+  ].map(cell).join(","));
+  const csv = [header.map(cell).join(","), ...rows].join("\r\n");
+
+  const blob = new Blob([csv], {type: "text/csv;charset=utf-8;"});
+  const url = URL.createObjectURL(blob);
+  const link = document.createElement("a");
+  link.href = url;
+  const slug = (teamName.value || "planfree").replace(/\s+/g, "-");
+  link.download = `${slug}-estimates-${new Date().toISOString().slice(0, 10)}.csv`;
+  link.click();
+  URL.revokeObjectURL(url);
 }
 
 function joiningAGame() {
@@ -364,6 +441,18 @@ const toggleTickets = () => showTickets.value = !showTickets.value;
 
   .voted {
     background: var(--accent);
+  }
+
+  .player.spectator {
+    background: var(--surface-sunken-hover);
+    color: var(--text-muted);
+  }
+
+  .spectator-icon {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: var(--text-muted);
   }
 }
 
@@ -765,37 +854,102 @@ span {
   display: flex;
   justify-content: center;
   position: absolute;
-  flex-wrap: wrap;
-  height: 200px;
-  gap: 30px;
   width: 90%;
   bottom: 5%;
-  font-size: 20px;
-  color: var(--accent);
+  user-select: none;
+  font-family: "Montserrat", sans-serif;
+}
 
-  .results {
+.results-card {
+  display: flex;
+  flex-direction: column;
+  background: var(--inverse-surface);
+  border-radius: 26px;
+  box-shadow: var(--shadow-raised);
+  padding: 18px 22px;
+  min-width: 250px;
+  max-width: 90vw;
+}
+
+.distribution {
+  display: flex;
+  align-items: flex-end;
+  justify-content: center;
+  gap: 14px;
+  padding: 4px 4px 16px;
+
+  .dist-item {
     display: flex;
     flex-direction: column;
-    justify-content: center;
-    background: var(--inverse-surface);
-    border-radius: 26px;
-    border: none;
-    width: 250px;
-    height: 100px;
-    transition: all 0.1s ease-in-out;
-    box-shadow: var(--shadow-raised);
+    align-items: center;
+    justify-content: flex-end;
+    gap: 6px;
+    min-width: 28px;
+  }
 
-    user-select: none;
-    font-family: "Montserrat", sans-serif;
-    font-weight: semibold;
+  .dist-count {
+    font-size: 14px;
+    font-weight: 600;
+    color: var(--inverse-text);
+    opacity: 0.6;
+  }
 
-    &:focus {
-      outline: none;
-    }
+  .dist-bar-track {
+    display: flex;
+    align-items: flex-end;
+    height: 60px;
+  }
 
-    .average {
-      padding: 4px;
-    }
+  .dist-bar {
+    width: 22px;
+    border-radius: 6px;
+    background: var(--accent);
+  }
+
+  .dist-value {
+    font-size: 15px;
+    font-weight: 600;
+    color: var(--inverse-text);
+  }
+}
+
+.results-summary {
+  display: flex;
+  align-items: stretch;
+  justify-content: center;
+  gap: 8px;
+
+  /* Only show the top divider when a distribution chart sits above it. */
+  .distribution + & {
+    border-top: 1px solid rgba(255, 255, 255, 0.12);
+    padding-top: 14px;
+  }
+
+  .stat {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 4px;
+    flex: 1;
+  }
+
+  .stat-label {
+    font-size: 13px;
+    font-weight: 600;
+    color: var(--inverse-text);
+    opacity: 0.6;
+  }
+
+  .stat-value {
+    font-size: 26px;
+    font-weight: 600;
+    color: var(--inverse-text);
+  }
+
+  .stat-divider {
+    width: 1px;
+    align-self: stretch;
+    background: rgba(255, 255, 255, 0.12);
   }
 }
 

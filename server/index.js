@@ -49,10 +49,19 @@ let gameTypes = [
 function getOrCreateRoom(roomId) {
     let room = rooms.get(roomId);
     if (!room) {
-        room = { players: [], tickets: [], gameType: gameTypes[0], teamName: '', autoReveal: true };
+        // `revealed` gates whether actual vote values are broadcast. While false
+        // the server only tells clients *that* a player has voted, never what
+        // they picked, so nobody can peek at others' votes before the reveal.
+        room = { players: [], tickets: [], gameType: gameTypes[0], teamName: '', autoReveal: true, revealed: false };
         rooms.set(roomId, room);
     }
     return room;
+}
+
+// Voters are everyone who isn't spectating. Auto-reveal and the average only
+// ever consider voters, so a watching Scrum Master / PO never blocks a round.
+function voters(room) {
+    return room.players.filter(p => !p.spectator);
 }
 
 io.on('connection', (socket) => {
@@ -81,13 +90,15 @@ io.on('connection', (socket) => {
     // persistent userId and reattach them to their existing player slot,
     // preserving their name and vote, instead of creating a duplicate.
     const userId = socket.handshake.query['userId'];
+    const spectator = socket.handshake.query['spectator'] === 'true';
     const existingPlayer = userId
         ? room.players.find(p => p.userId === userId)
         : null;
     if (existingPlayer) {
         existingPlayer.id = socket.id;
+        existingPlayer.spectator = spectator;
     } else {
-        room.players.push({ id: socket.id, userId: userId, name: '', vote: undefined });
+        room.players.push({ id: socket.id, userId: userId, name: '', vote: undefined, spectator: spectator });
     }
 
     socket.on('name', (name) => {
@@ -110,9 +121,10 @@ io.on('connection', (socket) => {
             console.log(`Player ${player.name} voted ${player.vote}`);
         }
 
-        // Auto-reveal once everyone has voted, unless the room has turned it
+        // Auto-reveal once every voter has voted, unless the room has turned it
         // off (in which case a player must hit "Show votes!" manually).
-        if (room.autoReveal && room.players.every(p => p.vote)) {
+        const roomVoters = voters(room);
+        if (room.autoReveal && roomVoters.length > 0 && roomVoters.every(p => p.vote)) {
             showVotes(roomId);
         }
         updateClientsInRoom(roomId);
@@ -149,9 +161,30 @@ io.on('connection', (socket) => {
         const room = rooms.get(roomId);
         if (!room) return;
         room.autoReveal = !!autoReveal;
-        // Turning it on while everyone has already voted should reveal now,
+        // Turning it on while every voter has already voted should reveal now,
         // rather than waiting for the next vote.
-        if (room.autoReveal && room.players.length > 0 && room.players.every(p => p.vote)) {
+        const roomVoters = voters(room);
+        if (room.autoReveal && roomVoters.length > 0 && roomVoters.every(p => p.vote)) {
+            showVotes(roomId);
+        }
+        updateClientsInRoom(roomId);
+    });
+
+    socket.on('spectatorChanged', (isSpectator) => {
+        const room = rooms.get(roomId);
+        if (!room) return;
+        const player = room.players.find(p => p.id == socket.id);
+        if (!player) return;
+        player.spectator = !!isSpectator;
+        // A spectator has no vote in the round; drop any cast vote so they stop
+        // counting toward the average and auto-reveal.
+        if (player.spectator) {
+            player.vote = undefined;
+        }
+        // Stepping out of the round may mean the remaining voters are all in,
+        // so re-check auto-reveal.
+        const roomVoters = voters(room);
+        if (room.autoReveal && roomVoters.length > 0 && roomVoters.every(p => p.vote)) {
             showVotes(roomId);
         }
         updateClientsInRoom(roomId);
@@ -192,11 +225,26 @@ io.on('connection', (socket) => {
     })
 });
 
+// Project a player into what's safe to send to clients. The actual `vote`
+// value is only included once the room is revealed; before that clients get a
+// `hasVoted` flag so they can show "this person has voted" without leaking the
+// value (which a curious player could otherwise read straight off the wire).
+function publicPlayer(room, player) {
+    return {
+        id: player.id,
+        userId: player.userId,
+        name: player.name,
+        spectator: !!player.spectator,
+        hasVoted: !!player.vote,
+        vote: room.revealed ? player.vote : undefined
+    };
+}
+
 function updateClientsInRoom(roomId) {
     const room = rooms.get(roomId);
     if (!room) return;
     io.to(roomId).emit('update', {
-        players: room.players,
+        players: room.players.map(p => publicPlayer(room, p)),
         tickets: room.tickets,
         gameType: room.gameType ?? gameTypes[0],
         teamName: room.teamName,
@@ -208,6 +256,7 @@ function restartGame(roomId) {
     const room = rooms.get(roomId);
     if (!room) return;
 
+    room.revealed = false; // hide votes again for the new round
     room.players.forEach(p => p.vote = undefined); // reset all the player's votes
 
     const ticketVotingOn = room.tickets.find(f => f.votingOn);
@@ -233,6 +282,7 @@ function logRooms() {
 function showVotes(roomId) {
     const room = rooms.get(roomId);
     if (!room) return;
+    room.revealed = true; // from now on real vote values are broadcast
     // find the text in the gametype where the index is the closest
     let closest = 0;
     let avg;
@@ -259,7 +309,7 @@ function showVotes(roomId) {
         else {
             closest = values.findLast(p => p <= average);
         }
-        avg = average;
+        avg = Math.round(average * 100) / 100;
     }
 
     if (room.tickets.length > 0) {
@@ -269,7 +319,23 @@ function showVotes(roomId) {
         }
     }
 
-    io.to(roomId).emit('show', { average: avg, closest: closest });
+    io.to(roomId).emit('show', { average: avg, closest: closest, distribution: getDistribution(roomId) });
+}
+
+// Tally how many voters picked each card, ordered by the deck so the client can
+// render the spread (e.g. three 5s, two 8s) without doing any counting itself.
+function getDistribution(roomId) {
+    const room = rooms.get(roomId);
+    const values = room.gameType.values;
+    const counts = new Map();
+    for (const player of room.players) {
+        if (player.spectator) continue;
+        if (player.vote === undefined || player.vote === null) continue;
+        counts.set(player.vote, (counts.get(player.vote) || 0) + 1);
+    }
+    return [...counts.entries()]
+        .map(([value, count]) => ({ value, count }))
+        .sort((a, b) => values.indexOf(a.value) - values.indexOf(b.value));
 }
 
 function getAverage(roomId) {

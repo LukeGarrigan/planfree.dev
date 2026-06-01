@@ -13,6 +13,8 @@ const currentVote: any = ref(null);
 const gameFormat = ref<GameFormat>();
 const closestValue: any = ref(null);
 const averageValue: any = ref(null);
+// Per-card tally for the revealed round, e.g. [{ value: '5', count: 3 }].
+const distribution = ref<{ value: string; count: number }[]>([]);
 const tickets = ref<Ticket[]>([]);
 const teamName = ref("");
 const autoReveal = ref(true);
@@ -40,6 +42,7 @@ export function useGameEngine() {
         socket.value.on("show", (results: any) => {
             closestValue.value = results.closest;
             averageValue.value = results.average;
+            distribution.value = results.distribution ?? [];
             showVotes.value = true;
             clearInterval(interval.value);
             countdown.value = 3;
@@ -54,6 +57,7 @@ export function useGameEngine() {
         socket.value.on("restart", () => {
             showVotes.value = false;
             currentVote.value = null;
+            distribution.value = [];
         });
 
         socket.value.on("ping", () => {
@@ -73,6 +77,7 @@ export function useGameEngine() {
         gameFormat,
         closestValue,
         averageValue,
+        distribution,
         teamName,
         autoReveal
     };

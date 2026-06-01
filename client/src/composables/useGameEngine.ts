@@ -1,8 +1,9 @@
-import {ref} from "vue";
+import {computed, ref} from "vue";
 import Player from "@/view-models/player";
 import Game from "@/view-models/game";
 import Ticket from "@/view-models/tickets";
 import GameFormat from "@/view-models/gameFormat";
+import {getUserId} from "@/utils/user";
 
 const players = ref<Player[]>([]);
 const socket = ref({} as any);
@@ -28,6 +29,14 @@ let timerInterval: any = null;
 // `offset` (0..1) spreads simultaneous reactions horizontally so they don't
 // stack on the same spot.
 const reactions = ref<{ id: number; emoji: string; name: string; offset: number }[]>([]);
+// Moderator state: the host's userId and whether the room is locked to host-only
+// control. `kicked` flips when this user is removed so the view can route home.
+const hostUserId = ref<string | null>(null);
+const locked = ref(false);
+const kicked = ref(false);
+const amHost = computed(() => !!hostUserId.value && hostUserId.value === getUserId());
+// Everyone may drive an unlocked room; only the host may once it's locked.
+const canControl = computed(() => !locked.value || amHost.value);
 
 export function useGameEngine() {
     function setSocket(newSocket: any) {
@@ -65,7 +74,13 @@ export function useGameEngine() {
             gameFormat.value = game.gameType;
             teamName.value = game.teamName ?? "";
             autoReveal.value = game.autoReveal ?? true;
+            hostUserId.value = game.hostUserId ?? null;
+            locked.value = game.locked ?? false;
             syncTimer(game.timer ?? null);
+        });
+
+        socket.value.on("kicked", () => {
+            kicked.value = true;
         });
 
         socket.value.on("reaction", (r: { emoji: string; name: string }) => {
@@ -125,6 +140,11 @@ export function useGameEngine() {
         autoReveal,
         timerRemaining,
         timerDuration,
-        reactions
+        reactions,
+        hostUserId,
+        locked,
+        amHost,
+        canControl,
+        kicked
     };
 }

@@ -10,7 +10,7 @@
         </svg>
       </button>
     </div>
-    <button class="add-ticket-button" type="button" @click="showAddModal = true">
+    <button v-if="canControl" class="add-ticket-button" type="button" @click="showAddModal = true">
       <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="currentColor">
         <path d="M11 11V5h2v6h6v2h-6v6h-2v-6H5v-2h6Z"/>
       </svg>
@@ -36,7 +36,7 @@
                   @click.stop
               >Open link</a>
             </div>
-            <PFLittleButton class="delete-button" type="delete" @clicked="deleteTicket(ticket.id)"></PFLittleButton>
+            <PFLittleButton v-if="canControl" class="delete-button" type="delete" @clicked="deleteTicket(ticket.id)"></PFLittleButton>
           </div>
         </li>
       </ul>
@@ -53,11 +53,14 @@
 
 import {ref} from "vue";
 import {useTickets} from "@/composables/useTickets";
+import {useGameEngine} from "@/composables/useGameEngine";
 import Ticket from "@/view-models/tickets";
 import PFLittleButton from "@/components/LittleButton.vue";
 import AddTicketModal, {NewTicket} from "@/components/AddTicketModal.vue";
 
 const {tickets, ticketUpdated} = useTickets();
+// When a room is locked to the host, only the host edits the ticket list.
+const {canControl} = useGameEngine();
 
 const emit = defineEmits(['close']);
 
@@ -91,6 +94,7 @@ function deleteTicket(id: string) {
 }
 
 function voteOn(ticket: Ticket) {
+  if (!canControl.value) return;
   for (const value of tickets.value) {
     value.votingOn = false;
   }

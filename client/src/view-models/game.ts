@@ -9,4 +9,6 @@ export default interface Game {
     teamName: string;
     autoReveal: boolean;
     timer: { remaining: number; duration: number } | null;
+    hostUserId: string | null;
+    locked: boolean;
 }

@@ -13,10 +13,19 @@
         :team-name="teamName"
         :auto-reveal="autoReveal"
         :spectator="spectator"
+        :players="players"
+        :host-user-id="hostUserId"
+        :my-user-id="myUserId"
+        :am-host="amHost"
+        :locked="locked"
+        :can-control="canControl"
         @saveSettings="saveSettings"
         @saveTeamName="saveTeamName"
         @saveAutoReveal="saveAutoReveal"
         @saveSpectator="saveSpectator"
+        @saveLock="saveLock"
+        @kick="kickPlayer"
+        @transferHost="transferHostTo"
         @close="settings = false"
     ></Settings>
     <Sharing v-if="showShareModal" @dismissModal="dismissModal"></Sharing>
@@ -83,8 +92,8 @@
           <div>{{ ("copy_to_clip") }}</div>
           <div></div>
         </button>
-        <div class="timer-wrapper">
-          <button class="button timer-button" :class="{ running: timerRemaining !== null }" @click="onTimerButton">
+        <div class="timer-wrapper" v-if="canControl || timerRemaining !== null">
+          <button class="button timer-button" :class="{ running: timerRemaining !== null, 'no-hover': !canControl }" @click="onTimerButton">
             <div>{{ timerRemaining !== null ? formatTime(timerRemaining) : 'Timer' }}</div>
             <div>
               <svg xmlns="http://www.w3.org/2000/svg" height="24" width="24" viewBox="0 0 24 24" fill="none">
@@ -123,21 +132,27 @@
 
       </div>
 
-      <button v-if="spectator && !showVotes" class="button no-hover">
+      <button v-if="!showVotes && !playerHasVoted() && spectator" class="button no-hover">
         <span>You're spectating 👀</span>
       </button>
-      <button v-if="!spectator && !playerHasVoted() && !showVotes" class="button no-hover">
+      <button v-if="!showVotes && !playerHasVoted() && !spectator" class="button no-hover">
         <span>Cast your votes</span>
       </button>
-      <button v-if="!spectator && playerHasVoted() && !showVotes" class="button" @click="showVotesClicked()">
+      <button v-if="!showVotes && playerHasVoted() && canControl" class="button" @click="showVotesClicked()">
         <span>Show votes!</span>
       </button>
+      <button v-if="!showVotes && playerHasVoted() && !canControl" class="button no-hover">
+        <span>Waiting for host…</span>
+      </button>
       <button
-          v-if="showVotes && countdown === 0"
+          v-if="showVotes && countdown === 0 && canControl"
           class="button start"
           @click="startNewGame()"
       >
         <span>{{ startGameMessage }}</span>
+      </button>
+      <button v-if="showVotes && countdown === 0 && !canControl" class="button no-hover">
+        <span>Waiting for host…</span>
       </button>
       <button v-if="showVotes && countdown > 0" class="button no-hover">
         <span>{{ countdown }}</span>
@@ -154,6 +169,7 @@
             <span v-else-if="showVotes && countdown === 0">{{ player.vote }}</span>
           </div>
           <div class="name">
+            <span v-if="player.userId === hostUserId" class="host-crown" title="Host" aria-label="Host">👑</span>
             <span>{{ player.name }}</span>
           </div>
         </div>
@@ -194,7 +210,7 @@
             </div>
           </div>
           <div class="consensus" v-if="isConsensus">🎉 Consensus!</div>
-          <button class="revote-button" v-else-if="hasSpread" @click="revote()">Discuss &amp; revote</button>
+          <button class="revote-button" v-else-if="hasSpread && canControl" @click="revote()">Discuss &amp; revote</button>
         </div>
       </div>
       <div class="tickets" v-show="showTickets">
@@ -231,8 +247,9 @@
 import Modal from "@/components/Modal.vue";
 import Player from "@/view-models/player";
 import {io} from "socket.io-client";
-import {computed, onMounted, ref} from "vue";
+import {computed, onMounted, ref, watch} from "vue";
 import {useRoute} from "vue-router";
+import router from "@/router";
 import Tickets from "@/components/Tickets.vue";
 import {useTickets} from "@/composables/useTickets";
 import {useGameEngine} from "@/composables/useGameEngine";
@@ -272,8 +289,23 @@ const {
   autoReveal,
   timerRemaining,
   timerDuration,
-  reactions
+  reactions,
+  hostUserId,
+  locked,
+  amHost,
+  canControl,
+  kicked
 } = useGameEngine();
+
+const myUserId = getUserId();
+
+// Kicked players are bounced back to the home screen.
+watch(kicked, (wasKicked) => {
+  if (wasKicked) {
+    alert("You have been removed from this room by the host.");
+    router.push({path: "/"});
+  }
+});
 
 const REACTION_EMOJIS = ['👍', '👎', '🎉', '😂', '🤔', '❤️'];
 
@@ -378,9 +410,22 @@ function showVotesClicked() {
   socket.value.emit("show");
 }
 
+function saveLock(value: boolean) {
+  socket.value.emit("lockChanged", value);
+}
+
+function kickPlayer(userId: string) {
+  socket.value.emit("kick", userId);
+}
+
+function transferHostTo(userId: string) {
+  socket.value.emit("transferHost", userId);
+}
+
 // While the timer runs the button cancels; while idle it opens the preset
 // popover so a round length can be picked in one tap.
 function onTimerButton() {
+  if (!canControl.value) return;
   if (timerRemaining.value !== null) {
     socket.value.emit("cancelTimer");
     return;
@@ -540,6 +585,13 @@ const toggleTickets = () => showTickets.value = !showTickets.value;
       /* Override the global 26px span rule so the name follows the cell's
          font-size (including the smaller mobile size). */
       font-size: inherit;
+    }
+
+    /* Crown marking the host sits a touch smaller than the name beside it. */
+    .host-crown {
+      font-size: 0.7em;
+      margin-right: 4px;
+      vertical-align: middle;
     }
   }
 

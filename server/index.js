@@ -53,10 +53,13 @@ function getOrCreateRoom(roomId) {
         // the server only tells clients *that* a player has voted, never what
         // they picked, so nobody can peek at others' votes before the reveal.
         // `timer*` back the optional round countdown (see startTimer).
+        // `hostUserId`/`locked` back the moderator feature: when `locked`, only
+        // the host may drive the session. `bannedUserIds` keeps kicked users out.
         room = {
             players: [], tickets: [], gameType: gameTypes[0], teamName: '',
             autoReveal: true, revealed: false,
-            timerEndsAt: null, timerDuration: 0, timerHandle: null
+            timerEndsAt: null, timerDuration: 0, timerHandle: null,
+            hostUserId: null, locked: true, bannedUserIds: new Set()
         };
         rooms.set(roomId, room);
     }
@@ -67,6 +70,18 @@ function getOrCreateRoom(roomId) {
 // ever consider voters, so a watching Scrum Master / PO never blocks a round.
 function voters(room) {
     return room.players.filter(p => !p.spectator);
+}
+
+// Is this socket's player the room host?
+function isHost(room, socket) {
+    const player = room.players.find(p => p.id == socket.id);
+    return !!player && player.userId === room.hostUserId;
+}
+
+// Whether this socket is allowed to drive the session. Everyone can when the
+// room is unlocked (today's free-for-all); only the host can once it's locked.
+function canControl(room, socket) {
+    return !room.locked || isHost(room, socket);
 }
 
 // Stop and forget any running round timer. Safe to call when none is set.
@@ -127,6 +142,15 @@ io.on('connection', (socket) => {
     // preserving their name and vote, instead of creating a duplicate.
     const userId = socket.handshake.query['userId'];
     const spectator = socket.handshake.query['spectator'] === 'true';
+
+    // A kicked user stays out until the room is gone. Tell them so the client
+    // can route home, then drop the socket before they rejoin a player slot.
+    if (room.bannedUserIds.has(userId)) {
+        socket.emit('kicked');
+        socket.disconnect(true);
+        return;
+    }
+
     const existingPlayer = userId
         ? room.players.find(p => p.userId === userId)
         : null;
@@ -135,6 +159,12 @@ io.on('connection', (socket) => {
         existingPlayer.spectator = spectator;
     } else {
         room.players.push({ id: socket.id, userId: userId, name: '', vote: undefined, spectator: spectator });
+    }
+
+    // The first person in (the creator), or anyone arriving when the seat is
+    // vacant (host left), becomes host.
+    if (!room.hostUserId || !room.players.some(p => p.userId === room.hostUserId)) {
+        room.hostUserId = userId;
     }
 
     socket.on('name', (name) => {
@@ -167,6 +197,8 @@ io.on('connection', (socket) => {
     });
 
     socket.on('show', () => {
+        const room = rooms.get(roomId);
+        if (!room || !canControl(room, socket)) return;
         showVotes(roomId);
         // showVotes only emits the 'show' (average/closest) event; it doesn't
         // broadcast room state. Push an update too so the ticket's freshly-set
@@ -176,26 +208,28 @@ io.on('connection', (socket) => {
     });
 
     socket.on('restart', () => {
+        const room = rooms.get(roomId);
+        if (!room || !canControl(room, socket)) return;
         restartGame(roomId);
     });
 
     socket.on('gameTypeChanged', (newGameType) => {
         const room = rooms.get(roomId);
-        if (!room) return;
+        if (!room || !canControl(room, socket)) return;
         room.gameType = newGameType;
         updateClientsInRoom(roomId);
     });
 
     socket.on('teamNameChanged', (newTeamName) => {
         const room = rooms.get(roomId);
-        if (!room) return;
+        if (!room || !canControl(room, socket)) return;
         room.teamName = (newTeamName ?? '').trim();
         updateClientsInRoom(roomId);
     });
 
     socket.on('autoRevealChanged', (autoReveal) => {
         const room = rooms.get(roomId);
-        if (!room) return;
+        if (!room || !canControl(room, socket)) return;
         room.autoReveal = !!autoReveal;
         // Turning it on while every voter has already voted should reveal now,
         // rather than waiting for the next vote.
@@ -228,7 +262,7 @@ io.on('connection', (socket) => {
 
     socket.on('startTimer', (seconds) => {
         const room = rooms.get(roomId);
-        if (!room) return;
+        if (!room || !canControl(room, socket)) return;
         // Clamp to a sane range; default to a minute.
         const duration = Math.min(600, Math.max(5, Math.floor(Number(seconds)) || 60));
         clearRoomTimer(room);
@@ -240,7 +274,7 @@ io.on('connection', (socket) => {
 
     socket.on('cancelTimer', () => {
         const room = rooms.get(roomId);
-        if (!room) return;
+        if (!room || !canControl(room, socket)) return;
         clearRoomTimer(room);
         updateClientsInRoom(roomId);
     });
@@ -260,7 +294,7 @@ io.on('connection', (socket) => {
     // do NOT advance to the next ticket the way 'restart' does.
     socket.on('revote', () => {
         const room = rooms.get(roomId);
-        if (!room) return;
+        if (!room || !canControl(room, socket)) return;
         room.revealed = false;
         clearRoomTimer(room);
         room.players.forEach(p => p.vote = undefined);
@@ -268,9 +302,44 @@ io.on('connection', (socket) => {
         updateClientsInRoom(roomId);
     });
 
+    socket.on('lockChanged', (locked) => {
+        const room = rooms.get(roomId);
+        if (!room || !isHost(room, socket)) return;
+        room.locked = !!locked;
+        updateClientsInRoom(roomId);
+    });
+
+    socket.on('transferHost', (targetUserId) => {
+        const room = rooms.get(roomId);
+        if (!room || !isHost(room, socket)) return;
+        if (room.players.some(p => p.userId === targetUserId)) {
+            room.hostUserId = targetUserId;
+            updateClientsInRoom(roomId);
+        }
+    });
+
+    socket.on('kick', (targetUserId) => {
+        const room = rooms.get(roomId);
+        if (!room || !isHost(room, socket)) return;
+        if (!targetUserId || targetUserId === room.hostUserId) return; // never kick the host
+        const target = room.players.find(p => p.userId === targetUserId);
+        if (!target) return;
+        room.bannedUserIds.add(targetUserId);
+        const targetSocket = io.sockets.sockets.get(target.id);
+        if (targetSocket) {
+            // Tell them, then drop the socket — its disconnect handler removes
+            // the player and broadcasts the updated room.
+            targetSocket.emit('kicked');
+            targetSocket.disconnect(true);
+        } else {
+            room.players = room.players.filter(p => p.userId !== targetUserId);
+            updateClientsInRoom(roomId);
+        }
+    });
+
     socket.on('ticket', (updatedTickets) => {
         const room = rooms.get(roomId);
-        if (!room) return;
+        if (!room || !canControl(room, socket)) return;
         if (updatedTickets.length === 1) {
             updatedTickets[0].votingOn = true;
         }
@@ -294,6 +363,11 @@ io.on('connection', (socket) => {
                 clearRoomTimer(room); // don't leave a setTimeout pointing at a dead room
                 rooms.delete(roomId);
             } else {
+                // If the host just left, hand the room to the longest-present
+                // remaining player (players are kept in join order).
+                if (player.userId === room.hostUserId) {
+                    room.hostUserId = room.players[0].userId;
+                }
                 updateClientsInRoom(roomId);
             }
         }
@@ -328,7 +402,9 @@ function updateClientsInRoom(roomId) {
         gameType: room.gameType ?? gameTypes[0],
         teamName: room.teamName,
         autoReveal: room.autoReveal,
-        timer: timerState(room)
+        timer: timerState(room),
+        hostUserId: room.hostUserId,
+        locked: room.locked
     });
 }
 

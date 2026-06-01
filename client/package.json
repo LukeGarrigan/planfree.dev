@@ -11,6 +11,7 @@
     "type-check": "vue-tsc --noEmit"
   },
   "dependencies": {
+    "@sentry/vue": "^10.19.0",
     "qrcode.vue": "^3.9.1",
     "socket.io-client": "^4.8.3",
     "vue": "^3.5.35",

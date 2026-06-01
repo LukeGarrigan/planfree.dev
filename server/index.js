@@ -1,3 +1,15 @@
+// Sentry must be initialised before anything else is required so its
+// auto-instrumentation and global uncaught-exception/unhandled-rejection
+// handlers are in place. No-ops when SENTRY_DSN is unset (e.g. local dev).
+const Sentry = require('@sentry/node');
+if (process.env.SENTRY_DSN) {
+    Sentry.init({
+        dsn: process.env.SENTRY_DSN,
+        environment: process.env.NODE_ENV || 'development',
+        tracesSampleRate: 1.0,
+    });
+}
+
 const http = require('http').createServer((req, res) => {
     // Tiny health-check route (replaces the former single Express route).
     res.writeHead(200, {'Content-Type': 'text/html'});

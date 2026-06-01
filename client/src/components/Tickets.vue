@@ -1,8 +1,8 @@
 <template>
   <div class="tickets-wrapper">
     <div class="tickets-header">
-      <span class="tickets-title">Stories</span>
-      <button class="close-tickets" aria-label="Close stories" @click="emit('close')">
+      <span class="tickets-title">Tickets</span>
+      <button class="close-tickets" aria-label="Close tickets" @click="emit('close')">
         <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none">
           <path
               d="M20.7457 3.32851C20.3552 2.93798 19.722 2.93798 19.3315 3.32851L12.0371 10.6229L4.74275 3.32851C4.35223 2.93798 3.71906 2.93798 3.32854 3.32851C2.93801 3.71903 2.93801 4.3522 3.32854 4.74272L10.6229 12.0371L3.32856 19.3314C2.93803 19.722 2.93803 20.3551 3.32856 20.7457C3.71908 21.1362 4.35225 21.1362 4.74277 20.7457L12.0371 13.4513L19.3315 20.7457C19.722 21.1362 20.3552 21.1362 20.7457 20.7457C21.1362 20.3551 21.1362 19.722 20.7457 19.3315L13.4513 12.0371L20.7457 4.74272C21.1362 4.3522 21.1362 3.71903 20.7457 3.32851Z"
@@ -10,47 +10,78 @@
         </svg>
       </button>
     </div>
-    <PFInput v-model="ticketName" @completed="addedTicket" placeholder="Add story title"></PFInput>
+    <button class="add-ticket-button" type="button" @click="showAddModal = true">
+      <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="currentColor">
+        <path d="M11 11V5h2v6h6v2h-6v6h-2v-6H5v-2h6Z"/>
+      </svg>
+      <span>Add ticket</span>
+    </button>
     <div class="tickets-container">
       <ul>
-        <li v-for="ticket in tickets">
+        <li v-for="ticket in tickets" :key="ticket.id">
           <div class="ticket" @click="voteOn(ticket)">
-            <h4 :class="{ voting: ticket.votingOn }">{{ ticket.name }} <span v-if="ticket.score">{{
-                ticket.score
-              }}</span></h4>
+            <div class="ticket-body">
+              <h4 :class="{ voting: ticket.votingOn }">
+                <span v-if="ticket.ticketId" class="ticket-id">{{ ticket.ticketId }}</span>
+                {{ ticket.title }}
+                <span v-if="ticket.score" class="ticket-score">{{ ticket.score }}</span>
+              </h4>
+              <p v-if="ticket.description" class="ticket-description">{{ ticket.description }}</p>
+              <a
+                  v-if="ticket.link"
+                  class="ticket-link"
+                  :href="ticket.link"
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  @click.stop
+              >Open link</a>
+            </div>
             <PFLittleButton class="delete-button" type="delete" @clicked="deleteTicket(ticket.id)"></PFLittleButton>
           </div>
         </li>
       </ul>
     </div>
+    <AddTicketModal
+        v-if="showAddModal"
+        @completed="addedTicket"
+        @close="showAddModal = false"
+    ></AddTicketModal>
   </div>
 </template>
 
 <script setup lang="ts">
 
-import PFInput from "@/components/Input.vue";
 import {ref} from "vue";
 import {useTickets} from "@/composables/useTickets";
 import Ticket from "@/view-models/tickets";
 import PFLittleButton from "@/components/LittleButton.vue";
+import AddTicketModal, {NewTicket} from "@/components/AddTicketModal.vue";
 
 const {tickets, ticketUpdated} = useTickets();
 
 const emit = defineEmits(['close']);
 
-let ticketName = ref('');
+const showAddModal = ref(false);
 
-const addedTicket = () => {
+// Short, readable reference used when the user doesn't supply their own ID.
+function generateTicketId(): string {
+  return `T-${Math.random().toString(36).slice(2, 6).toUpperCase()}`;
+}
+
+const addedTicket = (ticket: NewTicket) => {
   tickets.value.push({
-    name: ticketName.value,
-    voted: false,
     id: crypto.randomUUID(),
+    ticketId: ticket.ticketId || generateTicketId(),
+    title: ticket.title,
+    link: ticket.link,
+    description: ticket.description,
+    voted: false,
     average: '0',
     closest: '0',
     score: '0',
     votingOn: false
   });
-  ticketName.value = '';
+  showAddModal.value = false;
   ticketUpdated();
 }
 
@@ -80,17 +111,36 @@ function voteOn(ticket: Ticket) {
   text-align: left;
   overflow-wrap: break-word;
   word-wrap: break-word;
+}
 
-  /* Make the add-story input fill the panel rather than its fixed 295px width
-     so it never overflows the (narrower) panel on small screens. */
-  :deep(.input-container) {
-    width: 100%;
+.add-ticket-button {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  width: 100%;
+  height: 44px;
+  margin-bottom: 12px;
+  border: none;
+  border-radius: 12px;
+  background: var(--accent);
+  color: var(--accent-text);
+  cursor: pointer;
+  font-family: "Montserrat", sans-serif;
+  transition: opacity 0.1s ease-in-out;
+
+  svg {
+    fill: currentColor;
   }
 
-  :deep(.input) {
-    flex: 1;
-    width: auto;
-    min-width: 0;
+  span {
+    font-size: 15px;
+    font-weight: 600;
+    color: var(--accent-text);
+  }
+
+  &:hover {
+    opacity: 0.85;
   }
 }
 
@@ -139,14 +189,28 @@ function voteOn(ticket: Ticket) {
   cursor: pointer;
   display: flex;
   text-align: left;
-  align-items: center;
+  align-items: flex-start;
   word-wrap: break-word;
   overflow-wrap: break-word;
   gap: 10px;
   font-family: "Montserrat", sans-serif;
 
+  .ticket-body {
+    flex: 1;
+    min-width: 0;
+  }
+
+  h4 {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    gap: 6px;
+    margin: 0;
+  }
+
   .delete-button {
     visibility: hidden;
+    margin-top: 2px;
   }
 
   &:hover {
@@ -162,14 +226,45 @@ function voteOn(ticket: Ticket) {
   }
 }
 
-.ticket h4 span {
+.ticket-id {
+  font-size: 12px;
+  font-weight: 600;
+  padding: 2px 8px;
+  border-radius: 10px;
+  background: var(--surface-input);
+  color: var(--text-muted);
+}
+
+.ticket-score {
   background: var(--accent);
   padding: 5px;
   border-radius: 50%;
   color: var(--accent-text);
+  min-width: 18px;
   height: 18px;
-  display: inline-block;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
   text-align: center;
+}
+
+.ticket-description {
+  margin: 4px 0 0;
+  font-size: 13px;
+  color: var(--text-muted);
+  white-space: pre-wrap;
+}
+
+.ticket-link {
+  display: inline-block;
+  margin-top: 4px;
+  font-size: 13px;
+  color: var(--accent);
+  text-decoration: none;
+
+  &:hover {
+    text-decoration: underline;
+  }
 }
 
 @media only screen and (max-width: 700px) {

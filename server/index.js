@@ -120,6 +120,11 @@ io.on('connection', (socket) => {
 
     socket.on('show', () => {
         showVotes(roomId);
+        // showVotes only emits the 'show' (average/closest) event; it doesn't
+        // broadcast room state. Push an update too so the ticket's freshly-set
+        // score reaches clients now, matching the auto-reveal path — otherwise
+        // a manual reveal leaves the score stale until the next 'restart'.
+        updateClientsInRoom(roomId);
     });
 
     socket.on('restart', () => {

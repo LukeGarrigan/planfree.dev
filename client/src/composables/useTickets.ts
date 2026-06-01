@@ -4,7 +4,7 @@ import {useGameEngine} from "@/composables/useGameEngine";
 let votingOnId = ref('');
 const { tickets, socket } = useGameEngine();
 export function useTickets() {
-    const votingOnName = computed(() => tickets.value.find((f: Ticket) => f.votingOn === true)?.name);
+    const votingOnName = computed(() => tickets.value.find((f: Ticket) => f.votingOn === true)?.title);
     function ticketUpdated() {
         socket.value.emit('ticket', tickets.value);
     }

@@ -81,7 +81,7 @@
           <div></div>
         </button>
         <button class="button issues-button" @click="toggleTickets">
-          <div>Stories</div>
+          <div>Tickets</div>
           <div>
             <svg xmlns="http://www.w3.org/2000/svg" height="24" viewBox="0 -960 960 960" width="24" fill="currentColor">
               <path

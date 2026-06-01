@@ -83,6 +83,33 @@
           <div>{{ ("copy_to_clip") }}</div>
           <div></div>
         </button>
+        <div class="timer-wrapper">
+          <button class="button timer-button" :class="{ running: timerRemaining !== null }" @click="onTimerButton">
+            <div>{{ timerRemaining !== null ? formatTime(timerRemaining) : 'Timer' }}</div>
+            <div>
+              <svg xmlns="http://www.w3.org/2000/svg" height="24" width="24" viewBox="0 0 24 24" fill="none">
+                <circle cx="12" cy="13" r="8" stroke="currentColor" stroke-width="1.8"/>
+                <path d="M12 9v4l2.5 2.5" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"/>
+                <path d="M9 2h6" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"/>
+              </svg>
+            </div>
+          </button>
+          <div v-if="timerMenuOpen" class="timer-backdrop" @click="timerMenuOpen = false"></div>
+          <div v-if="timerMenuOpen" class="timer-menu" role="menu">
+            <button
+                v-for="preset in TIMER_PRESETS"
+                :key="`timer-${preset.seconds}`"
+                class="timer-menu-item"
+                role="menuitem"
+                @click="startTimerWith(preset.seconds)"
+            >
+              <span>{{ preset.label }}</span>
+              <svg v-if="timerDefault === preset.seconds" xmlns="http://www.w3.org/2000/svg" height="16" width="16" viewBox="0 0 24 24" fill="currentColor">
+                <path d="M9 16.17 4.83 12l-1.42 1.41L9 19 21 7l-1.41-1.41L9 16.17Z"/>
+              </svg>
+            </button>
+          </div>
+        </div>
         <button class="button issues-button" @click="toggleTickets">
           <div>Tickets</div>
           <div>
@@ -166,10 +193,35 @@
               <span class="stat-value">{{ closestValue }}</span>
             </div>
           </div>
+          <div class="consensus" v-if="isConsensus">🎉 Consensus!</div>
+          <button class="revote-button" v-else-if="hasSpread" @click="revote()">Discuss &amp; revote</button>
         </div>
       </div>
       <div class="tickets" v-show="showTickets">
         <Tickets @close="showTickets = false"></Tickets>
+      </div>
+
+      <div class="reaction-bar">
+        <button
+            v-for="emoji in REACTION_EMOJIS"
+            :key="`react-${emoji}`"
+            class="reaction-button"
+            type="button"
+            :aria-label="`React ${emoji}`"
+            @click="sendReaction(emoji)"
+        >{{ emoji }}</button>
+      </div>
+
+      <div class="reactions-layer" aria-hidden="true">
+        <div
+            class="floating-reaction"
+            v-for="r in reactions"
+            :key="r.id"
+            :style="{ left: `${20 + r.offset * 70}px` }"
+        >
+          <span class="floating-emoji">{{ r.emoji }}</span>
+          <span v-if="r.name" class="floating-name">{{ r.name }}</span>
+        </div>
       </div>
     </div>
   </div>
@@ -217,8 +269,29 @@ const {
   averageValue,
   distribution,
   teamName,
-  autoReveal
+  autoReveal,
+  timerRemaining,
+  timerDuration,
+  reactions
 } = useGameEngine();
+
+const REACTION_EMOJIS = ['👍', '👎', '🎉', '😂', '🤔', '❤️'];
+
+const TIMER_PRESETS = [
+  {label: '30s', seconds: 30},
+  {label: '1m', seconds: 60},
+  {label: '2m', seconds: 120},
+  {label: '5m', seconds: 300},
+];
+const timerMenuOpen = ref(false);
+// Remember the last-picked length so the popover shows a tick on it.
+const timerDefault = ref(Number(localStorage.getItem('timerDuration')) || 60);
+
+const totalVotes = computed(() => distribution.value.reduce((sum, d) => sum + d.count, 0));
+// Everyone landing on the same card (with at least two voters, so a lone voter
+// isn't celebrated for "agreeing" with themselves).
+const isConsensus = computed(() => distribution.value.length === 1 && totalVotes.value >= 2);
+const hasSpread = computed(() => distribution.value.length > 1);
 const showShareModal = ref(false);
 const {isDark, toggleTheme} = useTheme();
 
@@ -303,6 +376,37 @@ const startGameMessage = computed(() => {
 
 function showVotesClicked() {
   socket.value.emit("show");
+}
+
+// While the timer runs the button cancels; while idle it opens the preset
+// popover so a round length can be picked in one tap.
+function onTimerButton() {
+  if (timerRemaining.value !== null) {
+    socket.value.emit("cancelTimer");
+    return;
+  }
+  timerMenuOpen.value = !timerMenuOpen.value;
+}
+
+function startTimerWith(seconds: number) {
+  timerDefault.value = seconds;
+  localStorage.setItem("timerDuration", String(seconds));
+  socket.value.emit("startTimer", seconds);
+  timerMenuOpen.value = false;
+}
+
+function formatTime(seconds: number) {
+  const mins = Math.floor(seconds / 60);
+  const secs = seconds % 60;
+  return `${mins}:${String(secs).padStart(2, "0")}`;
+}
+
+function sendReaction(emoji: string) {
+  socket.value.emit("reaction", emoji);
+}
+
+function revote() {
+  socket.value.emit("revote");
 }
 
 function performVote(vote: string) {
@@ -640,7 +744,8 @@ const toggleTickets = () => showTickets.value = !showTickets.value;
     min-width: 0;
 
     .invite,
-    .issues-button {
+    .issues-button,
+    .timer-button {
       width: auto;
       min-width: 0;
       height: 46px;
@@ -759,7 +864,8 @@ const toggleTickets = () => showTickets.value = !showTickets.value;
   }
 
   .top-buttons .invite,
-  .top-buttons .issues-button {
+  .top-buttons .issues-button,
+  .top-buttons .timer-button {
     padding: 0 12px;
   }
 }
@@ -789,7 +895,8 @@ const toggleTickets = () => showTickets.value = !showTickets.value;
     }
   }
 
-  .issues-button {
+  .issues-button,
+  .timer-button {
     position: relative;
     top: auto;
     user-select: none;
@@ -805,6 +912,71 @@ const toggleTickets = () => showTickets.value = !showTickets.value;
     }
   }
 
+  /* A running timer turns the button accent so the countdown reads as "live". */
+  .timer-button.running {
+    background: var(--accent);
+    color: var(--accent-text);
+
+    svg {
+      color: var(--accent-text);
+    }
+  }
+
+}
+
+.timer-wrapper {
+  position: relative;
+  display: inline-flex;
+}
+
+.timer-backdrop {
+  position: fixed;
+  inset: 0;
+  z-index: 10;
+}
+
+.timer-menu {
+  position: absolute;
+  top: calc(100% + 8px);
+  right: 0;
+  z-index: 11;
+  display: flex;
+  flex-direction: column;
+  min-width: 120px;
+  padding: 8px;
+  gap: 2px;
+  background: var(--surface);
+  border-radius: 16px;
+  box-shadow: var(--shadow-modal);
+
+  .timer-menu-item {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 10px;
+    width: 100%;
+    padding: 10px 14px;
+    background: transparent;
+    border: none;
+    border-radius: 10px;
+    cursor: pointer;
+    font-family: "Montserrat", sans-serif;
+    color: var(--text);
+
+    &:hover {
+      background: var(--surface-sunken-hover);
+    }
+
+    span {
+      font-size: 16px;
+      font-weight: 500;
+    }
+
+    svg {
+      flex: none;
+      color: var(--accent);
+    }
+  }
 }
 
 .screen-reader-only {
@@ -950,6 +1122,126 @@ span {
     width: 1px;
     align-self: stretch;
     background: rgba(255, 255, 255, 0.12);
+  }
+}
+
+.consensus {
+  margin-top: 14px;
+  text-align: center;
+  font-family: "Montserrat", sans-serif;
+  font-weight: 600;
+  font-size: 16px;
+  color: var(--inverse-text);
+}
+
+.revote-button {
+  align-self: center;
+  margin-top: 14px;
+  border: none;
+  border-radius: 12px;
+  padding: 8px 18px;
+  background: var(--accent);
+  color: var(--accent-text);
+  font-family: "Montserrat", sans-serif;
+  font-weight: 600;
+  font-size: 14px;
+  cursor: pointer;
+  transition: opacity 0.1s ease;
+
+  &:hover {
+    opacity: 0.85;
+  }
+}
+
+.reaction-bar {
+  position: fixed;
+  left: 16px;
+  bottom: 16px;
+  z-index: 6;
+  display: flex;
+  gap: 4px;
+  padding: 6px;
+  background: var(--surface);
+  border-radius: 16px;
+  box-shadow: var(--shadow-raised);
+}
+
+.reaction-button {
+  width: 38px;
+  height: 38px;
+  border: none;
+  border-radius: 10px;
+  background: transparent;
+  font-size: 20px;
+  line-height: 1;
+  cursor: pointer;
+  transition: transform 0.1s ease, background 0.1s ease;
+
+  &:hover {
+    background: var(--surface-sunken-hover);
+    transform: scale(1.15);
+  }
+
+  &:active {
+    transform: scale(0.95);
+  }
+}
+
+/* Full-screen, click-through overlay the floating emojis animate over. */
+.reactions-layer {
+  position: fixed;
+  inset: 0;
+  pointer-events: none;
+  z-index: 7;
+}
+
+.floating-reaction {
+  position: absolute;
+  bottom: 64px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  animation: floatUp 2.5s ease-out forwards;
+}
+
+.floating-emoji {
+  font-size: 34px;
+}
+
+.floating-name {
+  font-family: "Montserrat", sans-serif;
+  font-size: 12px;
+  color: var(--text-muted);
+}
+
+@keyframes floatUp {
+  0% {
+    opacity: 0;
+    transform: translateY(0) scale(0.6);
+  }
+  15% {
+    opacity: 1;
+    transform: translateY(-12px) scale(1.1);
+  }
+  100% {
+    opacity: 0;
+    transform: translateY(-170px) scale(1);
+  }
+}
+
+@media only screen and (max-width: 700px) {
+  /* Keep the reaction bar clear of the bottom voting controls on mobile. */
+  .reaction-bar {
+    left: 10px;
+    bottom: 10px;
+    gap: 2px;
+    padding: 4px;
+  }
+
+  .reaction-button {
+    width: 32px;
+    height: 32px;
+    font-size: 17px;
   }
 }
 

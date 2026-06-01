@@ -8,4 +8,5 @@ export default interface Game {
     gameType: GameFormat;
     teamName: string;
     autoReveal: boolean;
+    timer: { remaining: number; duration: number } | null;
 }

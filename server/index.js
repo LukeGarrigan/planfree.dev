@@ -52,7 +52,12 @@ function getOrCreateRoom(roomId) {
         // `revealed` gates whether actual vote values are broadcast. While false
         // the server only tells clients *that* a player has voted, never what
         // they picked, so nobody can peek at others' votes before the reveal.
-        room = { players: [], tickets: [], gameType: gameTypes[0], teamName: '', autoReveal: true, revealed: false };
+        // `timer*` back the optional round countdown (see startTimer).
+        room = {
+            players: [], tickets: [], gameType: gameTypes[0], teamName: '',
+            autoReveal: true, revealed: false,
+            timerEndsAt: null, timerDuration: 0, timerHandle: null
+        };
         rooms.set(roomId, room);
     }
     return room;
@@ -62,6 +67,37 @@ function getOrCreateRoom(roomId) {
 // ever consider voters, so a watching Scrum Master / PO never blocks a round.
 function voters(room) {
     return room.players.filter(p => !p.spectator);
+}
+
+// Stop and forget any running round timer. Safe to call when none is set.
+function clearRoomTimer(room) {
+    if (room.timerHandle) {
+        clearTimeout(room.timerHandle);
+    }
+    room.timerHandle = null;
+    room.timerEndsAt = null;
+}
+
+// What clients need to render the countdown: seconds left + the original
+// length. Clients tick locally from `remaining` so we don't broadcast per
+// second. Returns null when no timer is running.
+function timerState(room) {
+    if (!room.timerEndsAt) return null;
+    const remaining = Math.max(0, Math.ceil((room.timerEndsAt - Date.now()) / 1000));
+    return { remaining, duration: room.timerDuration };
+}
+
+// Fires when a round timer runs out: reveal whatever votes are in (so the timer
+// actually forces a reveal), but only if at least one voter has voted —
+// otherwise revealing would average over nothing.
+function onTimerExpired(roomId) {
+    const room = rooms.get(roomId);
+    if (!room) return;
+    clearRoomTimer(room);
+    if (voters(room).some(p => p.vote)) {
+        showVotes(roomId);
+    }
+    updateClientsInRoom(roomId);
 }
 
 io.on('connection', (socket) => {
@@ -190,6 +226,48 @@ io.on('connection', (socket) => {
         updateClientsInRoom(roomId);
     });
 
+    socket.on('startTimer', (seconds) => {
+        const room = rooms.get(roomId);
+        if (!room) return;
+        // Clamp to a sane range; default to a minute.
+        const duration = Math.min(600, Math.max(5, Math.floor(Number(seconds)) || 60));
+        clearRoomTimer(room);
+        room.timerDuration = duration;
+        room.timerEndsAt = Date.now() + duration * 1000;
+        room.timerHandle = setTimeout(() => onTimerExpired(roomId), duration * 1000);
+        updateClientsInRoom(roomId);
+    });
+
+    socket.on('cancelTimer', () => {
+        const room = rooms.get(roomId);
+        if (!room) return;
+        clearRoomTimer(room);
+        updateClientsInRoom(roomId);
+    });
+
+    // Ephemeral, non-stored emoji blasts relayed to the whole room. Allow-listed
+    // so a client can't broadcast arbitrary strings to everyone.
+    socket.on('reaction', (emoji) => {
+        const room = rooms.get(roomId);
+        if (!room) return;
+        const allowed = ['👍', '👎', '🎉', '😂', '🤔', '❤️'];
+        if (!allowed.includes(emoji)) return;
+        const player = room.players.find(p => p.id == socket.id);
+        io.to(roomId).emit('reaction', { emoji, name: player ? player.name : '' });
+    });
+
+    // Re-vote the current ticket: reset votes and hide again, but deliberately
+    // do NOT advance to the next ticket the way 'restart' does.
+    socket.on('revote', () => {
+        const room = rooms.get(roomId);
+        if (!room) return;
+        room.revealed = false;
+        clearRoomTimer(room);
+        room.players.forEach(p => p.vote = undefined);
+        io.to(roomId).emit('restart');
+        updateClientsInRoom(roomId);
+    });
+
     socket.on('ticket', (updatedTickets) => {
         const room = rooms.get(roomId);
         if (!room) return;
@@ -213,6 +291,7 @@ io.on('connection', (socket) => {
             // Drop the whole room once the last player leaves so room state
             // (players, tickets, deck) doesn't accumulate forever.
             if (room.players.length === 0) {
+                clearRoomTimer(room); // don't leave a setTimeout pointing at a dead room
                 rooms.delete(roomId);
             } else {
                 updateClientsInRoom(roomId);
@@ -248,7 +327,8 @@ function updateClientsInRoom(roomId) {
         tickets: room.tickets,
         gameType: room.gameType ?? gameTypes[0],
         teamName: room.teamName,
-        autoReveal: room.autoReveal
+        autoReveal: room.autoReveal,
+        timer: timerState(room)
     });
 }
 
@@ -257,6 +337,7 @@ function restartGame(roomId) {
     if (!room) return;
 
     room.revealed = false; // hide votes again for the new round
+    clearRoomTimer(room); // a new round starts fresh, without a stale countdown
     room.players.forEach(p => p.vote = undefined); // reset all the player's votes
 
     const ticketVotingOn = room.tickets.find(f => f.votingOn);
@@ -282,6 +363,7 @@ function logRooms() {
 function showVotes(roomId) {
     const room = rooms.get(roomId);
     if (!room) return;
+    clearRoomTimer(room); // revealing ends the round, so stop any countdown
     room.revealed = true; // from now on real vote values are broadcast
     // find the text in the gametype where the index is the closest
     let closest = 0;

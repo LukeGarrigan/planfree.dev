@@ -13,11 +13,13 @@ if (import.meta.env.VITE_SENTRY_DSN) {
     environment: import.meta.env.MODE,
     integrations: [
         Sentry.browserTracingIntegration({ router }),
-        Sentry.replayIntegration()
+        Sentry.replayIntegration(),
+        Sentry.consoleLoggingIntegration({ levels: ["log", "warn", "error"] }),
     ],
-    replaysSessionSampleRate: 0.1, 
+    replaysSessionSampleRate: 0.1,
     replaysOnErrorSampleRate: 1.0,
     tracesSampleRate: 1.0,
+    enableLogs: true,
   })
 }
 

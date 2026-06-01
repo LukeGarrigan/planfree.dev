@@ -15,7 +15,6 @@ if (process.env.SENTRY_DSN) {
 }
 
 const http = require('http').createServer((req, res) => {
-    // Tiny health-check route (replaces the former single Express route).
     res.writeHead(200, {'Content-Type': 'text/html'});
     res.end('<h1>Hello world</h1>');
 });

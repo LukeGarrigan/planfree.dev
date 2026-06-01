@@ -49,7 +49,7 @@ let gameTypes = [
 function getOrCreateRoom(roomId) {
     let room = rooms.get(roomId);
     if (!room) {
-        room = { players: [], tickets: [], gameType: gameTypes[0], teamName: '' };
+        room = { players: [], tickets: [], gameType: gameTypes[0], teamName: '', autoReveal: true };
         rooms.set(roomId, room);
     }
     return room;
@@ -110,7 +110,9 @@ io.on('connection', (socket) => {
             console.log(`Player ${player.name} voted ${player.vote}`);
         }
 
-        if (room.players.every(p => p.vote)) {
+        // Auto-reveal once everyone has voted, unless the room has turned it
+        // off (in which case a player must hit "Show votes!" manually).
+        if (room.autoReveal && room.players.every(p => p.vote)) {
             showVotes(roomId);
         }
         updateClientsInRoom(roomId);
@@ -135,6 +137,18 @@ io.on('connection', (socket) => {
         const room = rooms.get(roomId);
         if (!room) return;
         room.teamName = (newTeamName ?? '').trim();
+        updateClientsInRoom(roomId);
+    });
+
+    socket.on('autoRevealChanged', (autoReveal) => {
+        const room = rooms.get(roomId);
+        if (!room) return;
+        room.autoReveal = !!autoReveal;
+        // Turning it on while everyone has already voted should reveal now,
+        // rather than waiting for the next vote.
+        if (room.autoReveal && room.players.length > 0 && room.players.every(p => p.vote)) {
+            showVotes(roomId);
+        }
         updateClientsInRoom(roomId);
     });
 
@@ -180,7 +194,8 @@ function updateClientsInRoom(roomId) {
         players: room.players,
         tickets: room.tickets,
         gameType: room.gameType ?? gameTypes[0],
-        teamName: room.teamName
+        teamName: room.teamName,
+        autoReveal: room.autoReveal
     });
 }
 

@@ -32,6 +32,27 @@
         <p class="section-label">Estimation deck</p>
         <DeckPicker :formats="gameFormats" :selected="current" @select="saveSettings"></DeckPicker>
       </div>
+
+      <div class="section">
+        <p class="section-label">Voting</p>
+        <div class="toggle-row">
+          <div class="toggle-text">
+            <span class="toggle-label">Auto-reveal votes</span>
+            <span class="toggle-hint">Show votes automatically once everyone has voted</span>
+          </div>
+          <button
+              type="button"
+              class="toggle"
+              :class="{ on: autoRevealDraft }"
+              role="switch"
+              :aria-checked="autoRevealDraft"
+              aria-label="Auto-reveal votes"
+              @click="toggleAutoReveal"
+          >
+            <span class="knob"></span>
+          </button>
+        </div>
+      </div>
     </div>
   </div>
 </template>
@@ -44,13 +65,20 @@ import DeckPicker from '@/components/DeckPicker.vue';
 const props = defineProps<{
   current?: string;
   teamName?: string;
+  autoReveal?: boolean;
 }>();
 
 const gameFormats = JSON.parse(localStorage.getItem('gameTypes') || '[]');
 
-const emit = defineEmits(['saveSettings', 'saveTeamName', 'close']);
+const emit = defineEmits(['saveSettings', 'saveTeamName', 'saveAutoReveal', 'close']);
 
 const teamNameDraft = ref(props.teamName ?? '');
+const autoRevealDraft = ref(props.autoReveal ?? true);
+
+function toggleAutoReveal() {
+  autoRevealDraft.value = !autoRevealDraft.value;
+  emit('saveAutoReveal', autoRevealDraft.value);
+}
 
 function commitTeamName() {
   const next = teamNameDraft.value.trim();
@@ -164,6 +192,65 @@ onUnmounted(() => window.removeEventListener('keydown', onKeydown));
 
   &::placeholder {
     color: var(--text-muted);
+  }
+}
+
+.toggle-row {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 16px;
+}
+
+.toggle-text {
+  flex: 1 1 auto;
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  text-align: left;
+  gap: 4px;
+}
+
+.toggle-label {
+  font-size: 16px;
+  font-weight: 500;
+}
+
+.toggle-hint {
+  font-size: 13px;
+  opacity: 0.6;
+}
+
+.toggle {
+  flex: none;
+  position: relative;
+  width: 52px;
+  height: 30px;
+  padding: 0;
+  border: none;
+  border-radius: 15px;
+  background: var(--surface-input);
+  cursor: pointer;
+  transition: background-color 0.15s ease;
+
+  &.on {
+    background: var(--accent);
+  }
+
+  .knob {
+    position: absolute;
+    top: 3px;
+    left: 3px;
+    width: 24px;
+    height: 24px;
+    border-radius: 50%;
+    background: #fff;
+    box-shadow: var(--shadow-raised);
+    transition: transform 0.15s ease;
+  }
+
+  &.on .knob {
+    transform: translateX(22px);
   }
 }
 

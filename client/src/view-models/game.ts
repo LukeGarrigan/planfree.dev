@@ -7,4 +7,5 @@ export default interface Game {
     tickets: Ticket[];
     gameType: GameFormat;
     teamName: string;
+    autoReveal: boolean;
 }

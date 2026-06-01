@@ -11,8 +11,10 @@
         v-if="settings"
         :current="gameFormat?.name"
         :team-name="teamName"
+        :auto-reveal="autoReveal"
         @saveSettings="saveSettings"
         @saveTeamName="saveTeamName"
+        @saveAutoReveal="saveAutoReveal"
         @close="settings = false"
     ></Settings>
     <Sharing v-if="showShareModal" @dismissModal="dismissModal"></Sharing>
@@ -181,7 +183,8 @@ const {
   gameFormat,
   closestValue,
   averageValue,
-  teamName
+  teamName,
+  autoReveal
 } = useGameEngine();
 const showShareModal = ref(false);
 const {isDark, toggleTheme} = useTheme();
@@ -201,6 +204,10 @@ function saveSettings(gameType: GameFormat) {
 
 function saveTeamName(newTeamName: string) {
   socket.value.emit("teamNameChanged", newTeamName);
+}
+
+function saveAutoReveal(value: boolean) {
+  socket.value.emit("autoRevealChanged", value);
 }
 
 async function dismissModal() {

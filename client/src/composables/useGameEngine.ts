@@ -15,6 +15,7 @@ const closestValue: any = ref(null);
 const averageValue: any = ref(null);
 const tickets = ref<Ticket[]>([]);
 const teamName = ref("");
+const autoReveal = ref(true);
 
 export function useGameEngine() {
     function setSocket(newSocket: any) {
@@ -28,6 +29,7 @@ export function useGameEngine() {
             tickets.value = game.tickets;
             gameFormat.value = game.gameType;
             teamName.value = game.teamName ?? "";
+            autoReveal.value = game.autoReveal ?? true;
         });
 
         socket.value.on("gameTypes", (gameTypes: []) => {
@@ -71,6 +73,7 @@ export function useGameEngine() {
         gameFormat,
         closestValue,
         averageValue,
-        teamName
+        teamName,
+        autoReveal
     };
 }

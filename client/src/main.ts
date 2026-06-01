@@ -11,7 +11,12 @@ if (import.meta.env.VITE_SENTRY_DSN) {
     app,
     dsn: import.meta.env.VITE_SENTRY_DSN,
     environment: import.meta.env.MODE,
-    integrations: [Sentry.browserTracingIntegration({ router })],
+    integrations: [
+        Sentry.browserTracingIntegration({ router }),
+        Sentry.replayIntegration()
+    ],
+    replaysSessionSampleRate: 0.1, 
+    replaysOnErrorSampleRate: 1.0,
     tracesSampleRate: 1.0,
   })
 }

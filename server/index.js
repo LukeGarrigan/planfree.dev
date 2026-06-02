@@ -436,38 +436,40 @@ function logRooms() {
     }
 }
 
+function isNumericDeck(values) {
+    return values
+        .filter(v => v !== "?")
+        .every(v => v !== "" && !isNaN(Number(v)));
+}
+
 function showVotes(roomId) {
     const room = rooms.get(roomId);
     if (!room) return;
     clearRoomTimer(room); // revealing ends the round, so stop any countdown
     room.revealed = true; // from now on real vote values are broadcast
-    // find the text in the gametype where the index is the closest
-    let closest = 0;
-    let avg;
-    const average = getAverage(roomId);
+
     const values = room.gameType.values;
-    let upwards = Math.abs(values.find(p => p >= average) - average);
-    let downWards = Math.abs(values.findLast(p => p <= average) - average);
-    // the game type is not numeric use indexes instead
-    if (isNaN(upwards)) {
-        upwards = values.find((v, k) => k >= average);
-        downWards = values.findLast((v, k) => k <= average);
-        if (upwards < downWards) {
-            closest = values.find((v, k) => k >= average);
-        }
-        else {
-            closest = values.findLast((v, k) => k <= average);
-        }
-        avg = values[Math.floor(average)];
-    }
-    else {
-        if (upwards < downWards) {
-            closest = values.find(p => p >= average);
-        }
-        else {
-            closest = values.findLast(p => p <= average);
-        }
-        avg = Math.round(average * 100) / 100;
+    const numeric = isNumericDeck(values);
+    const average = getAverage(roomId);
+
+    let closest = null;
+    let avg = null;
+    if (average !== null) {
+        // Pick the votable card nearest the average in the deck's own metric
+        // (face value for numeric decks, position otherwise). A min-by-distance
+        // scan — rather than find/findLast — stays correct even for custom decks
+        // whose cards aren't in ascending order.
+        const nearest = values
+            .filter(v => v !== "?")
+            .reduce((best, value) => {
+                const metric = numeric ? Number(value) : values.indexOf(value);
+                const distance = Math.abs(metric - average);
+                return best === null || distance < best.distance ? { value, distance } : best;
+            }, null);
+        closest = nearest ? nearest.value : null;
+        // Numeric decks show the true mean; non-numeric decks have no meaningful
+        // numeric mean, so we surface the nearest card instead.
+        avg = numeric ? Math.round(average * 100) / 100 : closest;
     }
 
     if (room.tickets.length > 0) {
@@ -496,23 +498,24 @@ function getDistribution(roomId) {
         .sort((a, b) => values.indexOf(a.value) - values.indexOf(b.value));
 }
 
+// Mean of the cast votes. For a numeric deck this is the mean of the face values;
+// for a non-numeric deck it's the mean of the card positions. Spectators and the
+// "?" abstain card are excluded, as is any vote that isn't actually in the deck
+// (e.g. a stale vote left over from a deck change). Returns null when nobody has
+// a usable vote, so callers can skip the reveal math rather than divide by zero.
 function getAverage(roomId) {
     const room = rooms.get(roomId);
-    const roomGameType = room.gameType;
+    const values = room.gameType.values;
+    const numeric = isNumericDeck(values);
     let count = 0;
     let total = 0;
     for (const player of room.players) {
-        if (player.vote && player.vote !== "?") {
-            // get the current index of the vote
-            const index = roomGameType.values.indexOf(player.vote);
-            let numberValue = Number(player.vote);
-            if (isNaN(numberValue)) {
-                numberValue = index;
-            }
-
-            total += parseInt(numberValue);
-            count++;
-        }
+        if (player.spectator) continue;
+        if (!player.vote || player.vote === "?") continue;
+        const metric = numeric ? Number(player.vote) : values.indexOf(player.vote);
+        if (isNaN(metric) || metric < 0) continue;
+        total += metric;
+        count++;
     }
-    return total / count;
+    return count === 0 ? null : total / count;
 }

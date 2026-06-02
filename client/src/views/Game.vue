@@ -69,7 +69,7 @@
       </div>
 
       <div class="top-buttons">
-        <button v-if="!showCopiedToClipboard" class="button invite" @click="copyToClipboard()">
+        <button v-if="!showCopiedToClipboard" class="button invite" aria-label="Invite players" @click="copyToClipboard()">
           <div>{{ "Invite players" }}</div>
           <div>
             <svg width="24px" height="24px" viewBox="0 0 24 24" fill="none"
@@ -119,7 +119,7 @@
             </button>
           </div>
         </div>
-        <button class="button issues-button" @click="toggleTickets">
+        <button class="button issues-button" aria-label="Tickets" @click="toggleTickets">
           <div>Tickets</div>
           <div>
             <svg xmlns="http://www.w3.org/2000/svg" height="24" viewBox="0 -960 960 960" width="24" fill="currentColor">

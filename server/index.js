@@ -451,12 +451,17 @@ function restartGame(roomId) {
     updateClientsInRoom(roomId);
 }
 
+// Real users are connected players who have set a username (an empty-named slot
+// is just a freshly-connected socket that hasn't joined in earnest yet).
+function namedUsersIn(room) {
+    return room.players.filter(p => p.name && p.name.trim()).map(p => p.name);
+}
+
 function logRooms() {
-    console.debug('heartbeat', { rooms: rooms.size });
-    for (const [roomId, room] of rooms) {
-        const names = room.players.map(p => p.name).filter(Boolean).join(', ');
-        console.debug('room state', { room: roomId, players: room.players.length, names, revealed: room.revealed });
-    }
+    const detail = [...rooms.values()]
+        .map(room => `${room.teamName || '(unnamed)'}: ${namedUsersIn(room).join(', ') || '—'}`)
+        .join(' | ');
+    console.info('heartbeat', { rooms: rooms.size, detail });
 }
 
 function isNumericDeck(values) {

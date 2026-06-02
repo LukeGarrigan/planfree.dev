@@ -53,7 +53,6 @@ test("a crowded room votes and the board reveals a distribution", async ({ brows
   // Capture the crowded board so you can literally see what it looks like.
   await host.page.screenshot({
     path: `e2e/screenshots/crowd-${PLAYERS}.png`,
-    fullPage: true,
   });
 
   if (HOLD_MS > 0) {

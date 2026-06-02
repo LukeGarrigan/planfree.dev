@@ -33,7 +33,14 @@
       <div class="section">
         <p class="section-label">Estimation deck</p>
         <div :class="{ 'is-locked': controlsDisabled }">
-          <DeckPicker :formats="gameFormats" :selected="current" @select="saveSettings"></DeckPicker>
+          <DeckPicker
+              :formats="gameFormats"
+              :selected="current"
+              :deletable="customDeckNames"
+              @select="saveSettings"
+              @delete="onDeleteDeck"
+          ></DeckPicker>
+          <CustomDeckEditor @created="onCustomDeckCreated"></CustomDeckEditor>
         </div>
       </div>
 
@@ -124,6 +131,8 @@ import GameFormat from '@/view-models/gameFormat';
 import Player from '@/view-models/player';
 import {computed, onMounted, onUnmounted, ref} from 'vue';
 import DeckPicker from '@/components/DeckPicker.vue';
+import CustomDeckEditor from '@/components/CustomDeckEditor.vue';
+import {useDecks} from '@/composables/useDecks';
 
 const props = defineProps<{
   current?: string;
@@ -138,7 +147,7 @@ const props = defineProps<{
   canControl?: boolean;
 }>();
 
-const gameFormats = JSON.parse(localStorage.getItem('gameTypes') || '[]');
+const {decks: gameFormats, customDeckNames, removeCustomDeck} = useDecks();
 
 const emit = defineEmits([
   'saveSettings', 'saveTeamName', 'saveAutoReveal', 'saveSpectator',
@@ -178,6 +187,16 @@ function commitTeamName() {
 function saveSettings(format: GameFormat) {
   if (controlsDisabled.value) return;
   emit('saveSettings', format);
+}
+
+// A freshly-created custom deck is applied to the room straight away.
+function onCustomDeckCreated(deck: GameFormat) {
+  saveSettings(deck);
+}
+
+function onDeleteDeck(name: string) {
+  if (controlsDisabled.value) return;
+  removeCustomDeck(name);
 }
 
 function close() {

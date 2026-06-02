@@ -34,6 +34,10 @@ function registerSocket(teamName: string, gameType: GameFormat) {
   setSocket(newSocket);
   socket.value.on("room", (roomId: string) => {
     hasStarted.value = true;
+    // The handshake only carries the deck name, which the server resolves
+    // against its built-in list — a custom deck wouldn't be found there. Push
+    // the full chosen deck now so custom values apply from the first round.
+    socket.value.emit("gameTypeChanged", gameType);
     router.push({ path: `/game/${roomId}` });
   });
   socket.value.on("gameTypes", (gameTypes: GameFormat[]) => {

@@ -4,7 +4,7 @@
       <label for="selectNameInput" class="heading">Name your team</label>
       <p class="subheading">Everyone in this session will see this</p>
 
-      <div class="input-container">
+      <div class="input-container" :class="{ 'needs-name': !canStart }">
         <PFInput
             v-model="teamName"
             @completed="completed"
@@ -14,39 +14,63 @@
       </div>
 
       <p class="section-label">Estimation deck</p>
-      <DeckPicker :formats="gameFormats" :selected="selected.name" @select="selected = $event"></DeckPicker>
+      <DeckPicker
+          :formats="gameFormats"
+          :selected="selected?.name"
+          :deletable="customDeckNames"
+          @select="selected = $event"
+          @delete="onDeleteDeck"
+      ></DeckPicker>
+      <CustomDeckEditor @created="onCustomDeckCreated"></CustomDeckEditor>
 
-      <button class="start-button" type="button" @click="completed">
-        <span>Start planning</span>
-      </button>
+      <div class="start-wrapper">
+        <button
+            class="start-button"
+            type="button"
+            :disabled="!canStart"
+            :title="canStart ? '' : 'Enter a team name first'"
+            @click="completed"
+        >
+          <span>Start planning</span>
+        </button>
+      </div>
     </div>
   </div>
 </template>
 
 <script setup lang="ts">
-import {onMounted, ref} from 'vue';
+import {computed, onMounted, ref} from 'vue';
 import PFInput from "@/components/Input.vue";
 import DeckPicker from "@/components/DeckPicker.vue";
+import CustomDeckEditor from "@/components/CustomDeckEditor.vue";
+import {useDecks} from "@/composables/useDecks";
 import GameFormat from "@/view-models/gameFormat";
 
-// Decks come from the list the server last pushed (cached in localStorage). For
-// a first-time visitor with no cache, fall back to a list that mirrors the
-// server's hardcoded gameTypes so the picker is never empty.
-const DEFAULT_GAME_TYPES: GameFormat[] = [
-  {name: 'Fibonacci', values: ['1', '2', '3', '5', '8', '13', '21', '34', '55', '89', '?']},
-  {name: 'T-Shirt', values: ['XXS', 'XS', 'S', 'M', 'L', 'XL', '?']},
-  {name: 'Powers of 2', values: ['0', '1', '2', '4', '8', '16', '32', '64', '?']},
-];
-
-const cached = JSON.parse(localStorage.getItem('gameTypes') || '[]') as GameFormat[];
-const gameFormats: GameFormat[] = cached.length ? cached : DEFAULT_GAME_TYPES;
+const {decks: gameFormats, customDeckNames, removeCustomDeck} = useDecks();
 
 const emit = defineEmits<{
   (e: 'completed', payload: { teamName: string; gameType: GameFormat }): void
 }>();
 
 const teamName = ref('');
-const selected = ref<GameFormat>(gameFormats[0]);
+const selected = ref<GameFormat>(gameFormats.value[0]);
+
+// A team name is required — everyone in the session sees it, and the button
+// stays disabled until one is entered so clicking it never silently no-ops.
+const canStart = computed(() => teamName.value.trim().length > 0);
+
+// A new custom deck is selected immediately so "Start planning" uses it.
+function onCustomDeckCreated(deck: GameFormat) {
+  selected.value = deck;
+}
+
+function onDeleteDeck(name: string) {
+  removeCustomDeck(name);
+  // If we just removed the deck that was selected, fall back to the first one.
+  if (selected.value?.name === name) {
+    selected.value = gameFormats.value[0];
+  }
+}
 
 onMounted(() => {
   const input = document.getElementById('selectNameInput') as HTMLInputElement | null;
@@ -78,6 +102,10 @@ function completed() {
 .modal {
   width: 90%;
   max-width: 440px;
+  /* Cap to the viewport and scroll within when the deck list + custom-deck
+     editor make the modal taller than the screen. */
+  max-height: 90vh;
+  overflow-y: auto;
   padding: 32px 28px;
   border-radius: 20px;
   background: var(--surface);
@@ -106,6 +134,15 @@ function completed() {
 
 .input-container {
   display: flex;
+  flex: none;
+  border-radius: 10px;
+  transition: box-shadow 0.15s ease;
+}
+
+/* While no name is entered, ring the field in the accent colour so it's clear
+   that's the thing to fill in before "Start planning" works. */
+.input-container.needs-name {
+  box-shadow: 0 0 0 2px var(--accent);
 }
 
 .section-label {
@@ -117,11 +154,18 @@ function completed() {
   margin: 24px 0 12px;
 }
 
+.start-wrapper {
+  /* Don't let the button block shrink when the modal scrolls — as a flex child
+     it would otherwise squish below its 56px height. */
+  flex: none;
+  width: 100%;
+  margin-top: 24px;
+}
+
 .start-button {
   display: flex;
   align-items: center;
   justify-content: center;
-  margin-top: 24px;
   width: 100%;
   height: 56px;
   background: var(--accent);
@@ -132,6 +176,11 @@ function completed() {
 
   &:hover {
     opacity: 0.85;
+  }
+
+  &:disabled {
+    opacity: 0.4;
+    cursor: not-allowed;
   }
 
   span {

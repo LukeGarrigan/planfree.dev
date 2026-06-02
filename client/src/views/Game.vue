@@ -536,23 +536,31 @@ const toggleTickets = () => showTickets.value = !showTickets.value;
 
 <style scoped lang="scss">
 .players-row {
-  /* Fills the space under the top bar and centres the player cards, so the
-     board flows below the header instead of sitting under an absolute bar. */
-  flex: 1 1 auto;
+  /* Players pack from the top and wrap into as many rows as the count needs;
+     the action button and voting hand flow below. `order: 1` keeps every player
+     above the button regardless of DOM order (the button sits earlier in the
+     markup). */
+  order: 1;
+  flex: 0 0 auto;
   width: 100%;
   display: flex;
   flex-wrap: wrap;
   justify-content: center;
-  align-items: center;
-  align-content: center;
-  gap: 0 1em;
+  align-items: flex-start;
+  align-content: flex-start;
+  gap: 24px 16px;
+  padding-top: 1em;
+  box-sizing: border-box;
 }
 
 .players {
   user-select: none;
   position: relative;
-  width: 320px;
-  height: 320px;
+  /* Compact, content-height cells so a dozen players wrap into a couple of tidy
+     rows instead of a few oversized boxes that overflow the screen. */
+  width: 150px;
+  height: auto;
+  min-height: 150px;
   display: flex;
   justify-content: center;
   align-items: center;
@@ -615,21 +623,28 @@ const toggleTickets = () => showTickets.value = !showTickets.value;
 .home {
   display: flex;
   flex-direction: column;
-  /* Centres children on the cross (horizontal) axis. The absolute .button /
-     .options / .results have no `left`, so they rely on this for centring —
-     the column equivalent of the old `justify-content: center`. */
+  /* Centres children on the cross (horizontal) axis. The absolute .options /
+     .results have no `left`, so they rely on this for centring — the column
+     equivalent of the old `justify-content: center`. */
   align-items: center;
   height: 100%;
   width: 100%;
   box-sizing: border-box;
+  /* Players + button flow top-to-bottom and scroll when the room is large, so
+     no player is ever clipped off-screen. The padding reserves room for the
+     voting hand / results card pinned to the bottom. */
+  overflow-y: auto;
+  padding-bottom: 240px;
 }
 
 .button {
   display: flex;
   align-items: center;
   justify-content: center;
-  position: absolute;
-  top: 45%;
+  /* Flows directly beneath the player grid (order: 2 puts it after the players,
+     which are order: 1) instead of floating over the middle of the board. */
+  order: 2;
+  margin: 16px 0;
   width: 320px;
   height: 80px;
   background: var(--surface);

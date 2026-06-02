@@ -917,10 +917,6 @@ const toggleTickets = () => showTickets.value = !showTickets.value;
       opacity: 1;
     }
   }
-
-  .results-container {
-    bottom: 3%;
-  }
 }
 
 @media only screen and (max-width: 600px) {
@@ -1092,9 +1088,12 @@ span {
 .results-container {
   display: flex;
   justify-content: center;
-  position: absolute;
-  width: 90%;
-  bottom: 5%;
+  /* Flows beneath the players + action button (order keeps it last even though
+     it sits earlier in the DOM) so a crowded board pushes the results card down
+     instead of having it painted over the player grid. */
+  order: 3;
+  width: 100%;
+  margin: 16px 0;
   user-select: none;
   font-family: "Montserrat", sans-serif;
 }

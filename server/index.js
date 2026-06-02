@@ -9,7 +9,8 @@ if (process.env.SENTRY_DSN) {
         tracesSampleRate: 1.0,
         enableLogs: true,
         integrations: [
-            Sentry.consoleLoggingIntegration({ levels: ["log", "warn", "error"] }),
+            // console.debug is omitted so high-frequency chatter stays stdout-only.
+            Sentry.consoleLoggingIntegration({ levels: ["info", "warn", "error"] }),
         ]
     });
 }
@@ -32,7 +33,7 @@ setInterval(() => {
 }, 20000);
 
 http.listen(process.env.PORT || 3000, () => {
-    console.log(`listening on *:${process.env.PORT || 3000}`);
+    console.info('server listening', { port: process.env.PORT || 3000 });
 });
 
 // All room state lives here, keyed by roomId. Each entry is a self-contained
@@ -62,6 +63,7 @@ function getOrCreateRoom(roomId) {
             hostUserId: null, locked: true, bannedUserIds: new Set()
         };
         rooms.set(roomId, room);
+        console.info('room created', { room: roomId, rooms: rooms.size });
     }
     return room;
 }
@@ -109,6 +111,7 @@ function onTimerExpired(roomId) {
     const room = rooms.get(roomId);
     if (!room) return;
     clearRoomTimer(room);
+    console.info('timer expired', { room: roomId });
     if (voters(room).some(p => p.vote)) {
         showVotes(roomId);
     }
@@ -116,7 +119,7 @@ function onTimerExpired(roomId) {
 }
 
 io.on('connection', (socket) => {
-    console.log('A user connected', socket.id);
+    console.debug('socket connected', { socket: socket.id });
     let roomId = socket.handshake.query['roomId'];
     if (!roomId) {
         roomId = randomBytes(8).toString('hex');
@@ -146,6 +149,7 @@ io.on('connection', (socket) => {
     // A kicked user stays out until the room is gone. Tell them so the client
     // can route home, then drop the socket before they rejoin a player slot.
     if (room.bannedUserIds.has(userId)) {
+        console.warn('blocked banned user', { room: roomId, socket: socket.id, user: userId });
         socket.emit('kicked');
         socket.disconnect(true);
         return;
@@ -157,14 +161,17 @@ io.on('connection', (socket) => {
     if (existingPlayer) {
         existingPlayer.id = socket.id;
         existingPlayer.spectator = spectator;
+        console.debug('player reconnected', { room: roomId, socket: socket.id, user: userId, spectator });
     } else {
         room.players.push({ id: socket.id, userId: userId, name: '', vote: undefined, spectator: spectator });
+        console.info('player joined', { room: roomId, socket: socket.id, user: userId, spectator, players: room.players.length });
     }
 
     // The first person in (the creator), or anyone arriving when the seat is
     // vacant (host left), becomes host.
     if (!room.hostUserId || !room.players.some(p => p.userId === room.hostUserId)) {
         room.hostUserId = userId;
+        console.info('host assigned', { room: roomId, user: userId });
     }
 
     socket.on('name', (name) => {
@@ -172,7 +179,7 @@ io.on('connection', (socket) => {
         if (!room) return;
         const player = room.players.find(p => p.id == socket.id);
         if (player) {
-            console.log(`Changing name from ${player.name} to ${name}`)
+            console.info('name changed', { room: roomId, user: player.userId, from: player.name, to: name });
             player.name = name;
         }
         updateClientsInRoom(roomId);
@@ -184,7 +191,7 @@ io.on('connection', (socket) => {
         const player = room.players.find(p => p.id == socket.id);
         if (player) {
             player.vote = vote;
-            console.log(`Player ${player.name} voted ${player.vote}`);
+            console.info('player voted', { room: roomId, user: player.userId, name: player.name, vote });
         }
 
         // Auto-reveal once every voter has voted, unless the room has turned it
@@ -217,6 +224,7 @@ io.on('connection', (socket) => {
         const room = rooms.get(roomId);
         if (!room || !canControl(room, socket)) return;
         room.gameType = newGameType;
+        console.info('deck changed', { room: roomId, deck: newGameType?.name });
         updateClientsInRoom(roomId);
     });
 
@@ -224,6 +232,7 @@ io.on('connection', (socket) => {
         const room = rooms.get(roomId);
         if (!room || !canControl(room, socket)) return;
         room.teamName = (newTeamName ?? '').trim();
+        console.info('team name changed', { room: roomId, teamName: room.teamName });
         updateClientsInRoom(roomId);
     });
 
@@ -231,6 +240,7 @@ io.on('connection', (socket) => {
         const room = rooms.get(roomId);
         if (!room || !canControl(room, socket)) return;
         room.autoReveal = !!autoReveal;
+        console.info('auto-reveal changed', { room: roomId, autoReveal: room.autoReveal });
         // Turning it on while every voter has already voted should reveal now,
         // rather than waiting for the next vote.
         const roomVoters = voters(room);
@@ -246,6 +256,7 @@ io.on('connection', (socket) => {
         const player = room.players.find(p => p.id == socket.id);
         if (!player) return;
         player.spectator = !!isSpectator;
+        console.info('spectator changed', { room: roomId, user: player.userId, spectator: player.spectator });
         // A spectator has no vote in the round; drop any cast vote so they stop
         // counting toward the average and auto-reveal.
         if (player.spectator) {
@@ -269,6 +280,7 @@ io.on('connection', (socket) => {
         room.timerDuration = duration;
         room.timerEndsAt = Date.now() + duration * 1000;
         room.timerHandle = setTimeout(() => onTimerExpired(roomId), duration * 1000);
+        console.info('timer started', { room: roomId, duration });
         updateClientsInRoom(roomId);
     });
 
@@ -276,6 +288,7 @@ io.on('connection', (socket) => {
         const room = rooms.get(roomId);
         if (!room || !canControl(room, socket)) return;
         clearRoomTimer(room);
+        console.info('timer cancelled', { room: roomId });
         updateClientsInRoom(roomId);
     });
 
@@ -287,6 +300,7 @@ io.on('connection', (socket) => {
         const allowed = ['👍', '👎', '🎉', '😂', '🤔', '❤️'];
         if (!allowed.includes(emoji)) return;
         const player = room.players.find(p => p.id == socket.id);
+        console.debug('reaction', { room: roomId, user: player?.userId, emoji });
         io.to(roomId).emit('reaction', { emoji, name: player ? player.name : '' });
     });
 
@@ -298,6 +312,7 @@ io.on('connection', (socket) => {
         room.revealed = false;
         clearRoomTimer(room);
         room.players.forEach(p => p.vote = undefined);
+        console.info('round revoted', { room: roomId });
         io.to(roomId).emit('restart');
         updateClientsInRoom(roomId);
     });
@@ -306,6 +321,7 @@ io.on('connection', (socket) => {
         const room = rooms.get(roomId);
         if (!room || !isHost(room, socket)) return;
         room.locked = !!locked;
+        console.info('lock changed', { room: roomId, locked: room.locked });
         updateClientsInRoom(roomId);
     });
 
@@ -314,6 +330,7 @@ io.on('connection', (socket) => {
         if (!room || !isHost(room, socket)) return;
         if (room.players.some(p => p.userId === targetUserId)) {
             room.hostUserId = targetUserId;
+            console.info('host transferred', { room: roomId, to: targetUserId });
             updateClientsInRoom(roomId);
         }
     });
@@ -325,6 +342,7 @@ io.on('connection', (socket) => {
         const target = room.players.find(p => p.userId === targetUserId);
         if (!target) return;
         room.bannedUserIds.add(targetUserId);
+        console.info('player kicked', { room: roomId, user: targetUserId, name: target.name });
         const targetSocket = io.sockets.sockets.get(target.id);
         if (targetSocket) {
             // Tell them, then drop the socket — its disconnect handler removes
@@ -344,10 +362,11 @@ io.on('connection', (socket) => {
             updatedTickets[0].votingOn = true;
         }
         room.tickets = updatedTickets;
+        console.debug('tickets updated', { room: roomId, count: updatedTickets.length });
         updateClientsInRoom(roomId);
     });
 
-    socket.on('disconnect', () => {
+    socket.on('disconnect', (reason) => {
         // Only remove the player if this socket is still the one attached to
         // them. If they've already reconnected on a new socket, their player
         // slot now points at that socket and should be left intact.
@@ -355,18 +374,20 @@ io.on('connection', (socket) => {
         if (!room) return;
         const player = room.players.find(player => player.id === socket.id);
         if (player) {
-            console.log(`Player ${player.name} has disconnected`);
+            console.info('player disconnected', { room: roomId, socket: socket.id, user: player.userId, name: player.name, reason });
             room.players = room.players.filter(p => p.id !== socket.id);
             // Drop the whole room once the last player leaves so room state
             // (players, tickets, deck) doesn't accumulate forever.
             if (room.players.length === 0) {
                 clearRoomTimer(room); // don't leave a setTimeout pointing at a dead room
                 rooms.delete(roomId);
+                console.info('room deleted', { room: roomId, rooms: rooms.size });
             } else {
                 // If the host just left, hand the room to the longest-present
                 // remaining player (players are kept in join order).
                 if (player.userId === room.hostUserId) {
                     room.hostUserId = room.players[0].userId;
+                    console.info('host reassigned', { room: roomId, user: room.hostUserId });
                 }
                 updateClientsInRoom(roomId);
             }
@@ -424,15 +445,17 @@ function restartGame(roomId) {
             ticketToVoteOn.votingOn = true;
         }
     }
-    console.log(`Restarted game with Players: ${room.players.map(p => p.name).join(", ")}`);
+    const votingOn = room.tickets.find(t => t.votingOn);
+    console.info('game restarted', { room: roomId, players: room.players.length, votingOn: votingOn?.title });
     io.to(roomId).emit('restart');
     updateClientsInRoom(roomId);
 }
 
 function logRooms() {
+    console.debug('heartbeat', { rooms: rooms.size });
     for (const [roomId, room] of rooms) {
-        const playerNames = room.players.map(p => p.name);
-        console.log(`Room: ${roomId} - Players: ${playerNames.join(", ")}`);
+        const names = room.players.map(p => p.name).filter(Boolean).join(', ');
+        console.debug('room state', { room: roomId, players: room.players.length, names, revealed: room.revealed });
     }
 }
 
@@ -479,6 +502,7 @@ function showVotes(roomId) {
         }
     }
 
+    console.info('votes revealed', { room: roomId, voters: voters(room).length, average: avg, closest });
     io.to(roomId).emit('show', { average: avg, closest: closest, distribution: getDistribution(roomId) });
 }
 

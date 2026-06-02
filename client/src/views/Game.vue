@@ -605,6 +605,10 @@ const toggleTickets = () => showTickets.value = !showTickets.value;
 
   .voted {
     background: var(--accent);
+
+    span {
+      color: var(--accent-text);
+    }
   }
 
   .player.spectator {
@@ -1352,6 +1356,10 @@ span {
 
   &.current {
     background: var(--accent);
+
+    span {
+      color: var(--accent-text);
+    }
   }
 }
 </style>

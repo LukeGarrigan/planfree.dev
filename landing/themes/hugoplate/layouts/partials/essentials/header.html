@@ -126,6 +126,18 @@
       {{ partial "components/language-switcher" (dict "Context" . "Class" "mr-5 pl-2 py-1 dark:bg-darkmode-light rounded") }}
       {{ partial "components/theme-switcher" (dict "Class" "mr-5") }}
 
+      <!-- github link -->
+      {{ with site.Params.github_repo }}
+        <a
+          href="{{ . }}"
+          target="_blank"
+          rel="noopener"
+          aria-label="View Planfree.dev on GitHub"
+          title="View source on GitHub"
+          class="text-text-dark hover:text-primary dark:text-white dark:hover:text-darkmode-primary mr-5 inline-block text-xl">
+          <i class="fab fa-github"></i>
+        </a>
+      {{ end }}
 
       <!-- navigation btn -->
       {{ if site.Params.navigation_button.enable }}

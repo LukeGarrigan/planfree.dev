@@ -12,6 +12,8 @@ logo_height = "32px"
 logo_webp = true
 # logo text will only show when logo is missing.
 logo_text = "Planfree.dev"
+# open-source repo, surfaced as a GitHub link in the navbar (leave blank to hide)
+github_repo = "https://github.com/LukeGarrigan/planfree.dev"
 # navbar fixed to top
 navbar_fixed = true
 # theme-mode

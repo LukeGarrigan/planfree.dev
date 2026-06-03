@@ -15,7 +15,65 @@ if (process.env.SENTRY_DSN) {
     });
 }
 
-const http = require('http').createServer((req, res) => {
+// Prometheus metrics. Gauges read live state at scrape time (the `rooms` Map is
+// declared below; collect() runs later, so the reference is fine). Counters are
+// monotonic and tick in-process as events happen — that's how lifetime totals
+// survive between scrapes, which a gauge can't do once it goes back down.
+// Default runtime metrics keep their conventional process_/nodejs_ names (no
+// prefix) so stock dashboards match them; only our own metrics are namespaced.
+const client = require('prom-client');
+const register = client.register;
+client.collectDefaultMetrics();
+
+// --- Live counts (gauges) ---
+new client.Gauge({
+    name: 'planfree_rooms_active',
+    help: 'Rooms currently held in memory',
+    collect() { this.set(rooms.size); }
+});
+new client.Gauge({
+    name: 'planfree_players_connected',
+    help: 'Players connected across all rooms',
+    collect() {
+        let total = 0;
+        for (const room of rooms.values()) total += room.players.length;
+        this.set(total);
+    }
+});
+new client.Gauge({
+    name: 'planfree_rounds_in_progress',
+    help: 'Rooms in an unrevealed (still voting) round',
+    collect() {
+        let inProgress = 0;
+        for (const room of rooms.values()) if (!room.revealed) inProgress++;
+        this.set(inProgress);
+    }
+});
+
+// --- Lifetime totals (counters) ---
+const roomsCreatedTotal = new client.Counter({
+    name: 'planfree_rooms_created_total',
+    help: 'Rooms created since server start'
+});
+const playersJoinedTotal = new client.Counter({
+    name: 'planfree_players_joined_total',
+    help: 'Players that joined a room since server start'
+});
+const votesCastTotal = new client.Counter({
+    name: 'planfree_votes_cast_total',
+    help: 'Votes cast since server start'
+});
+const roundsRevealedTotal = new client.Counter({
+    name: 'planfree_rounds_revealed_total',
+    help: 'Rounds revealed since server start'
+});
+
+const http = require('http').createServer(async (req, res) => {
+    if (req.url === '/metrics') {
+        res.writeHead(200, {'Content-Type': register.contentType});
+        res.end(await register.metrics());
+        return;
+    }
     res.writeHead(200, {'Content-Type': 'text/html'});
     res.end('<h1>Hello world</h1>');
 });
@@ -63,6 +121,7 @@ function getOrCreateRoom(roomId) {
             hostUserId: null, locked: true, bannedUserIds: new Set()
         };
         rooms.set(roomId, room);
+        roomsCreatedTotal.inc();
         console.info('room created', { room: roomId, rooms: rooms.size });
     }
     return room;
@@ -164,6 +223,7 @@ io.on('connection', (socket) => {
         console.debug('player reconnected', { room: roomId, socket: socket.id, user: userId, spectator });
     } else {
         room.players.push({ id: socket.id, userId: userId, name: '', vote: undefined, spectator: spectator });
+        playersJoinedTotal.inc();
         console.info('player joined', { room: roomId, socket: socket.id, user: userId, spectator, players: room.players.length });
     }
 
@@ -191,6 +251,7 @@ io.on('connection', (socket) => {
         const player = room.players.find(p => p.id == socket.id);
         if (player) {
             player.vote = vote;
+            votesCastTotal.inc();
             console.info('player voted', { room: roomId, user: player.userId, name: player.name, vote });
         }
 
@@ -474,6 +535,7 @@ function showVotes(roomId) {
     const room = rooms.get(roomId);
     if (!room) return;
     clearRoomTimer(room); // revealing ends the round, so stop any countdown
+    if (!room.revealed) roundsRevealedTotal.inc(); // count the round once, not on re-reveals
     room.revealed = true; // from now on real vote values are broadcast
 
     const values = room.gameType.values;

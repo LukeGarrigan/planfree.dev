@@ -105,6 +105,107 @@ let gameTypes = [
     { name: 'Powers of 2', values: [0, 1, 2, 4, 8, 16, 32, 64, '?'] },
 ]
 
+// --- Redis persistence (optional, no-op without REDIS_URL) ------------------
+// Write-through so a dyno restart doesn't wipe live in-memory rooms.
+let redis = null;
+if (process.env.REDIS_URL) {
+    const Redis = require('ioredis');
+    redis = new Redis(process.env.REDIS_URL, { maxRetriesPerRequest: 2 });
+    redis.on('error', (err) => console.warn('redis error', { error: err.message }));
+    redis.on('connect', () => console.info('redis connected'));
+}
+const ROOM_TTL_SECONDS = 24 * 60 * 60;
+const roomKey = (roomId) => `room:${roomId}`;
+
+// Drop what JSON/a restart can't carry: the bannedUserIds Set, socket ids, timer.
+function serializeRoom(room) {
+    return JSON.stringify({
+        players: room.players.map(p => ({ userId: p.userId, name: p.name, vote: p.vote, spectator: !!p.spectator })),
+        tickets: room.tickets,
+        gameType: room.gameType,
+        teamName: room.teamName,
+        autoReveal: room.autoReveal,
+        revealed: room.revealed,
+        hostUserId: room.hostUserId,
+        locked: room.locked,
+        bannedUserIds: [...room.bannedUserIds],
+    });
+}
+function deserializeRoom(json) {
+    const d = JSON.parse(json);
+    return {
+        players: (d.players || []).map(p => ({ id: null, userId: p.userId, name: p.name, vote: p.vote, spectator: !!p.spectator })),
+        tickets: d.tickets || [],
+        gameType: d.gameType || gameTypes[0],
+        teamName: d.teamName || '',
+        autoReveal: d.autoReveal !== false,
+        revealed: !!d.revealed,
+        timerEndsAt: null, timerDuration: 0, timerHandle: null,
+        hostUserId: d.hostUserId || null,
+        locked: d.locked !== false,
+        bannedUserIds: new Set(d.bannedUserIds || []),
+    };
+}
+
+// Restore a room from Redis when it's not in memory (post-restart). Best-effort.
+async function hydrateRoom(roomId) {
+    if (rooms.has(roomId) || !redis) return;
+    try {
+        const json = await redis.get(roomKey(roomId));
+        if (!json) return;
+        rooms.set(roomId, deserializeRoom(json));
+        console.info('room restored from redis', { room: roomId });
+    } catch (err) {
+        console.warn('redis hydrate failed', { room: roomId, error: err.message });
+    }
+}
+
+// Debounced write-through: mark dirty on change, flush every 10s.
+const dirtyRooms = new Set();
+function markDirty(roomId) {
+    if (redis) dirtyRooms.add(roomId);
+}
+async function flushDirtyRooms() {
+    if (!redis || dirtyRooms.size === 0) return;
+    for (const roomId of [...dirtyRooms]) {
+        dirtyRooms.delete(roomId);
+        const room = rooms.get(roomId);
+        if (!room) continue; // deleted before flush; its key was already removed
+        try {
+            await redis.set(roomKey(roomId), serializeRoom(room), 'EX', ROOM_TTL_SECONDS);
+        } catch (err) {
+            console.warn('redis save failed', { room: roomId, error: err.message });
+        }
+    }
+}
+if (redis) setInterval(flushDirtyRooms, 10000).unref();
+
+// Last player left: flush to Redis and evict from memory so the room survives on
+// TTL and rehydrates on return, instead of being destroyed. No Redis: keep it.
+async function parkRoom(roomId) {
+    const room = rooms.get(roomId);
+    if (!room) return;
+    if (!redis) {
+        console.info('room kept in memory (no redis)', { room: roomId });
+        return;
+    }
+    try {
+        await redis.set(roomKey(roomId), serializeRoom(room), 'EX', ROOM_TTL_SECONDS);
+        dirtyRooms.delete(roomId);
+        rooms.delete(roomId);
+        console.info('room parked', { room: roomId, rooms: rooms.size });
+    } catch (err) {
+        console.warn('redis park failed; keeping in memory', { room: roomId, error: err.message });
+    }
+}
+
+// Flush in-flight state on shutdown so a graceful restart loses nothing.
+process.on('SIGTERM', async () => {
+    console.info('SIGTERM — flushing rooms to redis');
+    await flushDirtyRooms();
+    process.exit(0);
+});
+
 function getOrCreateRoom(roomId) {
     let room = rooms.get(roomId);
     if (!room) {
@@ -177,7 +278,7 @@ function onTimerExpired(roomId) {
     updateClientsInRoom(roomId);
 }
 
-io.on('connection', (socket) => {
+io.on('connection', async (socket) => {
     console.debug('socket connected', { socket: socket.id });
     let roomId = socket.handshake.query['roomId'];
     if (!roomId) {
@@ -194,6 +295,8 @@ io.on('connection', (socket) => {
             room.gameType = chosenGameType;
         }
         socket.emit('room', roomId);
+    } else {
+        await hydrateRoom(roomId); // restore from Redis if a restart dropped it
     }
     const room = getOrCreateRoom(roomId);
     socket.emit('gameTypes', gameTypes)
@@ -440,9 +543,10 @@ io.on('connection', (socket) => {
             // Drop the whole room once the last player leaves so room state
             // (players, tickets, deck) doesn't accumulate forever.
             if (room.players.length === 0) {
-                clearRoomTimer(room); // don't leave a setTimeout pointing at a dead room
-                rooms.delete(roomId);
-                console.info('room deleted', { room: roomId, rooms: rooms.size });
+                // Park, don't delete: an empty room (refresh/blip/restart) should
+                // survive on TTL, not be destroyed.
+                clearRoomTimer(room);
+                parkRoom(roomId);
             } else {
                 // If the host just left, hand the room to the longest-present
                 // remaining player (players are kept in join order).
@@ -488,6 +592,7 @@ function updateClientsInRoom(roomId) {
         hostUserId: room.hostUserId,
         locked: room.locked
     });
+    markDirty(roomId);
 }
 
 function restartGame(roomId) {

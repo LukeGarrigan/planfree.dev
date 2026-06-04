@@ -132,42 +132,54 @@
 
       </div>
 
-      <button v-if="!showVotes && !playerHasVoted() && spectator" class="button no-hover">
-        <span>You're spectating 👀</span>
-      </button>
-      <button v-if="!showVotes && !playerHasVoted() && !spectator" class="button no-hover">
-        <span>Cast your votes</span>
-      </button>
-      <button v-if="!showVotes && playerHasVoted() && canControl" class="button" @click="showVotesClicked()">
-        <span>Show votes!</span>
-      </button>
-      <button v-if="!showVotes && playerHasVoted() && !canControl" class="button no-hover">
-        <span>Waiting for host…</span>
-      </button>
-      <button
-          v-if="showVotes && countdown === 0 && canControl"
-          class="button start"
-          @click="startNewGame()"
-      >
-        <span>{{ startGameMessage }}</span>
-      </button>
-      <button v-if="showVotes && countdown === 0 && !canControl" class="button no-hover">
-        <span>Waiting for host…</span>
-      </button>
-      <button v-if="showVotes && countdown > 0" class="button no-hover">
-        <span>{{ countdown }}</span>
-      </button>
+      <Transition name="status" mode="out-in">
+        <button v-if="!showVotes && !playerHasVoted() && spectator" key="spectating" class="button no-hover">
+          <span>You're spectating 👀</span>
+        </button>
+        <button v-else-if="!showVotes && !playerHasVoted() && !spectator" key="cast" class="button no-hover">
+          <span>Cast your votes</span>
+        </button>
+        <button v-else-if="!showVotes && playerHasVoted() && canControl" key="show" class="button" @click="showVotesClicked()">
+          <span>Show votes!</span>
+        </button>
+        <button v-else-if="!showVotes && playerHasVoted() && !canControl" key="waiting-vote" class="button no-hover">
+          <span>Waiting for host…</span>
+        </button>
+        <button
+            v-else-if="showVotes && countdown === 0 && canControl"
+            key="start"
+            class="button start"
+            @click="startNewGame()"
+        >
+          <span>{{ startGameMessage }}</span>
+        </button>
+        <button v-else-if="showVotes && countdown === 0 && !canControl" key="waiting-reveal" class="button no-hover">
+          <span>Waiting for host…</span>
+        </button>
+        <button v-else-if="showVotes && countdown > 0" key="countdown" class="button no-hover">
+          <span :key="countdown" class="countdown-pop">{{ countdown }}</span>
+        </button>
+      </Transition>
 
       <div class="players-row">
         <div class="players" v-for="player in players" :key="player.id">
-          <div class="player" :class="{ voted: player.hasVoted, spectator: player.spectator }">
+          <div
+              class="player-tile"
+              :class="{ revealed: showVotes && countdown === 0 && player.hasVoted }"
+          >
             <span v-if="player.userId === hostUserId" class="host-crown" title="Host" aria-label="Host">👑</span>
-            <span v-if="player.spectator" class="spectator-icon" aria-label="Spectator" title="Spectator">
-              <svg xmlns="http://www.w3.org/2000/svg" height="26" width="26" viewBox="0 0 24 24" fill="currentColor">
-                <path d="M12 5c-7 0-10 7-10 7s3 7 10 7 10-7 10-7-3-7-10-7Zm0 11a4 4 0 1 1 0-8 4 4 0 0 1 0 8Zm0-2a2 2 0 1 0 0-4 2 2 0 0 0 0 4Z"/>
-              </svg>
-            </span>
-            <span v-else-if="showVotes && countdown === 0">{{ player.vote }}</span>
+            <div class="player-flip">
+              <div class="player front" :class="{ voted: player.hasVoted, spectator: player.spectator }">
+                <span v-if="player.spectator" class="spectator-icon" aria-label="Spectator" title="Spectator">
+                  <svg xmlns="http://www.w3.org/2000/svg" height="26" width="26" viewBox="0 0 24 24" fill="currentColor">
+                    <path d="M12 5c-7 0-10 7-10 7s3 7 10 7 10-7 10-7-3-7-10-7Zm0 11a4 4 0 1 1 0-8 4 4 0 0 1 0 8Zm0-2a2 2 0 1 0 0-4 2 2 0 0 0 0 4Z"/>
+                  </svg>
+                </span>
+              </div>
+              <div class="player back" :class="{ voted: player.hasVoted }">
+                <span>{{ player.vote }}</span>
+              </div>
+            </div>
           </div>
           <div class="name">
             <span>{{ player.name }}</span>
@@ -187,32 +199,36 @@
           <span>{{ vote }}</span>
         </button>
       </div>
+      <Transition name="results">
       <div class="results-container" v-if="showVotes && countdown === 0">
         <div class="results-card">
-          <div class="distribution" v-if="distribution.length">
-            <div class="dist-item" v-for="d in distribution" :key="`dist-${d.value}`">
-              <div class="dist-count">{{ d.count }}</div>
-              <div class="dist-bar-track">
-                <div class="dist-bar" :style="{ height: barHeight(d.count) }"></div>
+          <div class="results-body">
+            <div class="distribution" v-if="distribution.length">
+              <div class="dist-item" v-for="d in distribution" :key="`dist-${d.value}`">
+                <div class="dist-count">{{ d.count }}</div>
+                <div class="dist-bar-track">
+                  <div class="dist-bar" :style="{ height: barHeight(d.count) }"></div>
+                </div>
+                <div class="dist-value">{{ d.value }}</div>
               </div>
-              <div class="dist-value">{{ d.value }}</div>
             </div>
-          </div>
-          <div class="results-summary">
-            <div class="stat">
-              <span class="stat-label">Average</span>
-              <span class="stat-value">{{ averageValue }}</span>
+            <div class="results-summary">
+              <div class="stat">
+                <span class="stat-label">Average</span>
+                <span class="stat-value">{{ averageValue }}</span>
+              </div>
+              <div class="stat-divider"></div>
+              <div class="stat">
+                <span class="stat-label">Closest</span>
+                <span class="stat-value">{{ closestValue }}</span>
+              </div>
             </div>
-            <div class="stat-divider"></div>
-            <div class="stat">
-              <span class="stat-label">Closest</span>
-              <span class="stat-value">{{ closestValue }}</span>
-            </div>
+            <button class="revote-button" v-if="!isConsensus && hasSpread && canControl" @click="revote()">Discuss &amp; revote</button>
           </div>
           <div class="consensus" v-if="isConsensus">🎉 Consensus!</div>
-          <button class="revote-button" v-else-if="hasSpread && canControl" @click="revote()">Discuss &amp; revote</button>
         </div>
       </div>
+      </Transition>
       <div class="tickets" v-show="showTickets">
         <Tickets @close="showTickets = false"></Tickets>
       </div>
@@ -550,6 +566,7 @@ const toggleTickets = () => showTickets.value = !showTickets.value;
   align-content: flex-start;
   gap: 24px 16px;
   padding-top: 1em;
+  margin-bottom: 58px;
   box-sizing: border-box;
 }
 
@@ -566,22 +583,15 @@ const toggleTickets = () => showTickets.value = !showTickets.value;
   align-items: center;
   flex-direction: column;
 
-  .player {
+  .player-tile {
     position: relative;
-    border-radius: 26px;
-    border: none;
-    cursor: default;
     width: 64px;
     height: 80px;
-    background: var(--surface);
-    box-shadow: var(--shadow-raised);
-    color: var(--text);
-    font-size: 1.625rem;
-    display: flex;
-    justify-content: center;
-    align-items: center;
+    /* 3D space so the card has depth as it flips on reveal. */
+    perspective: 600px;
 
-    /* Crown marking the host sits centred on the top edge of the tile. */
+    /* Crown marking the host sits centred on the top edge of the tile and
+       stays put while the card flips beneath it. */
     .host-crown {
       position: absolute;
       top: -15px;
@@ -590,7 +600,43 @@ const toggleTickets = () => showTickets.value = !showTickets.value;
       font-size: 1.375rem;
       line-height: 1;
       pointer-events: none;
+      z-index: 2;
     }
+  }
+
+  .player-flip {
+    position: relative;
+    width: 100%;
+    height: 100%;
+    transform-style: preserve-3d;
+    transition: transform 0.5s cubic-bezier(0.45, 0.05, 0.2, 1);
+  }
+
+  /* When the round is revealed the card flips to show its value. */
+  .player-tile.revealed .player-flip {
+    transform: rotateY(180deg);
+  }
+
+  .player {
+    position: absolute;
+    inset: 0;
+    border-radius: 26px;
+    border: none;
+    cursor: default;
+    background: var(--surface);
+    box-shadow: var(--shadow-raised);
+    color: var(--text);
+    font-size: 1.625rem;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    /* Hide whichever face is turned away from the viewer. */
+    backface-visibility: hidden;
+  }
+
+  /* The value side starts pre-rotated so it reads correctly once flipped in. */
+  .player.back {
+    transform: rotateY(180deg);
   }
 
   .name {
@@ -634,11 +680,9 @@ const toggleTickets = () => showTickets.value = !showTickets.value;
   height: 100%;
   width: 100%;
   box-sizing: border-box;
-  /* Players + button flow top-to-bottom and scroll when the room is large, so
-     no player is ever clipped off-screen. The padding reserves room for the
-     voting hand / results card pinned to the bottom. */
+  /* Everything flows top-to-bottom and scrolls when the room is large. */
   overflow-y: auto;
-  padding-bottom: 240px;
+  padding-bottom: 80px;
 }
 
 .button {
@@ -802,11 +846,10 @@ const toggleTickets = () => showTickets.value = !showTickets.value;
     gap: 8px;
   }
 
-  /* The board scrolls as a whole when players + button outgrow the screen;
-     reserve space so the last content clears the pinned voting cards. */
+  /* Everything flows; small padding keeps the last row off the screen edge. */
   .home {
     overflow-y: auto;
-    padding-bottom: 220px;
+    padding-bottom: 80px;
   }
 
   /* Compact top toolbar that can't overflow the viewport */
@@ -872,6 +915,7 @@ const toggleTickets = () => showTickets.value = !showTickets.value;
     flex: 0 0 auto;
     align-content: flex-start;
     padding-top: 1em;
+    margin-bottom: 8px;
   }
 
   .players {
@@ -881,7 +925,7 @@ const toggleTickets = () => showTickets.value = !showTickets.value;
     min-height: 150px;
     height: auto;
 
-    .player {
+    .player-tile {
       width: 56px;
       height: 72px;
     }
@@ -907,15 +951,21 @@ const toggleTickets = () => showTickets.value = !showTickets.value;
     }
   }
 
-  /* Tighter voting options so more fit per row */
-  .options {
-    gap: 12px;
-    bottom: 3%;
+  /* Tighter voting options, flowing under the button like desktop.
+     .home raises specificity above the base .options rule (defined later). */
+  .home .options {
+    gap: 10px;
+    margin-top: 31px;
+  }
+
+  .home .results-container {
+    margin-top: 31px;
   }
 
   .options .fib-button {
-    width: 60px;
-    height: 64px;
+    width: 52px;
+    height: 58px;
+    font-size: 1.375rem;
 
     &:not(.current):hover {
       opacity: 1;
@@ -1095,7 +1145,9 @@ span {
      instead of having it painted over the player grid. */
   order: 3;
   width: 100%;
-  margin: 16px 0;
+  /* Matches the options' top margin so the gap below the button is the same
+     whether the voting hand or the results card is showing. */
+  margin: 64px 0 16px;
   user-select: none;
   font-family: "Plus Jakarta Sans Variable", sans-serif;
 }
@@ -1109,6 +1161,59 @@ span {
   padding: 18px 22px;
   min-width: 250px;
   max-width: 90vw;
+}
+
+.status-enter-active,
+.status-leave-active {
+  transition: opacity 0.2s ease, transform 0.2s ease;
+}
+
+/* Each countdown number re-mounts (keyed) and replays this pop as it ticks. */
+.countdown-pop {
+  display: inline-block;
+  animation: countdown-pop 0.5s cubic-bezier(0.34, 1.56, 0.64, 1);
+}
+
+@keyframes countdown-pop {
+  0% { transform: scale(0.3); opacity: 0; }
+  60% { transform: scale(1.12); opacity: 1; }
+  100% { transform: scale(1); opacity: 1; }
+}
+
+.status-enter-from {
+  opacity: 0;
+  transform: translateY(4px);
+}
+
+.status-leave-to {
+  opacity: 0;
+  transform: translateY(-4px);
+}
+
+/* Delay lets the cards finish flipping before the results card slides in. */
+.results-enter-active {
+  transition: opacity 0.35s ease, transform 0.35s cubic-bezier(0.45, 0.05, 0.2, 1);
+  transition-delay: 0.45s;
+}
+
+.results-leave-active {
+  transition: opacity 0.2s ease, transform 0.2s ease;
+}
+
+.results-enter-from,
+.results-leave-to {
+  opacity: 0;
+  transform: translateY(12px);
+}
+
+/* Chart and summary sit side by side so the card grows wider, not taller —
+   keeps the revealed board short enough to avoid popping a scrollbar. */
+.results-body {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-wrap: wrap;
+  gap: 22px;
 }
 
 .distribution {
@@ -1159,10 +1264,10 @@ span {
   justify-content: center;
   gap: 8px;
 
-  /* Only show the top divider when a distribution chart sits above it. */
+  /* Vertical divider between the chart on the left and the summary. */
   .distribution + & {
-    border-top: 1px solid rgba(255, 255, 255, 0.12);
-    padding-top: 14px;
+    border-left: 1px solid rgba(255, 255, 255, 0.12);
+    padding-left: 20px;
   }
 
   .stat {
@@ -1204,7 +1309,6 @@ span {
 
 .revote-button {
   align-self: center;
-  margin-top: 14px;
   border: none;
   border-radius: 12px;
   padding: 8px 18px;
@@ -1316,12 +1420,11 @@ span {
 .options {
   display: flex;
   justify-content: center;
-  position: absolute;
+  order: 2;
   flex-wrap: wrap;
-  height: 200px;
   gap: 30px;
   width: 90%;
-  bottom: 5%;
+  margin-top: 64px;
   user-select: none;
 }
 

@@ -94,13 +94,13 @@ const emit = defineEmits<{
   /* Push the badge / delete button over to the right edge. */
   margin-right: auto;
   font-family: "Plus Jakarta Sans Variable", sans-serif;
-  font-size: 18px;
+  font-size: 1.125rem;
   font-weight: 600;
   color: var(--text);
 }
 
 .badge {
-  font-size: 12px;
+  font-size: 0.75rem;
   font-weight: 600;
   color: var(--accent-text);
   background: var(--accent);
@@ -145,7 +145,7 @@ const emit = defineEmits<{
   background: var(--surface);
   color: var(--text);
   font-family: "Plus Jakarta Sans Variable", sans-serif;
-  font-size: 13px;
+  font-size: 0.875rem;
   font-weight: 500;
   box-shadow: inset 1px 1px 2px rgba(0, 0, 0, 0.08);
 }

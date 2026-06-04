@@ -92,7 +92,7 @@ input {
   height: 45px;
   border: none;
   outline: none;
-  font-size: 20px;
+  font-size: 1.25rem;
   border-top-left-radius: 10px;
   border-bottom-left-radius: 10px;
   background: var(--surface-input);
@@ -102,7 +102,7 @@ input {
 
 input::placeholder {
   color: var(--text-muted); /* Lighter/dimmer color for the placeholder */
-  font-size: 20px; /* Smaller font size for the placeholder */
+  font-size: 1.25rem; /* Smaller font size for the placeholder */
   padding-left: 10px;
 }
 </style>

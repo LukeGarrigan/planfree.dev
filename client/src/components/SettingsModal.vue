@@ -270,7 +270,7 @@ onUnmounted(() => window.removeEventListener('keydown', onKeydown));
 }
 
 .heading {
-  font-size: 24px;
+  font-size: 1.5rem;
   font-weight: 600;
   margin-bottom: 20px;
 }
@@ -285,7 +285,7 @@ onUnmounted(() => window.removeEventListener('keydown', onKeydown));
 
 .section-label {
   display: block;
-  font-size: 15px;
+  font-size: 0.875rem;
   font-weight: 600;
   opacity: 0.6;
   margin: 0 0 12px;
@@ -301,7 +301,7 @@ onUnmounted(() => window.removeEventListener('keydown', onKeydown));
   background: var(--surface-input);
   color: var(--text);
   font-family: "Plus Jakarta Sans Variable", sans-serif;
-  font-size: 17px;
+  font-size: 1rem;
   outline: none;
   transition: border-color 0.15s ease;
 
@@ -337,12 +337,12 @@ onUnmounted(() => window.removeEventListener('keydown', onKeydown));
 }
 
 .toggle-label {
-  font-size: 16px;
+  font-size: 1rem;
   font-weight: 500;
 }
 
 .toggle-hint {
-  font-size: 13px;
+  font-size: 0.875rem;
   opacity: 0.6;
 }
 
@@ -408,7 +408,7 @@ onUnmounted(() => window.removeEventListener('keydown', onKeydown));
 }
 
 .player-admin-name {
-  font-size: 15px;
+  font-size: 0.875rem;
   font-weight: 500;
   overflow: hidden;
   text-overflow: ellipsis;
@@ -428,7 +428,7 @@ onUnmounted(() => window.removeEventListener('keydown', onKeydown));
   background: var(--surface-input);
   color: var(--text);
   font-family: "Plus Jakarta Sans Variable", sans-serif;
-  font-size: 13px;
+  font-size: 0.875rem;
   font-weight: 600;
   cursor: pointer;
   transition: opacity 0.1s ease;
@@ -445,7 +445,7 @@ onUnmounted(() => window.removeEventListener('keydown', onKeydown));
 
 .host-note {
   margin: 0;
-  font-size: 14px;
+  font-size: 0.875rem;
   line-height: 1.5;
   color: var(--text-muted);
 

@@ -576,6 +576,7 @@ const toggleTickets = () => showTickets.value = !showTickets.value;
     background: var(--surface);
     box-shadow: var(--shadow-raised);
     color: var(--text);
+    font-size: 1.625rem;
     display: flex;
     justify-content: center;
     align-items: center;
@@ -586,7 +587,7 @@ const toggleTickets = () => showTickets.value = !showTickets.value;
       top: -15px;
       left: 50%;
       transform: translateX(-50%) rotate(-10deg);
-      font-size: 22px;
+      font-size: 1.375rem;
       line-height: 1;
       pointer-events: none;
     }
@@ -595,17 +596,11 @@ const toggleTickets = () => showTickets.value = !showTickets.value;
   .name {
     margin-top: 1em;
     text-align: center;
-    font-size: 26px;
+    font-size: 1.625rem;
     /* Cap to the player cell and break long names so they wrap inside their own
        card instead of overlapping neighbours. */
     max-width: 100%;
     overflow-wrap: anywhere;
-
-    span {
-      /* Override the global 26px span rule so the name follows the cell's
-         font-size (including the smaller mobile size). */
-      font-size: inherit;
-    }
   }
 
   .voted {
@@ -664,6 +659,7 @@ const toggleTickets = () => showTickets.value = !showTickets.value;
   transition: all 0.1s ease-in-out;
   box-shadow: var(--shadow-raised);
   color: var(--text);
+  font-size: 1.625rem;
 
   &:hover {
     opacity: 0.3;
@@ -760,16 +756,15 @@ const toggleTickets = () => showTickets.value = !showTickets.value;
       cursor: pointer;
       text-align: left;
       font-family: "Plus Jakarta Sans Variable", sans-serif;
-      font-size: 16px;
+      font-size: 1rem;
       color: var(--text);
 
       &:hover {
         background: var(--surface-sunken-hover);
       }
 
-      /* Override the global `span { font-size: 26px }` used for vote text. */
       span {
-        font-size: 16px;
+        font-size: 1rem;
         font-weight: 500;
       }
 
@@ -785,7 +780,7 @@ const toggleTickets = () => showTickets.value = !showTickets.value;
   .voting-on {
     font-family: "Plus Jakarta Sans Variable", sans-serif;
     margin-left: 20px;
-    font-size: 20px;
+    font-size: 1.25rem;
     display: flex;
     align-items: center;
     word-wrap: break-word;
@@ -825,7 +820,7 @@ const toggleTickets = () => showTickets.value = !showTickets.value;
       width: auto;
       min-width: 0;
       height: 46px;
-      font-size: 15px;
+      font-size: 0.875rem;
       padding: 0 14px;
       gap: 6px;
 
@@ -867,7 +862,7 @@ const toggleTickets = () => showTickets.value = !showTickets.value;
   .team-name {
     height: 46px;
     line-height: 46px;
-    font-size: 18px;
+    font-size: 1.125rem;
   }
 
   /* Size the player grid to its contents and pack from the top, so the action
@@ -893,7 +888,7 @@ const toggleTickets = () => showTickets.value = !showTickets.value;
 
     .name {
       margin-top: 0.5em;
-      font-size: 18px;
+      font-size: 1.125rem;
     }
   }
 
@@ -958,7 +953,7 @@ const toggleTickets = () => showTickets.value = !showTickets.value;
     width: auto;
     padding: 0 28px;
     height: 70px;
-    font-size: 26px;
+    font-size: 1.625rem;
 
     svg {
       position: relative;
@@ -976,7 +971,7 @@ const toggleTickets = () => showTickets.value = !showTickets.value;
     width: auto;
     padding: 0 28px;
     height: 70px;
-    font-size: 26px;
+    font-size: 1.625rem;
 
     svg {
       position: relative;
@@ -1040,7 +1035,7 @@ const toggleTickets = () => showTickets.value = !showTickets.value;
     }
 
     span {
-      font-size: 16px;
+      font-size: 1rem;
       font-weight: 500;
     }
 
@@ -1064,7 +1059,7 @@ const toggleTickets = () => showTickets.value = !showTickets.value;
   height: 70px;
   line-height: 70px;
   font-family: "Plus Jakarta Sans Variable", sans-serif;
-  font-size: 26px;
+  font-size: 1.625rem;
   font-weight: 400;
   color: var(--text);
   user-select: none;
@@ -1088,8 +1083,6 @@ const toggleTickets = () => showTickets.value = !showTickets.value;
 
 span {
   font-family: "Plus Jakarta Sans Variable", sans-serif;
-  font-size: 26px;
-  font-weight: semibold;
   color: var(--text);
   user-select: none;
 }
@@ -1135,7 +1128,7 @@ span {
   }
 
   .dist-count {
-    font-size: 14px;
+    font-size: 0.875rem;
     font-weight: 600;
     color: var(--inverse-text);
     opacity: 0.6;
@@ -1154,7 +1147,7 @@ span {
   }
 
   .dist-value {
-    font-size: 15px;
+    font-size: 0.875rem;
     font-weight: 600;
     color: var(--inverse-text);
   }
@@ -1181,14 +1174,14 @@ span {
   }
 
   .stat-label {
-    font-size: 13px;
+    font-size: 0.875rem;
     font-weight: 600;
     color: var(--inverse-text);
     opacity: 0.6;
   }
 
   .stat-value {
-    font-size: 26px;
+    font-size: 1.625rem;
     font-weight: 600;
     color: var(--inverse-text);
   }
@@ -1205,7 +1198,7 @@ span {
   text-align: center;
   font-family: "Plus Jakarta Sans Variable", sans-serif;
   font-weight: 600;
-  font-size: 16px;
+  font-size: 1rem;
   color: var(--inverse-text);
 }
 
@@ -1219,7 +1212,7 @@ span {
   color: var(--accent-text);
   font-family: "Plus Jakarta Sans Variable", sans-serif;
   font-weight: 600;
-  font-size: 14px;
+  font-size: 0.875rem;
   cursor: pointer;
   transition: opacity 0.1s ease;
 
@@ -1247,7 +1240,7 @@ span {
   border: none;
   border-radius: 10px;
   background: transparent;
-  font-size: 20px;
+  font-size: 1.25rem;
   line-height: 1;
   cursor: pointer;
   transition: transform 0.1s ease, background 0.1s ease;
@@ -1280,12 +1273,12 @@ span {
 }
 
 .floating-emoji {
-  font-size: 34px;
+  font-size: 2.125rem;
 }
 
 .floating-name {
   font-family: "Plus Jakarta Sans Variable", sans-serif;
-  font-size: 12px;
+  font-size: 0.75rem;
   color: var(--text-muted);
 }
 
@@ -1316,7 +1309,7 @@ span {
   .reaction-button {
     width: 32px;
     height: 32px;
-    font-size: 17px;
+    font-size: 1rem;
   }
 }
 
@@ -1346,6 +1339,7 @@ span {
   transition: all 0.1s ease-in-out;
   box-shadow: var(--shadow-raised);
   color: var(--text);
+  font-size: 1.625rem;
 
   &:not(.current) {
     &:hover {

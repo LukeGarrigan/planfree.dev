@@ -143,7 +143,7 @@ function submit() {
 
 .heading {
   font-family: "Plus Jakarta Sans Variable", sans-serif;
-  font-size: 22px;
+  font-size: 1.375rem;
   font-weight: 600;
   text-align: center;
   margin-bottom: 6px;
@@ -151,7 +151,7 @@ function submit() {
 
 .subheading {
   font-family: "Plus Jakarta Sans Variable", sans-serif;
-  font-size: 14px;
+  font-size: 0.875rem;
   opacity: 0.6;
   text-align: center;
   margin: 0 0 20px;
@@ -172,7 +172,7 @@ function submit() {
 
 .field-label {
   font-family: "Plus Jakarta Sans Variable", sans-serif;
-  font-size: 14px;
+  font-size: 0.875rem;
   font-weight: 600;
   opacity: 0.7;
 }
@@ -183,7 +183,7 @@ function submit() {
   height: 45px;
   border: none;
   outline: none;
-  font-size: 18px;
+  font-size: 1.125rem;
   font-family: "Plus Jakarta Sans Variable", sans-serif;
   border-radius: 10px;
   background: var(--surface-input);
@@ -192,7 +192,7 @@ function submit() {
 
   &::placeholder {
     color: var(--text-muted);
-    font-size: 16px;
+    font-size: 1rem;
   }
 }
 
@@ -226,7 +226,7 @@ function submit() {
 
   span {
     font-family: "Plus Jakarta Sans Variable", sans-serif;
-    font-size: 16px;
+    font-size: 1rem;
     font-weight: 600;
   }
 

@@ -138,7 +138,7 @@ function voteOn(ticket: Ticket) {
   }
 
   span {
-    font-size: 15px;
+    font-size: 0.875rem;
     font-weight: 600;
     color: var(--accent-text);
   }
@@ -157,7 +157,7 @@ function voteOn(ticket: Ticket) {
 
 .tickets-title {
   font-family: "Plus Jakarta Sans Variable", sans-serif;
-  font-size: 16px;
+  font-size: 1rem;
   font-weight: 600;
   color: var(--text);
 }
@@ -231,7 +231,7 @@ function voteOn(ticket: Ticket) {
 }
 
 .ticket-id {
-  font-size: 12px;
+  font-size: 0.75rem;
   font-weight: 600;
   padding: 2px 8px;
   border-radius: 10px;
@@ -254,7 +254,7 @@ function voteOn(ticket: Ticket) {
 
 .ticket-description {
   margin: 4px 0 0;
-  font-size: 13px;
+  font-size: 0.875rem;
   color: var(--text-muted);
   white-space: pre-wrap;
 }
@@ -262,7 +262,7 @@ function voteOn(ticket: Ticket) {
 .ticket-link {
   display: inline-block;
   margin-top: 4px;
-  font-size: 13px;
+  font-size: 0.875rem;
   color: var(--accent);
   text-decoration: none;
 

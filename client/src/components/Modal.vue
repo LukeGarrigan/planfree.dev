@@ -78,7 +78,7 @@ function completed() {
 
 .heading {
   font-family: "Plus Jakarta Sans Variable", sans-serif;
-  font-size: 22px;
+  font-size: 1.375rem;
   font-weight: 600;
   text-align: center;
   margin-bottom: 6px;
@@ -86,7 +86,7 @@ function completed() {
 
 .subheading {
   font-family: "Plus Jakarta Sans Variable", sans-serif;
-  font-size: 14px;
+  font-size: 0.875rem;
   opacity: 0.6;
   text-align: center;
   margin: 0 0 20px;

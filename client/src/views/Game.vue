@@ -29,6 +29,7 @@
         @close="settings = false"
     ></Settings>
     <Sharing v-if="showShareModal" @dismissModal="dismissModal"></Sharing>
+    <LoginModal v-if="showLogin" @close="showLogin = false"></LoginModal>
     <div v-if="!modal" class="home">
 
       <div class="top-bar">
@@ -60,6 +61,14 @@
             <button v-if="tickets && tickets.length" class="menu-item" role="menuitem" @click="exportResults()">Export results</button>
             <button v-if="showInstallPwa" class="menu-item" role="menuitem" @click="installPWA()">Install app</button>
             <button class="menu-item" role="menuitem" @click="goToGithub()">View on GitHub</button>
+            <template v-if="authEnabled">
+              <div class="menu-divider"></div>
+              <button v-if="!authUser" class="menu-item" role="menuitem" @click="openLogin()">Log in</button>
+              <template v-else>
+                <div class="menu-account">{{ displayName() }}</div>
+                <button class="menu-item" role="menuitem" @click="logOut()">Log out</button>
+              </template>
+            </template>
           </div>
         </div>
         <div v-if="teamName" class="team-name">{{ teamName }}</div>
@@ -272,6 +281,8 @@ import {useGameEngine} from "@/composables/useGameEngine";
 import {useTheme} from "@/composables/useTheme";
 import Settings from "../components/SettingsModal.vue";
 import Sharing from "../components/SharingModal.vue";
+import LoginModal from "@/components/LoginModal.vue";
+import { useAuth } from "@/composables/useAuth";
 import GameFormat from "@/view-models/gameFormat";
 import { getUserId } from "@/utils/user";
 
@@ -342,6 +353,19 @@ const isConsensus = computed(() => distribution.value.length === 1 && totalVotes
 const hasSpread = computed(() => distribution.value.length > 1);
 const showShareModal = ref(false);
 const {isDark, toggleTheme} = useTheme();
+
+const showLogin = ref(false);
+const { user: authUser, authEnabled, displayName, signOut } = useAuth();
+
+function openLogin() {
+  menuOpen.value = false;
+  showLogin.value = true;
+}
+
+function logOut() {
+  menuOpen.value = false;
+  signOut();
+}
 
 let deferredPrompt: any;
 
@@ -818,6 +842,25 @@ const toggleTickets = () => showTickets.value = !showTickets.value;
         height: 18px;
         fill: currentColor;
       }
+    }
+
+    .menu-divider {
+      height: 1px;
+      margin: 4px 6px;
+      background: var(--surface-sunken-hover);
+    }
+
+    .menu-account {
+      padding: 6px 14px 2px;
+      font-family: "Plus Jakarta Sans Variable", sans-serif;
+      font-size: 0.8rem;
+      font-weight: 600;
+      color: var(--text-muted);
+      text-align: left;
+      max-width: 100%;
+      overflow: hidden;
+      text-overflow: ellipsis;
+      white-space: nowrap;
     }
   }
 

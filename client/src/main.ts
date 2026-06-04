@@ -3,6 +3,7 @@ import App from './App.vue'
 import router from './router'
 import { createApp } from 'vue'
 import * as Sentry from '@sentry/vue'
+import { initAuth } from './composables/useAuth'
 
 const app = createApp(App)
 
@@ -25,4 +26,7 @@ if (import.meta.env.VITE_SENTRY_DSN) {
 }
 
 app.use(router)
-app.mount('#planfree');
+
+// Resolve any existing session (and process an OAuth redirect) before mounting,
+// so the first socket handshake already carries the signed-in identity.
+initAuth().finally(() => app.mount('#planfree'));

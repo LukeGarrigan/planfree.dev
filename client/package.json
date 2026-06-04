@@ -17,6 +17,7 @@
   "dependencies": {
     "@fontsource-variable/plus-jakarta-sans": "^5.2.8",
     "@sentry/vue": "^10.19.0",
+    "@supabase/supabase-js": "^2.107.0",
     "qrcode.vue": "^3.9.1",
     "socket.io-client": "^4.8.3",
     "vue": "^3.5.35",

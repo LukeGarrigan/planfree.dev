@@ -82,7 +82,7 @@ function submit() {
   border-radius: 12px;
   background: var(--surface-input);
   color: var(--text);
-  font-family: "Montserrat", sans-serif;
+  font-family: "Plus Jakarta Sans Variable", sans-serif;
   font-size: 15px;
   outline: none;
   transition: border-color 0.15s ease;
@@ -104,7 +104,7 @@ function submit() {
   border-radius: 12px;
   background: var(--accent);
   color: var(--accent-text);
-  font-family: "Montserrat", sans-serif;
+  font-family: "Plus Jakarta Sans Variable", sans-serif;
   font-size: 15px;
   font-weight: 600;
   cursor: pointer;
@@ -136,7 +136,7 @@ function submit() {
   border-radius: 8px;
   background: var(--surface);
   color: var(--text);
-  font-family: "Montserrat", sans-serif;
+  font-family: "Plus Jakarta Sans Variable", sans-serif;
   font-size: 13px;
   font-weight: 500;
   box-shadow: inset 1px 1px 2px rgba(0, 0, 0, 0.08);
@@ -144,7 +144,7 @@ function submit() {
 
 .cd-hint {
   margin: 0;
-  font-family: "Montserrat", sans-serif;
+  font-family: "Plus Jakarta Sans Variable", sans-serif;
   font-size: 13px;
   color: var(--text-muted);
 }

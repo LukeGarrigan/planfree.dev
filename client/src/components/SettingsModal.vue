@@ -235,7 +235,7 @@ onUnmounted(() => window.removeEventListener('keydown', onKeydown));
   background: var(--surface);
   color: var(--text);
   box-shadow: var(--shadow-modal);
-  font-family: "Montserrat", sans-serif;
+  font-family: "Plus Jakarta Sans Variable", sans-serif;
 }
 
 /* The frame (.modal) stays put — close button pinned — while the content
@@ -300,7 +300,7 @@ onUnmounted(() => window.removeEventListener('keydown', onKeydown));
   border-radius: 12px;
   background: var(--surface-input);
   color: var(--text);
-  font-family: "Montserrat", sans-serif;
+  font-family: "Plus Jakarta Sans Variable", sans-serif;
   font-size: 17px;
   outline: none;
   transition: border-color 0.15s ease;
@@ -427,7 +427,7 @@ onUnmounted(() => window.removeEventListener('keydown', onKeydown));
   padding: 6px 12px;
   background: var(--surface-input);
   color: var(--text);
-  font-family: "Montserrat", sans-serif;
+  font-family: "Plus Jakarta Sans Variable", sans-serif;
   font-size: 13px;
   font-weight: 600;
   cursor: pointer;

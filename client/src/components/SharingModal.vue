@@ -114,7 +114,7 @@ onUnmounted(() => window.removeEventListener("keydown", onKeydown));
   background: var(--surface);
   color: var(--text);
   box-shadow: var(--shadow-modal);
-  font-family: "Montserrat", sans-serif;
+  font-family: "Plus Jakarta Sans Variable", sans-serif;
 }
 
 .close-x {
@@ -166,7 +166,7 @@ onUnmounted(() => window.removeEventListener("keydown", onKeydown));
   border-radius: 14px;
   background: var(--surface-sunken);
   color: var(--text);
-  font-family: "Montserrat", sans-serif;
+  font-family: "Plus Jakarta Sans Variable", sans-serif;
   font-size: 14px;
   box-shadow: var(--shadow-inset);
 
@@ -183,7 +183,7 @@ onUnmounted(() => window.removeEventListener("keydown", onKeydown));
   border-radius: 14px;
   background: var(--inverse-surface);
   color: var(--inverse-text);
-  font-family: "Montserrat", sans-serif;
+  font-family: "Plus Jakarta Sans Variable", sans-serif;
   font-size: 16px;
   font-weight: 600;
   cursor: pointer;
@@ -207,7 +207,7 @@ onUnmounted(() => window.removeEventListener("keydown", onKeydown));
   border: none;
   background: transparent;
   color: var(--text);
-  font-family: "Montserrat", sans-serif;
+  font-family: "Plus Jakarta Sans Variable", sans-serif;
   font-size: 15px;
   cursor: pointer;
   opacity: 0.7;

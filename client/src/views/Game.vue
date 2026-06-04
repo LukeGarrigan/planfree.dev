@@ -161,6 +161,7 @@
       <div class="players-row">
         <div class="players" v-for="player in players" :key="player.id">
           <div class="player" :class="{ voted: player.hasVoted, spectator: player.spectator }">
+            <span v-if="player.userId === hostUserId" class="host-crown" title="Host" aria-label="Host">👑</span>
             <span v-if="player.spectator" class="spectator-icon" aria-label="Spectator" title="Spectator">
               <svg xmlns="http://www.w3.org/2000/svg" height="26" width="26" viewBox="0 0 24 24" fill="currentColor">
                 <path d="M12 5c-7 0-10 7-10 7s3 7 10 7 10-7 10-7-3-7-10-7Zm0 11a4 4 0 1 1 0-8 4 4 0 0 1 0 8Zm0-2a2 2 0 1 0 0-4 2 2 0 0 0 0 4Z"/>
@@ -169,7 +170,6 @@
             <span v-else-if="showVotes && countdown === 0">{{ player.vote }}</span>
           </div>
           <div class="name">
-            <span v-if="player.userId === hostUserId" class="host-crown" title="Host" aria-label="Host">👑</span>
             <span>{{ player.name }}</span>
           </div>
         </div>
@@ -567,6 +567,7 @@ const toggleTickets = () => showTickets.value = !showTickets.value;
   flex-direction: column;
 
   .player {
+    position: relative;
     border-radius: 26px;
     border: none;
     cursor: default;
@@ -578,6 +579,17 @@ const toggleTickets = () => showTickets.value = !showTickets.value;
     display: flex;
     justify-content: center;
     align-items: center;
+
+    /* Crown marking the host sits centred on the top edge of the tile. */
+    .host-crown {
+      position: absolute;
+      top: -15px;
+      left: 50%;
+      transform: translateX(-50%) rotate(-10deg);
+      font-size: 22px;
+      line-height: 1;
+      pointer-events: none;
+    }
   }
 
   .name {
@@ -593,13 +605,6 @@ const toggleTickets = () => showTickets.value = !showTickets.value;
       /* Override the global 26px span rule so the name follows the cell's
          font-size (including the smaller mobile size). */
       font-size: inherit;
-    }
-
-    /* Crown marking the host sits a touch smaller than the name beside it. */
-    .host-crown {
-      font-size: 0.7em;
-      margin-right: 4px;
-      vertical-align: middle;
     }
   }
 
@@ -754,7 +759,7 @@ const toggleTickets = () => showTickets.value = !showTickets.value;
       border-radius: 10px;
       cursor: pointer;
       text-align: left;
-      font-family: "Montserrat", sans-serif;
+      font-family: "Plus Jakarta Sans Variable", sans-serif;
       font-size: 16px;
       color: var(--text);
 
@@ -778,7 +783,7 @@ const toggleTickets = () => showTickets.value = !showTickets.value;
   }
 
   .voting-on {
-    font-family: "Montserrat", sans-serif;
+    font-family: "Plus Jakarta Sans Variable", sans-serif;
     margin-left: 20px;
     font-size: 20px;
     display: flex;
@@ -1027,7 +1032,7 @@ const toggleTickets = () => showTickets.value = !showTickets.value;
     border: none;
     border-radius: 10px;
     cursor: pointer;
-    font-family: "Montserrat", sans-serif;
+    font-family: "Plus Jakarta Sans Variable", sans-serif;
     color: var(--text);
 
     &:hover {
@@ -1058,7 +1063,7 @@ const toggleTickets = () => showTickets.value = !showTickets.value;
   max-width: 30vw;
   height: 70px;
   line-height: 70px;
-  font-family: "Montserrat", sans-serif;
+  font-family: "Plus Jakarta Sans Variable", sans-serif;
   font-size: 26px;
   font-weight: 400;
   color: var(--text);
@@ -1082,7 +1087,7 @@ const toggleTickets = () => showTickets.value = !showTickets.value;
 }
 
 span {
-  font-family: "Montserrat", sans-serif;
+  font-family: "Plus Jakarta Sans Variable", sans-serif;
   font-size: 26px;
   font-weight: semibold;
   color: var(--text);
@@ -1099,7 +1104,7 @@ span {
   width: 100%;
   margin: 16px 0;
   user-select: none;
-  font-family: "Montserrat", sans-serif;
+  font-family: "Plus Jakarta Sans Variable", sans-serif;
 }
 
 .results-card {
@@ -1198,7 +1203,7 @@ span {
 .consensus {
   margin-top: 14px;
   text-align: center;
-  font-family: "Montserrat", sans-serif;
+  font-family: "Plus Jakarta Sans Variable", sans-serif;
   font-weight: 600;
   font-size: 16px;
   color: var(--inverse-text);
@@ -1212,7 +1217,7 @@ span {
   padding: 8px 18px;
   background: var(--accent);
   color: var(--accent-text);
-  font-family: "Montserrat", sans-serif;
+  font-family: "Plus Jakarta Sans Variable", sans-serif;
   font-weight: 600;
   font-size: 14px;
   cursor: pointer;
@@ -1279,7 +1284,7 @@ span {
 }
 
 .floating-name {
-  font-family: "Montserrat", sans-serif;
+  font-family: "Plus Jakarta Sans Variable", sans-serif;
   font-size: 12px;
   color: var(--text-muted);
 }

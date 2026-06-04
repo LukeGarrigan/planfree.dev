@@ -93,7 +93,7 @@ const emit = defineEmits<{
 .option-name {
   /* Push the badge / delete button over to the right edge. */
   margin-right: auto;
-  font-family: "Montserrat", sans-serif;
+  font-family: "Plus Jakarta Sans Variable", sans-serif;
   font-size: 18px;
   font-weight: 600;
   color: var(--text);
@@ -144,7 +144,7 @@ const emit = defineEmits<{
   border-radius: 8px;
   background: var(--surface);
   color: var(--text);
-  font-family: "Montserrat", sans-serif;
+  font-family: "Plus Jakarta Sans Variable", sans-serif;
   font-size: 13px;
   font-weight: 500;
   box-shadow: inset 1px 1px 2px rgba(0, 0, 0, 0.08);

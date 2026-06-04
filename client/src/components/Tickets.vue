@@ -130,7 +130,7 @@ function voteOn(ticket: Ticket) {
   background: var(--accent);
   color: var(--accent-text);
   cursor: pointer;
-  font-family: "Montserrat", sans-serif;
+  font-family: "Plus Jakarta Sans Variable", sans-serif;
   transition: opacity 0.1s ease-in-out;
 
   svg {
@@ -156,7 +156,7 @@ function voteOn(ticket: Ticket) {
 }
 
 .tickets-title {
-  font-family: "Montserrat", sans-serif;
+  font-family: "Plus Jakarta Sans Variable", sans-serif;
   font-size: 16px;
   font-weight: 600;
   color: var(--text);
@@ -197,7 +197,7 @@ function voteOn(ticket: Ticket) {
   word-wrap: break-word;
   overflow-wrap: break-word;
   gap: 10px;
-  font-family: "Montserrat", sans-serif;
+  font-family: "Plus Jakarta Sans Variable", sans-serif;
 
   .ticket-body {
     flex: 1;

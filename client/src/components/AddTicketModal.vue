@@ -142,7 +142,7 @@ function submit() {
 }
 
 .heading {
-  font-family: "Montserrat", sans-serif;
+  font-family: "Plus Jakarta Sans Variable", sans-serif;
   font-size: 22px;
   font-weight: 600;
   text-align: center;
@@ -150,7 +150,7 @@ function submit() {
 }
 
 .subheading {
-  font-family: "Montserrat", sans-serif;
+  font-family: "Plus Jakarta Sans Variable", sans-serif;
   font-size: 14px;
   opacity: 0.6;
   text-align: center;
@@ -171,7 +171,7 @@ function submit() {
 }
 
 .field-label {
-  font-family: "Montserrat", sans-serif;
+  font-family: "Plus Jakarta Sans Variable", sans-serif;
   font-size: 14px;
   font-weight: 600;
   opacity: 0.7;
@@ -184,7 +184,7 @@ function submit() {
   border: none;
   outline: none;
   font-size: 18px;
-  font-family: "Montserrat", sans-serif;
+  font-family: "Plus Jakarta Sans Variable", sans-serif;
   border-radius: 10px;
   background: var(--surface-input);
   color: var(--text);
@@ -225,7 +225,7 @@ function submit() {
   transition: opacity 0.1s ease-in-out;
 
   span {
-    font-family: "Montserrat", sans-serif;
+    font-family: "Plus Jakarta Sans Variable", sans-serif;
     font-size: 16px;
     font-weight: 600;
   }
